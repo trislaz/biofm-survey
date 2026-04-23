@@ -32,12 +32,16 @@ tags:
 - foundation-model
 - ablation
 - parameter-efficiency
-parameters: "8M / 33M / 50M / 100M / 150M / 650M (suite)"
-training_tokens: "~31M ncRNA seqs from RNAcentral (~5.1B tokens); extended +31M coding seqs from RefSeq (~62M seqs total). Scaling expts: 2.4B–24.8B tokens."
-training_compute: "Scaling plateau ~1e16 FLOPs. N_opt ∝ C^0.2279, D_opt ∝ C^0.7720."
+parameters: 8M / 33M / 50M / 100M / 150M / 650M (suite)
+training_tokens: '~31M ncRNA seqs from RNAcentral (~5.1B tokens); extended +31M coding
+  seqs from RefSeq (~62M seqs total). Scaling expts: 2.4B–24.8B tokens.'
+training_compute: Scaling plateau ~1e16 FLOPs. N_opt ∝ C^0.2279, D_opt ∝ C^0.7720.
 references_chased: false
 added_at: '2026-04-22T19:36:49+00:00'
 updated_at: '2026-04-22T20:17:57+00:00'
+is_fm: false
+fm_classification_reason: Methodology study on tokenization for RNA FMs; not a released
+  FM.
 ---
 
 ## TL;DR

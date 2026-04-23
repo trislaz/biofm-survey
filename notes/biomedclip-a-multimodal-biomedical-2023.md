@@ -52,6 +52,8 @@ training_compute: up to 16× NVIDIA A100 GPUs
 references_chased: false
 added_at: '2026-04-22T19:42:13+00:00'
 updated_at: '2026-04-22T20:17:29+00:00'
+is_fm: true
+fm_classification_reason: 'BiomedCLIP: pretrained biomedical VL FM.'
 ---
 
 ## TL;DR
@@ -152,3 +154,38 @@ BiomedCLIP is a CLIP-style contrastive vision-language model pretrained on PMC-1
 - Training compute not precisely reported (no GPU-hours or FLOPs); only "up to 16 A100s" mentioned.
 - WordPiece (30k) vs. BPE (50k) confounded with PubMedBERT vs. GPT-2 swap — individual contribution of tokenizer change is not isolated.
 - The paper uses OpenAI CLIP as continual-pretraining init for some variants but trains from ImageNet init for the best model — the comparison could be more systematic.
+
+## Ablations (Rev 4)
+
+Validation metrics on PMC-15M (img2txt / txt2img R@1, %); downstream zero-shot mean accuracy where noted. All ablations from the Supplementary Note (Tables S1–S8).
+
+| # | Axis varied | Setting | Val loss ↓ | img2txt R@1 | txt2img R@1 | Downstream (mean) | Δ vs. prev row | Source |
+|---|---|---|---|---|---|---|---|---|
+| 1 | Text encoder + tokenizer + ctx | GPT-2 / BPE-50k / ctx 77 (CLIP default) | 0.6626 | 64.53 | 63.56 | — | baseline | S1 |
+| 2 | Text encoder + tokenizer | PubMedBERT / WordPiece-30k / ctx 77 | 0.5776 | 69.03 | 67.41 | — | +4.50 / +3.85 | S1 |
+| 3 | Context length | PubMedBERT / WordPiece-30k / ctx 256 | 0.4807 | 73.50 | 72.26 | — | +4.47 / +4.85 | S1 |
+| 4 | Vision scale | ViT-S/16 (22M, dim 384) | 0.5342 | 69.45 | 68.02 | — | baseline | S2 |
+| 5 | Vision scale | ViT-M/16 (39M, dim 512) | 0.5063 | 71.85 | 70.22 | — | +2.40 / +2.20 | S2 |
+| 6 | Vision scale | ViT-B/16 (86M, dim 768) | 0.4807 | 73.50 | 72.26 | — | +1.65 / +2.04 | S2 |
+| 7 | Vision init | ViT-B/16 random init | 0.3814 | 83.15 | 81.75 | — | baseline | S3 |
+| 8 | Vision init | ViT-B/16 ImageNet-pretrained | 0.3819 | 82.90 | 81.86 | — | ≈0 (val) but more stable downstream | S3 |
+| 9 | Image resolution | 224 px (1.00× train time) | 0.3819 | 82.90 | 81.86 | 75.52 | baseline | S4/S5 |
+| 10 | Image resolution | 384 px (1.92× train time) | 0.3406 | 84.63 | 83.56 | 70.37 | +1.73 val / **−5.15 downstream** | S4/S5 |
+| 11 | Batch size (8 ep) | 2k | — | 79.69 | 78.43 | — | baseline | S6 |
+| 12 | Batch size (8 ep) | 4k | — | 82.90 | 81.86 | — | +3.21 / +3.43 | S6 |
+| 13 | Batch schedule (40 ep) | constant 4k | — | 83.98 | 82.71 | — | baseline | S7 |
+| 14 | Batch schedule (40 ep) | 4k → 64k (after 8 ep) | — | 87.32 | 86.66 | no downstream gain | +3.34 val only | S7 |
+| 15 | End-to-end config | OpenAI CLIP RN50-224-GPT/77, WIT-400M only | — | 10.31 | 10.38 | — | baseline (no biomed pretraining) | S8 |
+| 16 | End-to-end config | CLIP RN50 init → continual on PMC-15M | — | 81.17 | 80.17 | — | +70.86 / +69.79 | S8 |
+| 17 | End-to-end config | CLIP ViT-B/16 init → continual on PMC-15M | — | 81.57 | 80.89 | — | +0.40 / +0.72 | S8 |
+| 18 | End-to-end config (final) | ViT-B/16 (ImageNet) + PubMedBERT/256, PMC-15M | — | **82.90** | **81.86** | — | +1.33 / +0.97 | S8 |
+
+### Take-aways
+
+1. **Domain-specific text stack is the single largest controllable lever.** Swapping GPT-2/BPE/77-token for PubMedBERT/WordPiece/256-token lifts R@1 by ~9 points on each retrieval direction (rows 1→3) — bigger than any vision-side change tested.
+2. **Context length matters as much as the encoder swap.** Going from 77 → 256 tokens alone gives +4.47 / +4.85 R@1 (rows 2→3); biomedical captions are long and truncation is costly.
+3. **Validation gains do not always transfer downstream.** 384 px improves val by +1.7 R@1 but *drops* zero-shot mean by 5.15 pts (rows 9→10), driven mainly by PCam (96 px native). Pretraining-resolution / downstream-resolution mismatch dominates over raw resolution.
+4. **Batch size has a clear plateau around 4k for PMC-15M.** Scaling 4k → 64k still improves validation (+3.3 R@1) but yields no downstream benefit (row 14), suggesting the 15M-pair dataset is the bottleneck — consistent with CLIP needing 400M pairs for 64k batches.
+5. **Vision scaling helps monotonically up to ViT-B/16** (+4.05 / +4.24 R@1 from S→B, rows 4→6), but the largest tested model is still only ViT-B; head-room for L/H/G is unexplored.
+6. **ImageNet vs. random init is a wash on validation but improves downstream stability** (rows 7–8) — the authors keep ImageNet init for that practical reason, not for a metric gain.
+7. **Continual pretraining from OpenAI CLIP ≈ training from ImageNet+PubMedBERT init** for the final R@1 (rows 17 vs. 18: 81.57/80.89 vs. 82.90/81.86), so the biomedical text encoder contributes the remaining ~1 point edge in the chosen recipe.

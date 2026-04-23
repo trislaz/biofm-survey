@@ -39,6 +39,8 @@ training_compute: null
 references_chased: false
 added_at: '2026-04-22T19:37:08+00:00'
 updated_at: '2026-04-22T20:23:01+00:00'
+is_fm: true
+fm_classification_reason: Self-supervised pretraining for 3D-genome multimodal FM.
 ---
 
 ## TL;DR
@@ -110,3 +112,35 @@ MIX-HIC is the first multimodal foundation model for 3D genomics, integrating Hi
 - Pre-training on 4 cell lines only; generalization to diverse tissues/conditions untested beyond GM12878/K562 fine-tuning.
 - No DNA sequence input — unlike EPCOT/C.Origami. Trade-off: simpler input but potentially missing sequence-level regulatory grammar.
 - Code available: https://github.com/myang998/MIX-HIC
+
+## Ablations (Rev 4)
+
+| Variable | Settings | Metric/dataset | Result | Conclusion |
+|---|---|---|---|---|
+| Loss terms (Table 5) | L_con only | AUROC, chromatin loop detection (GM12878 / K562) | 0.9136 / 0.9099 | Contrastive loss alone is a strong baseline. |
+| Loss terms (Table 5) | L_con + L_orth | AUROC, chromatin loop detection (GM12878 / K562) | 0.9183 / 0.9156 | Orthogonal loss adds ~0.5% AUROC by separating modal-invariant vs modal-specific features. |
+| Loss terms (Table 5) | L_con + L_orth + L_mapping (full) | AUROC, chromatin loop detection (GM12878 / K562) | 0.9209 / 0.9194 | Cross-modal mapping yields a modest extra gain and enables missing-modality inference. |
+| Modality (Table 6) — Hi-C contact map prediction | Epi only, no pre-training | R² (GM12878 / K562) | 0.8481 / 0.7709 | Single-modal baseline. |
+| Modality (Table 6) — Hi-C contact map prediction | Epi + inferred Hi-C, pre-trained | R² (GM12878 / K562) | 0.8724 / 0.8001 | Cross-modal mapping recovers Hi-C information, improving over epi-only. |
+| Modality (Table 6) — Chromatin loop detection | Epi only, no pre-training | AUROC (GM12878 / K562) | 0.8236 / 0.8054 | Epi-only baseline. |
+| Modality (Table 6) — Chromatin loop detection | Epi + inferred Hi-C, pre-trained | AUROC (GM12878 / K562) | 0.8494 / 0.8226 | Inferred Hi-C still helps when true Hi-C absent. |
+| Modality (Table 6) — Chromatin loop detection | Hi-C only, no pre-training | AUROC (GM12878 / K562) | 0.9065 / 0.9072 | Hi-C alone is the strongest unimodal signal for loops. |
+| Modality (Table 6) — Chromatin loop detection | Inferred Epi + Hi-C, pre-trained | AUROC (GM12878 / K562) | 0.9135 / 0.9159 | Pre-training + inferred epi outperforms Hi-C alone. |
+| Modality (Table 6) — Chromatin loop detection | Bimodal, no pre-training | AUROC (GM12878 / K562) | 0.9091 / 0.8859 | Naïve bimodal underperforms unimodal Hi-C on K562 due to heterogeneity. |
+| Modality (Table 6) — Chromatin loop detection | Bimodal, pre-trained (full) | AUROC (GM12878 / K562) | 0.9209 / 0.9194 | Pre-training is essential to make bimodal fusion beneficial. |
+| Modality (Table 6) — CAGE-seq expression | Epi only, no pre-training | R² (GM12878 / K562) | 0.8514 / 0.8710 | Epi-only baseline. |
+| Modality (Table 6) — CAGE-seq expression | Epi + inferred Hi-C, pre-trained | R² (GM12878 / K562) | 0.8684 / 0.8870 | Inferred Hi-C improves expression prediction. |
+| Modality (Table 6) — CAGE-seq expression | Bimodal, no pre-training | R² (GM12878 / K562) | 0.8614 / 0.8755 | Bimodal without pre-training gives only marginal gains. |
+| Modality (Table 6) — CAGE-seq expression | Bimodal, pre-trained (full) | R² (GM12878 / K562) | 0.8833 / 0.9077 | Pre-trained bimodal best across all three tasks. |
+| Feature dimension C (Fig. 7) | C ∈ {64, 128, 256} | Hi-C contact map & chromatin loops vs CAGE-seq (GM12878, K562) | C=128 best for Hi-C / loops; C=256 best for CAGE-seq | Moderate width is optimal; performance robust to choice. |
+| Transformer depth T (Fig. 8) | T ∈ {2, 4, 8} | All 3 downstream tasks (GM12878, K562) | T=2 most robust across tasks | Shallow encoder/decoder suffices; deeper risks overfitting on task-specific fine-tuning data. |
+| Orthogonal constraint (Table 9) | With vs without L_orth | Inner product of modal-invariant vs modal-specific features (GM12878, K562) | With: ≤3e−3; Without: up to 1.42 (Hi-C, GM12878) | Orthogonal loss yields near-orthogonal representations, validating Theorem 1 (rigid alignment is harmful; promote diversity instead). |
+| In silico CTCF anchor perturbation (Table 10) | Down-sample epi signal at anchors at ratio 0.0/0.5/0.7/0.8/0.9 | Recall of 118 CTCF-mediated K562 loops (MIX-HIC-InferMap) | 100% / 98% / 61% / 15% / 0% | Loop predictions are mechanistically driven by epigenomic signal at anchors — biologically grounded. |
+
+### Take-aways
+
+- **Pre-training is the load-bearing component**: bimodal fusion *without* pre-training can underperform unimodal Hi-C (e.g., K562 loops 0.8859 vs 0.9072), but bimodal *with* pre-training is best on every task — pre-training, not multimodality per se, drives the gains.
+- Orthogonal constraint contributes a small AUROC bump (~0.5%) but a large representational effect (inner products drop ~3 orders of magnitude), supporting the diversity-not-strict-alignment thesis.
+- Cross-modal mapping is more valuable for *practical deployment* (imputing missing Hi-C) than for benchmark headroom — gains over L_con+L_orth are modest (~0.3%).
+- Architecture is in a "sweet spot" at C≈128, T=2: shallow and narrow, indicating data — not parameters — is currently the bottleneck.
+- Biological grounding is empirically demonstrated: attenuating CTCF-anchor epigenomic peaks monotonically destroys loop recall.

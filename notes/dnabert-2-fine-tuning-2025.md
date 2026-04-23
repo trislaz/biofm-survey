@@ -17,13 +17,23 @@ modalities:
 - dna
 status: extracted
 evidence_quality: full-text
-tags: ["fine-tuning", "bpe", "enhancer-classification", "colorectal-cancer", "optuna-hpo", "binary-classification", "threshold-tuning"]
-parameters: "117M"
+tags:
+- fine-tuning
+- bpe
+- enhancer-classification
+- colorectal-cancer
+- optuna-hpo
+- binary-classification
+- threshold-tuning
+parameters: 117M
 training_tokens: null
 training_compute: null
 references_chased: false
 added_at: '2026-04-22T19:36:46+00:00'
 updated_at: '2026-04-22T19:46:08+00:00'
+is_fm: false
+fm_classification_reason: Fine-tuning DNABERT-2 for enhancer classification; application
+  paper.
 ---
 
 ## TL;DR

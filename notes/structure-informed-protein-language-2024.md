@@ -31,6 +31,9 @@ training_compute: null
 references_chased: false
 added_at: '2026-04-22T19:36:52+00:00'
 updated_at: '2026-04-22T20:26:29+00:00'
+is_fm: false
+fm_classification_reason: Fine-tuning ESM-2 with structural data; not pitched as new
+  released FM.
 ---
 
 ## TL;DR

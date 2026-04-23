@@ -34,12 +34,15 @@ tags:
 - data-curation
 - intermediate-layers
 - biological-representation
-parameters: '1.9B (MAE-G/8); 307M (MAE-L/8); 25M (CA-MAE-S/16)'
+parameters: 1.9B (MAE-G/8); 307M (MAE-L/8); 25M (CA-MAE-S/16)
 training_tokens: '>8B image crops (MAE-G/8, 500 epochs over 16M images)'
-training_compute: '48000 H100 GPU-hours (MAE-G/8); 15360 H100 GPU-hours (MAE-L/8); 400 A100 GPU-hours (CA-MAE-S/16)'
+training_compute: 48000 H100 GPU-hours (MAE-G/8); 15360 H100 GPU-hours (MAE-L/8);
+  400 A100 GPU-hours (CA-MAE-S/16)
 references_chased: false
 added_at: '2026-04-22T19:42:01+00:00'
 updated_at: '2026-04-22T20:28:09+00:00'
+is_fm: true
+fm_classification_reason: 'Phenom-Beta: 1.9B-param MAE microscopy FM.'
 ---
 
 ## TL;DR
@@ -172,3 +175,23 @@ Largest cell-microscopy foundation model: 1.9B-param ViT-G/8 MAE trained on 8B+ 
 - **Only Cell Painting data**: All training/eval is on 6-channel Cell Painting. Generalization to other microscopy modalities (brightfield, H&E, confocal) is untested.
 - **No absolute accuracy reported on whole-genome recall** — only relative recall percentages at 5th/95th percentile thresholds of cosine similarity, making cross-paper comparison difficult.
 - **Code**: https://github.com/recursionpharma/maes_microscopy. Weights for CA-MAE-S/16 at https://huggingface.co/recursionpharma/OpenPhenom. MAE-G/8 weights not publicly released.
+
+## Ablations (Rev 4)
+
+Each row isolates one design axis; deltas reported on the whole-genome RxRx3 benchmark (Recall%, KS, CM = Cramér–von Mises replicate-consistency) unless noted. Baselines are taken from Table 1 of the paper.
+
+| # | Axis | Variants compared | Result (metric Δ) | Take-away |
+|---|------|-------------------|-------------------|-----------|
+| 1 | Model scale | CA-MAE-S/16 (RxRx3) → MAE-L/8 (RPI-93M) → MAE-G/8 (PP-16M); 22M → 0.3B → 1.9B params | Recall 39.6 → 44.4 → 45.4; KS .47 → .52 → .60; CM 10.4 → 12.3 → 16.4 | Scaling continues to pay off into the billion-param regime; CM (replicate consistency) gains faster than raw recall. |
+| 2 | Training data curation | RxRx3 (full) vs RPI-93M (filtered HCS) vs Phenoprints-16M (aggressively curated via prior MAE embeddings) at fixed L/8 backbone | MAE-L/8 RPI-93M vs MAE-L/8 PP-16M: KS .52 → .59, CM 12.3 → 16.2 (Recall flat at 44.4) | Curating to ~16M morphologically-active crops matches a much larger un-curated set on consistency; data quality > quantity. |
+| 3 | Patch size (8 vs 16) | MAE-L/16 vs MAE-L/8 (and CA-MAE variants) | /8 patches "outperform or match" /16 channel-agnostic variants on Anax probe | Smaller patches help on cellular morphology, justifying the G/8 choice despite cost. |
+| 4 | Channel-agnostic vs standard MAE | CA-MAE-S/16 (RxRx3) vs ViT-S baselines | CA-MAE-S/16 (Recall 39.6, KS .47) ≫ ViT-S/16 untrained (34.2, .30) and ViT-L/16 ImgNet-MAE (37.4, .34) | Even smallest microscopy-trained CA-MAE beats much larger natural-image ViTs — domain SSL dominates. |
+| 5 | Block trimming (b*) — main novel ablation | Final block vs linear-probe-selected intermediate block b* on every model | MAE-G/8: b=48 → b*=38 lifts KS .60 → .63 (+5%), CM 16.4 → 18.2 (+11%); MAE-L/8 RPI-93M: KS .52 → .57, CM 12.3 → 15.2 (+24%) | Free post-hoc gain by chopping ~20% of the encoder; b* found cheaply via Anax/RxRx1 logistic-regression probes. |
+| 6 | Block trimming on natural-image SSL | Dino-V2 ViT-S/L/G and ImgNet-MAE-L at b vs b* | Dino-V2 ViT-G: Recall 32.7 (worse than untrained ViT-S) at b=40 → 37.5 at b*=16; ViT-L: 35.7→38.8 | Trimming rescues OOD foundation models; default "use final layer" is a systematic mistake on biological data. |
+| 7 | SSL algorithm: MAE vs Dino-V2 | Dino-V2 ViT-L/16 trained on RxRx3 (and ViT-L/8 fine-tuned on RPI-93M) | Dino-V2 ViT-L/16: Avg.Prec. 0.258, z=2.13 — worse than CA-MAE-S/16 (z=2.90); over-fits from step 1 | No effective Dino recipe found for microscopy; MAEs remain the SSL of choice at this scale. |
+| 8 | External-data generalization (JUMP-CP) | CellProfiler vs CA-MAE-S/16 vs MAE-L/8 vs MAE-G/8-trimmed on CORUM/hu.MAP/Reactome/StringDB recall | MAE-G/8-trimmed best on all 4 (e.g. CORUM .264 vs CellProfiler .219, +21%) | Scaling + trimming gains transfer to data from completely different labs/assays — not an RxRx-only artifact. |
+| 9 | RxRx3-core compound-gene activity | MAE-L/8 vs MAE-G/8, each ± trimming | MAE-G/8 trimmed gives +42% (3.77 → 5.38) over prior MAE-L/8 SOTA on max-axis compound-gene prediction | Confirms scaling+trimming wins on a public, drug-discovery-relevant zero-shot task. |
+
+**Count: 9 ablations.**
+
+**Top take-away — block trimming is a free scaling boost (and a correction to a community default).** A cheap linear-probe search over encoder blocks (Eq. 1) finds an intermediate b* that beats the final block on every microscopy MAE tested — e.g. MAE-G/8's CM jumps 16.4 → 18.2 (+11%) and MAE-L/8's by +24%, with no extra training and ~20% lower inference cost. Strikingly, the same trick rescues natural-image SSL models (Dino-V2 ViT-G goes from below-random at b=40 to competitive at b*=16), implying the standard practice of taking foundation-model embeddings from the final layer is systematically suboptimal on out-of-distribution biological imagery.

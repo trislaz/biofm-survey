@@ -27,12 +27,15 @@ tags:
 - zero-shot-variant-scoring
 - rotary-embeddings
 - genomics-benchmark
-parameters: "50M/100M/250M/500M/2.5B"
-training_tokens: "50B–1T (model-dependent; v1-500M 50B, v1-2.5B 300B, v2-50M/100M 300B, v2-250M 800B, v2-500M 900B)"
-training_compute: "128×A100 for 28 days (v1 2.5B); 8×A100 for 1 day (v1/v2 ≤500M)"
+parameters: 50M/100M/250M/500M/2.5B
+training_tokens: 50B–1T (model-dependent; v1-500M 50B, v1-2.5B 300B, v2-50M/100M 300B,
+  v2-250M 800B, v2-500M 900B)
+training_compute: 128×A100 for 28 days (v1 2.5B); 8×A100 for 1 day (v1/v2 ≤500M)
 references_chased: false
 added_at: null
 updated_at: null
+is_fm: true
+fm_classification_reason: 'Nucleotide Transformer: family of pretrained genomic FMs.'
 ---
 
 ## TL;DR
@@ -153,3 +156,23 @@ Eight claims referencing `[the-nucleotide-transformer-building-2024]` were found
 | 8 | L393 | "The distilled v2-250 M matches v1-2.5 B, and IA3 … matches full fine-tuning" | **partial** | Same distillation error as #6 — v2-250 M was trained from scratch, not distilled. IA3 ≈ full fine-tuning is correct (see #1). |
 
 **Summary**: 3 supported, 3 partial, 2 unsupported. Key recurring errors: (a) the word "distillation" is used but never appears in the paper — v2 gains come from architecture + longer training; (b) the multispecies dataset size is 174 B nt, not 3.2 B nt; (c) the context-length table entry overstates by ~6× and misattributes the positional encoding scheme.
+
+## Ablations (Rev 4)
+| Variable | Settings | Metric / dataset | Result | Conclusion |
+|---|---|---|---|---|
+| Pre-training dataset | Human ref vs 1000G (3,202 human) vs Multispecies (850 species) | Avg MCC over 18 downstream tasks (fine-tuned) | Multispecies 2.5B matches/outperforms 1000G 2.5B on most human-derived tasks; both beat Human ref 500M | Sequence diversity beats raw human-only data; diversity > size when compute-limited |
+| Model size (NT-v1) | 500M (Human ref, 1000G) vs 2.5B (1000G, Multispecies) | Avg MCC over 18 tasks | Larger consistently > smaller within same dataset; 2.5B Multispecies best of v1 | Scale helps, but pairing with diverse pretraining data matters as much |
+| Adaptation strategy | Probing (10 layers × LR/MLP) vs IA³ parameter-efficient fine-tuning | # of 18 tasks ≥ BPNet baseline | Probing matched/beat 13/18; fine-tuning matched/beat 18/18 | Fine-tuning required for top performance; also lower variance than probing |
+| Probing layer choice | All layers of NT models | Best vs worst layer MCC (e.g., enhancer-types task) | Up to 38% relative gap; final layer never optimal | Embedding quality is layer-dependent; mid/late-but-not-final layers best |
+| IA³ vs full fine-tuning | 0.1% params (IA³) vs 100% params | Chromatin (DeepSEA), splicing (SpliceAI), enhancer (DeepSTARR) (Supp Fig 2) | No significant gain on chromatin/splicing; +3% on enhancer activity | IA³ is sufficient; ~1000× storage savings with negligible performance cost |
+| Architecture upgrades (NT-v2) | +RoPE, +SwiGLU, −MLP biases, −dropout, 12 kb context, 1T tokens | Avg MCC over 18 tasks | 50M v2 ≈ 500M v1 and 1000G 2.5B v1; 250M v2 = 0.769 (best, 10× smaller than 2.5B) | Modern transformer recipe + longer training yields ≥50× parameter efficiency |
+| Pre-training token budget (NT-v2) | Up to 1T tokens (250M & 500M) | Avg MCC vs tokens seen (Fig 5b) | 250M only surpasses 500M after ~900B tokens | Longer training disproportionately helps smaller models; token budget matters more than parameter count past a point |
+| Context length (downstream) | NT 2.5B (6 kb) vs SpliceAI-10k (15 kb) | Splice site top-k acc / PR-AUC | NT matches SpliceAI-10k overall; beats SpliceAI when both restricted to 6 kb input | Pretraining can compensate for shorter context vs supervised long-context baseline |
+| Zero-shot variant score type | Cosine sim, dot-product, L1, L2, loss-based | Correlation w/ Ensembl severity; AUC on eQTL/meQTL/ClinVar/HGMD | Cosine: highest severity corr (r² −0.30 to −0.35, P<6.55e-186); dot-product: AUC 0.73 (eQTL) / 0.71 (meQTL), ≈ fine-tuned | Score choice materially changes utility; dot-product competitive with fine-tuning for QTL prioritization |
+
+**Design-choice take-aways:**
+- Pretraining-data diversity (multispecies) gives more bang-per-parameter than scaling on a single-species corpus.
+- A modern transformer recipe (RoPE + SwiGLU + no-bias/dropout) plus a larger token budget beats raw parameter count by ~10–50×.
+- Parameter-efficient fine-tuning (IA³, 0.1% params) is sufficient — full fine-tuning rarely justifies its compute/storage cost.
+- Always probe multiple intermediate layers; the final layer is consistently suboptimal.
+- For variant prioritization, score selection (cosine vs dot-product) matters as much as fine-tuning.

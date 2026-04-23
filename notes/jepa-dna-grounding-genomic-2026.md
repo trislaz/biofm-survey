@@ -41,12 +41,15 @@ tags:
 - vicreg
 - linear-probing
 - zero-shot
-parameters: '117M'
-training_tokens: '7.6B bp'
-training_compute: '2x NVIDIA GPUs, 5 epochs (FLOPs not reported)'
+parameters: 117M
+training_tokens: 7.6B bp
+training_compute: 2x NVIDIA GPUs, 5 epochs (FLOPs not reported)
 references_chased: false
 added_at: '2026-04-22T19:36:44+00:00'
 updated_at: '2026-04-22T20:22:09+00:00'
+is_fm: true
+fm_classification_reason: 'JEPA-DNA: continual self-supervised pretraining for genomic
+  FMs.'
 ---
 
 ## TL;DR
@@ -160,3 +163,19 @@ JEPA-DNA adds a Joint-Embedding Predictive Architecture branch to standard GFM p
 - **From-scratch training gap:** Paper claims JEPA-DNA works from scratch but shows zero from-scratch results.
 - **Multi-architecture gap:** Claims compatibility with SSMs/decoders but only tests Transformer Encoder.
 - NVIDIA affiliations (first authors) — may see follow-up at scale with more architectures.
+
+## Ablations (Rev 4)
+
+No formal ablation study is reported. The paper provides only a single contrast — DNABERT-2 baseline vs. DNABERT-2 + JEPA-DNA continual pre-training — across supervised (linear probe, Table 1) and zero-shot cosine-similarity (Table 2) tasks. Loss-component weights (λ₁–λ₄), predictor architecture, masking strategy, and optimizer choice (SGD) are not ablated; authors list these explicitly as future work (§5).
+
+| # | Variable ablated | Variants compared | Setting | Metric | Result | Take-away |
+|---|---|---|---|---|---|---|
+| 1 | JEPA-DNA objective (presence) | DNABERT-2 vs. + JEPA-DNA | Linear probe, GUE TF Binding (100 bp) | AUROC | 0.783 → 0.808 (+3.19%) | Short-range motif tasks benefit |
+| 2 | JEPA-DNA objective (presence) | DNABERT-2 vs. + JEPA-DNA | Linear probe, GUE Splice Site (400 bp) | AUROC | 0.623 → 0.653 (+4.82%) | Mid-range structural tasks benefit |
+| 3 | JEPA-DNA objective (presence) | DNABERT-2 vs. + JEPA-DNA | Linear probe, VB Coding Pathogenicity (1024 bp) | AUROC | 0.569 → 0.603 (+5.98%) | Largest supervised gain; coding variants |
+| 4 | JEPA-DNA objective (presence) | DNABERT-2 vs. + JEPA-DNA | Linear probe, VB sQTL (1024 bp) | AUROC | 0.567 → 0.564 (−0.53%) | Sole regression; splice-QTL hurt slightly |
+| 5 | JEPA-DNA objective (presence) | DNABERT-2 vs. + JEPA-DNA | Linear probe, LRB Causal eQTL (12 kb) | AUROC | 0.704 → 0.705 (+0.14%) | Long-range gain vanishes |
+| 6 | JEPA-DNA objective (presence) | DNABERT-2 vs. + JEPA-DNA | Zero-shot cosine, BEND Expression Effect (512 bp) | AUROC | 0.490 → 0.524 (+6.94%) | Best zero-shot gain |
+| 7 | JEPA-DNA objective (presence) | DNABERT-2 vs. + JEPA-DNA | Zero-shot cosine, TraitGym Mendelian (4096 bp) | AUROC | 0.507 → 0.544 (+7.30%) | Largest overall gain; rare-variant ranking |
+| 8 | JEPA-DNA objective (presence) | DNABERT-2 vs. + JEPA-DNA | Zero-shot cosine, LRB Pathogenic OMIM (12 kb) | AUROC | 0.495 → 0.452 (−8.69%) | Long-range zero-shot regresses below random |
+

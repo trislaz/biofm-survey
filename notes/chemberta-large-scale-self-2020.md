@@ -17,13 +17,28 @@ modalities:
 - small-molecule
 status: extracted
 evidence_quality: full-text
-tags: ["transformer", "RoBERTa", "SMILES", "SELFIES", "masked-language-modeling", "molecular-property-prediction", "self-supervised", "PubChem", "MoleculeNet", "attention-visualization", "tokenization", "BPE"]
-parameters: "not reported (estimated ~83M from RoBERTa config: 6 layers, 12 heads, 768 hidden)"
-training_tokens: "not reported (largest run: 10M SMILES × 3 epochs)"
-training_compute: "~48 V100-hours (10M-subset run); 17.1 kg CO₂eq"
+tags:
+- transformer
+- RoBERTa
+- SMILES
+- SELFIES
+- masked-language-modeling
+- molecular-property-prediction
+- self-supervised
+- PubChem
+- MoleculeNet
+- attention-visualization
+- tokenization
+- BPE
+parameters: 'not reported (estimated ~83M from RoBERTa config: 6 layers, 12 heads,
+  768 hidden)'
+training_tokens: 'not reported (largest run: 10M SMILES × 3 epochs)'
+training_compute: ~48 V100-hours (10M-subset run); 17.1 kg CO₂eq
 references_chased: false
 added_at: '2026-04-22T21:55:42+00:00'
 updated_at: '2026-04-22T21:55:43+00:00'
+is_fm: true
+fm_classification_reason: 'ChemBERTa: pretrained molecular FM.'
 ---
 
 ## TL;DR
@@ -105,3 +120,16 @@ ChemBERTa is one of the first systematic attempts to apply BERT-style transforme
 - No regression tasks evaluated; only binary classification from MoleculeNet.
 - Comparison is limited to a single GNN baseline (D-MPNN) and classical methods; no comparison with other molecular pretrained models (e.g., SMILES-BERT, SMILES Transformer).
 - The 77M PubChem SMILES dataset released with this work became a widely adopted pretraining resource for subsequent molecular FMs.
+
+## Ablations (Rev 4)
+
+| Variable | Settings | Metric/dataset | Result | Conclusion |
+|---|---|---|---|---|
+| Pretraining dataset size | 100K, 250K, 1M, 10M PubChem SMILES | ROC-AUC & PRC-AUC on BBBP, ClinTox (CT_TOX), Tox21 (SR-p53) | Scaling 100K → 10M yields mean ΔROC-AUC = +0.110, ΔPRC-AUC = +0.059 | Downstream performance scales consistently with more pretraining data; MLM learns more robust representations at larger scale |
+| Tokenizer | BPE (HuggingFace) vs custom SmilesTokenizer (regex from Schwaller et al.), both pretrained on PubChem-1M | PRC-AUC on Tox21 SR-p53 | SmilesTokenizer beats BPE by ΔPRC-AUC = +0.015 | Semantically-relevant SMILES tokenization gives a small edge over BPE, but margin is narrow and needs more benchmarks |
+| String representation | SMILES vs SELFIES, same ChemBERTa pretraining | Tox21 SR-p53 | No significant difference in downstream performance | Despite SELFIES' 100% validity guarantee, it offers no measurable advantage here; further benchmarking needed |
+
+Take-aways:
+- Pretraining scale is the dominant lever among the variables tested — going from 100K to 10M SMILES gives a clear, consistent downstream gain, while tokenizer and string-representation choices yield small or null effects.
+- Tokenizer choice (SmilesTokenizer vs BPE) and SMILES vs SELFIES are second-order; authors flag both findings as needing more benchmarks before drawing firm conclusions.
+- All ablations were performed on a single representative MoleculeNet task (Tox21 SR-p53 for tokenizer/SELFIES) which limits generalizability of the conclusions.

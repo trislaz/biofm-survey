@@ -22,12 +22,15 @@ tags:
 - protein-protein-complex
 - MSA
 - end-to-end
-parameters: null  # "many millions of parameters"; exact count not reported
-training_tokens: null  # not reported
-training_compute: null  # not reported; limited by GPU memory
+parameters: null
+training_tokens: null
+training_compute: null
 references_chased: false
 added_at: null
 updated_at: null
+is_fm: true
+fm_classification_reason: 'RoseTTAFold: pretrained 3-track network for protein structure,
+  widely transferred.'
 ---
 
 ## TL;DR
@@ -126,3 +129,22 @@ Each claim citing `[accurate-prediction-of-protein-2021]` in `insights.md` is ch
 | 6 | 587 | RoseTTAFold's 3D-track cross-prediction is early evidence of cross-modal transfer (DNA ↔ protein). | **partial** | The paper demonstrates cross-representation transfer (1D/2D/3D tracks) and cross-task generalisation (monomer → complex), but does **not** address DNA↔protein cross-modal transfer, which is the question posed by the surrounding insight context. Citing RoseTTAFold as evidence for genomic-LM-to-protein transfer overstates the paper's scope. |
 
 **Summary**: 5 of 6 citations fully supported; 1 partial (line 587 stretches the paper's scope to a cross-modal transfer question it does not address).
+
+## Ablations (Rev 4)
+
+The paper reports few formal ablations in the main text — most architecture-variant comparisons are deferred to table S1. Comparisons summarised below are those discussed in the main body.
+
+| # | Ablation / Comparison | Setup | Result | Take-away |
+|---|---|---|---|---|
+| 1 | 3-track vs 2-track attention (Fig. 1B, CASP14) | Same attention backbone, with vs without the parallel 3D-coordinate track | 3-track "clearly outperforming … our 2-track attention models" and top CASP14 servers | The 3D-coordinate track is the central architectural contribution; tighter coupling of seq/dist/coords beats 2-track. |
+| 2 | End-to-end (SE(3) layer) vs pyRosetta back-end (Fig. 1B) | Same 3-track features, final 3D either from SE(3)-equivariant layer or pyRosetta folding | pyRosetta version more accurate on CASP14 | End-to-end is limited by GPU memory and lack of side-chain info at training; gap expected to close with more compute / side chains. |
+| 3 | Discontinuous crops vs whole-protein inference (fig. S4A) | Averaging 1D/2D features over multiple discontinuous 260-residue crops vs single-pass on full sequence | Crop-averaging more accurate | Memory-driven cropping is not just a workaround — it improves accuracy via implicit ensembling. |
+| 4 | MSA-depth sensitivity (fig. S2) | Accuracy vs Neff for RoseTTAFold, AF2, trRosetta, CASP14 methods | RoseTTAFold and AF2 show weaker accuracy↔MSA-depth correlation than trRosetta | Attention + multi-track architectures reduce reliance on deep MSAs (mirrors AF2 behaviour). |
+| 5 | Paired-MSA depth for complexes (fig. S10) | Vary number of paired sequences for complex prediction | More paired sequences → more accurate complex structures | Inter-chain co-evolution signal drives complex accuracy; the network exploits it despite monomer-only training. |
+| 6 | RoseTTAFold vs trRosetta for molecular replacement | 4 unsolved crystallographic datasets, MR with each model set | RoseTTAFold solved all 4; trRosetta yielded no MR solutions | The accuracy gain over the prior best non-AF2 method is large enough to cross the practical MR threshold. |
+| 7 | RoseTTAFold vs distant-homology model (TANGO2, fig. S9 / table S3) | Same target, RoseTTAFold model vs <15% identity homology model | Homology model has alignment shifts misplacing key conserved residues | Useful where templates exist but are too distant for sequence-based modelling. |
+| 8 | Architecture-variant sweep (table S1, methods only) | "Wide variety of approaches for passing information between different parts of the networks" | Best variant = 3-track with attention at 1D/2D/3D and bidirectional inter-track flow | Cited but not detailed in the main text — full numbers live in supplementary table S1. |
+
+**Count**: 8 ablation/comparison points discussed in the main text.
+
+**Top take-away**: The decisive architectural choice is the **third (3D-coordinate) track with bidirectional information flow across 1D/2D/3D representations** (Ablation #1). Every other reported comparison — back-end choice, cropping, MSA depth, MR success, complex prediction — is downstream of, or enabled by, this multi-track design.

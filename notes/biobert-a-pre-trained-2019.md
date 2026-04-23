@@ -21,13 +21,24 @@ modalities:
 - text
 status: extracted
 evidence_quality: full-text
-tags: ["continued-pretraining", "domain-adaptation", "masked-lm", "wordpiece", "biomedical-nlp", "bert", "ner", "relation-extraction", "question-answering"]
+tags:
+- continued-pretraining
+- domain-adaptation
+- masked-lm
+- wordpiece
+- biomedical-nlp
+- bert
+- ner
+- relation-extraction
+- question-answering
 parameters: 110000000
 training_tokens: 98300000000
 training_compute: null
 references_chased: false
 added_at: '2026-04-22T21:55:54+00:00'
 updated_at: '2026-04-22T21:55:56+00:00'
+is_fm: true
+fm_classification_reason: 'BioBERT: pretrained biomedical text FM.'
 ---
 
 ## TL;DR
@@ -113,3 +124,16 @@ BioBERT is BERT_BASE (110M params) continually pre-trained on biomedical corpora
 - ~30% of BioASQ factoid questions were unanswerable in extractive QA and were excluded from training, which may inflate reported scores.
 - LINNAEUS scores are lower than SOTA partly because the exact train/test splits from Giorgi & Bader (2018) were unavailable.
 - Future versions mentioned (BioBERT_LARGE, domain-specific vocabulary) but no follow-up paper from same authors.
+
+## Ablations (Rev 4)
+
+| # | Ablation axis | Variants compared | Setup / metric | Key result | Take-away |
+|---|---|---|---|---|---|
+| 1 | Pre-training corpus composition | BERT (Wiki+Books) vs +PubMed (200K) vs +PMC (270K) vs +PubMed+PMC (470K) vs +PubMed 1M (v1.1) | NER micro-F1 over 9 datasets (Table 6) | 83.36 → 85.86 → 85.65 → 86.51 → 86.77; v1.1 best on 6/9 datasets | Continued pre-training on PubMed is the dominant gain; adding PMC gives diminishing returns once PubMed steps are scaled up |
+| 2 | Pre-training corpus composition (RE) | Same five variants | RE micro-F1 on GAD, EU-ADR, CHEMPROT (Table 7) | BERT 79.22 → BioBERT v1.0 (+PubMed) best at 80.41 micro-F1 (+2.80 vs SOTA); CHEMPROT F1 64.10 (SOTA) → 73.74 (BERT) → 76.46 (v1.1) | Even vanilla BERT beats the prior CHEMPROT SOTA; biomedical pre-training adds a further ~3 F1 |
+| 3 | Pre-training corpus composition (QA) | Same five variants | BioASQ 4b/5b/6b MRR (Table 8) | Micro MRR: SOTA 32.53 → BERT 39.64 → v1.0 (+PubMed) 42.71 → v1.0 (+PubMed+PMC) 44.01 → v1.1 (+PubMed) 44.77 | QA benefits most from biomedical pre-training (+12.24 MRR over SOTA, +5.13 over BERT) — largest relative gain among the three task families |
+| 4 | PubMed corpus size | 0 / 1B / 2B / 3B / 4.5B words, fixed 200K steps | NER F1 on NCBI Disease, BC2GM, BC4CHEMD (Fig. 2a) | F1 rises sharply from 0→1B, then improves more slowly to 4.5B with diminishing returns past ~3B | 1B words already captures most of the benefit; full PubMed (4.5B) yields modest extra gains |
+| 5 | Number of pre-training steps | Checkpoints from 0 up to ≥200K (v1.0) and 1M (v1.1) on PubMed | NER F1 on NCBI Disease, BC2GM, BC4CHEMD (Fig. 2b) | Monotonic improvement with more steps; v1.1 (1M) beats v1.0 (200K) on micro-F1 (86.77 vs 85.86) | More pre-training compute keeps helping — no saturation observed by 1M steps |
+| 6 | Initialization / vocabulary | BERT_BASE (Wiki+Books init, original cased vocab) — kept fixed across all BioBERT variants; no from-scratch or domain-vocab variant trained | Implicit baseline = BERT row in Tables 6–8 | All BioBERT variants improve over BERT despite reusing the general-domain WordPiece vocab | Original BERT vocab is sufficient; subword decomposition + fine-tuning compensates for missing biomedical tokens (later work, e.g. PubMedBERT, contests this) |
+| 7 | Cased vs uncased vocabulary | Cased vs uncased BERT WordPiece | Reported qualitatively (Section 4.2) | Cased "results in slightly better performance" — no quantitative table | Minor effect; cased preferred for biomedical NER where casing carries entity signal |
+| 8 | Per-dataset BioBERT vs BERT lift | BERT vs BioBERT v1.0 (+PubMed+PMC) across all 15 NER/RE/QA datasets | Absolute F1/MRR delta (Fig. 2c) | Positive on nearly all 15 datasets; largest lifts on BioASQ QA datasets, smallest on already-strong RE benchmarks | Biomedical pre-training helps universally but most where the task requires deep biomedical knowledge (QA) rather than surface patterns |

@@ -32,6 +32,8 @@ training_compute: null
 references_chased: false
 added_at: '2026-04-22T19:36:44+00:00'
 updated_at: '2026-04-22T20:19:10+00:00'
+is_fm: true
+fm_classification_reason: 'dnaGrinder: pretrained genomic FM.'
 ---
 
 ## TL;DR
@@ -106,3 +108,21 @@ dnaGrinder is a 63.6M-parameter encoder-only genomic foundation model that match
 - No code or model weights released at time of writing (arXiv v1, Sep 2024).
 - Unclear how ME-BPE vocabulary quality degrades with very large numbers of file splits or highly divergent species.
 - Further pretraining hurt more tasks than it helped — suggests potential overfitting or distribution shift from downstream data mixing.
+
+## Ablations (Rev 4)
+
+| Variable | Settings | Metric/dataset | Result | Conclusion |
+|---|---|---|---|---|
+| Gated activation function | GEGLU vs SwiGLU | Model parameter count (architecture choice driven by efficiency) | GEGLU inflates model from 63M → 110M params (two linear transforms + biases); SwiGLU retains comparable performance with single gating transform | SwiGLU adopted: ~comparable quality at substantially lower parameter cost |
+| Further (in-domain) pretraining | dnaGrinder vs dnaGrinder-plus (further pretrained on GUE+GUE-plus, 31K steps / 0.176B tokens) | MCC on 10 yeast Epigenetic Marks Prediction tasks (Table 5) | 6/10 tasks degraded (avg −0.88 MCC); 4/10 improved (avg +0.755 MCC); still SOTA on 5/10 vs DNABERT-2-plus despite ~70% fewer steps and ~60% fewer tokens | Further pretraining yields limited / inconsistent gains for dnaGrinder; not worth the compute as a default |
+| Pretraining data composition | (a) 1000G SNP variants from chr1 only; (b) SNPs from chr1+21+22; (c) full multi-species reference genomes with SNPs incorporated | MLM accuracy / cross-chromosome generalization | (a) reached 60% acc on chr1 but failed on other chromosomes; (b) still failed to generalize; (c) generalized successfully | SNP-variant-only data is unsuitable (sparse, arbitrarily spaced); complete reference sequences with SNPs incorporated are required |
+| Long-context attention mechanism | Dilated attention (scales to 400 kbp) vs Flash Attention 2 with sequence-length warmup (12 kbp pretraining) | MLM accuracy and downstream task performance | Dilated attention gave consistently low MLM accuracy, insufficient for downstream tasks; Flash Attention 2 + SLW achieved generalizable representations | Approximate (dilated) attention loses too much information; full attention with SLW is preferred even at shorter context |
+| Fine-tuning learning rate sensitivity | Learning rate sweep over 1e-5–7e-5 (20 values) × 5 random seeds = ~100 runs/task | Best test metric across GUE/GUE-plus tasks | Variations as small as 1e-6 in LR produced significantly different results | BERT-style DNA encoders are highly LR-sensitive; large hyperparameter sweeps are needed for fair comparison |
+
+### Take-aways
+
+- **Architecture parameter efficiency dominates**: switching GEGLU→SwiGLU nearly halves parameter count (110M→63M) without quality loss — a major lever for "lightweight" claims.
+- **Top take-away: complete reference genomes (with SNPs incorporated) are essential**; pretraining on SNP-variant-only data fails to generalize across chromosomes regardless of how many chromosomes are pooled, because variants are too sparsely and arbitrarily spaced to model biological distributions.
+- **Approximate attention is a false economy** here: dilated attention enabled 400 kbp context but produced unusable MLM features; full attention + sequence-length warmup is the better long-context recipe at this scale.
+- **Further pretraining is not a free lunch**: in-domain continued pretraining hurt as many tasks as it helped, suggesting distribution shift / mild overfitting when mixing many downstream datasets.
+- **Fine-tuning LR sensitivity inflates evaluation cost**: 100 runs/task to find optima implies reported numbers are best-of-100 — real-world deployment quality may be lower without the same sweep.

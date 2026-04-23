@@ -23,11 +23,13 @@ tags:
 - efficient
 - transfer-learning
 parameters: 16M
-training_tokens: null  # ~670M protein records processed; per-token count not reported
-training_compute: null  # 28 GPU-days on single Nvidia Quadro RTX 5000; FLOPs not reported
+training_tokens: null
+training_compute: null
 references_chased: false
 added_at: null
 updated_at: null
+is_fm: true
+fm_classification_reason: 'ProteinBERT: pretrained protein LM.'
 ---
 
 ## TL;DR
@@ -109,3 +111,15 @@ ProteinBERT is a compact (~16M params) protein language model with a novel dual 
 - The paper predicts larger ProteinBERT variants should improve; unclear if this was ever explored.
 - GO annotation quality and coverage are uneven across organisms; potential bias in the pretraining task.
 - The 40% BLASTP similarity threshold for leakage prevention is conservative but principled.
+
+## Ablations (Rev 4)
+
+| # | Ablation | Setup | Finding | Source |
+|---|----------|-------|---------|--------|
+| 1 | Pretraining vs no pretraining | Train ProteinBERT from scratch on each downstream task vs fine-tune from the pretrained checkpoint | Pretraining yields large gains on most of the 9 benchmarks (Table 2); a few tasks are unaffected | §3.2, Table 2 |
+| 2 | Pretraining duration | Fine-tune from 371 snapshots taken along the pretraining trajectory; measure downstream test performance | Performance improves monotonically with more pretraining on harder tasks (secondary structure, remote homology) with no saturation; some tasks plateau early or do not benefit | §3.2, Fig. 3, Supp. Fig. S1 |
+| 3 | GO-annotation pretraining task | Pretrain with vs without the dual GO-annotation denoising objective (sequence-only MLM baseline) | Removing GO hurts secondary structure, remote homology, and fold-class benchmarks; other tasks are largely insensitive | §3.2, Supp. Fig. S2 |
+| 4 | Input sequence length generalisation | Evaluate fine-tuned models at input lengths 512 → 16 384 on 4 benchmarks with long test proteins | Performance degrades only modestly at longer lengths; sometimes improves (e.g. 16 384 on Major PTMs), confirming length-agnostic architecture works | §3.3, Fig. 4 |
+| 5 | Effect of fine-tuning on global attention | Compare 24 global-attention head maps before vs after fine-tuning on signal-peptide task for two proteins | Fine-tuning chiefly modifies the last (6th) global attention block; head #1 sharpens onto the cleavage-site region in positives | §3.4, Fig. 5 |
+
+**Top take-away:** The GO-annotation denoising auxiliary task is the key novel design choice — its removal specifically hurts structure-related benchmarks (secondary structure, remote homology, fold classes), while pretraining length keeps paying off on the hardest tasks without saturating, suggesting ProteinBERT is under-trained rather than under-parameterised.

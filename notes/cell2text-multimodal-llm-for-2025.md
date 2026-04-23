@@ -28,12 +28,15 @@ tags:
 - llm-decoder
 - gene-level-embeddings
 - ontology-evaluation
-parameters: "~1.3B (Llama-1B variant) / ~4.3B (Gemma-4B variant); encoder Geneformer-V2-316M frozen"
+parameters: ~1.3B (Llama-1B variant) / ~4.3B (Gemma-4B variant); encoder Geneformer-V2-316M
+  frozen
 training_tokens: null
-training_compute: "8x V100 32GB (Llama); 8x A100 80GB (Gemma); 2-3 epochs"
+training_compute: 8x V100 32GB (Llama); 8x A100 80GB (Gemma); 2-3 epochs
 references_chased: false
 added_at: '2026-04-22T19:37:11+00:00'
 updated_at: '2026-04-22T20:17:40+00:00'
+is_fm: false
+fm_classification_reason: Uses frozen Geneformer + LLM, supervised fine-tuning only.
 ---
 
 ## TL;DR

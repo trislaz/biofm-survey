@@ -60,6 +60,8 @@ training_compute: null
 references_chased: false
 added_at: '2026-04-22T19:37:16+00:00'
 updated_at: '2026-04-22T20:28:05+00:00'
+is_fm: true
+fm_classification_reason: 'Virchow: pathology FM.'
 ---
 
 ## TL;DR
@@ -139,3 +141,23 @@ First million-scale pathology foundation model. ViT-H/14 (632 M params) trained 
 - **Aggregator not deeply explored** — Agata is fixed across all experiments; the paper explicitly notes that aggregator architecture search is out of scope.
 - **v5 of the arXiv** — the paper self-describes as a "live paper" with ongoing updates; check for newer versions.
 - **Virchow 2** — follow-up work expected from Paige; check for successor model and whether scaling trends continue.
+
+## Ablations (Rev 4)
+
+Note: The paper does not present a dedicated controlled-ablation section (no swap-in/out of single design choices on Virchow itself). Reported "ablations" are (a) one stain-normalization robustness test on Virchow, and (b) cross-model comparisons that vary data scale, model scale, and SSL recipe simultaneously — included here as quasi-ablations.
+
+| # | Axis varied | Setting (vs Virchow ViT-H/14, 1.5 M WSIs, DINOv2) | Benchmark / Metric | Result | Δ vs Virchow | Source |
+|---|---|---|---|---|---|---|
+| 1 | Stain normalization (test-time) | Train norm → test no-norm (CRC-NoNorm) | CRC weighted F1 | 0.968 | −0.005 | Tab. A4, §2.3 |
+| 2 | Data scale + model scale | Phikon (TCGA 6 k WSIs, ViT-B 86 M, iBOT) | PanMSK weighted F1 | 0.923 | −0.027 | Tab. A4 |
+| 3 | Data scale + model scale | CTransPath (15 k WSIs, SwinT 28 M, MoCoV3) | PanMSK weighted F1 | 0.897 | −0.053 | Tab. A4 |
+| 4 | In-domain vs natural-image pretraining | NatImg (1.1 B params, 142 M ImageNet-22k images, DINOv2) | PanMSK weighted F1 | 0.883 | −0.067 | Tab. A4 |
+| 5 | In-domain vs natural-image pretraining | NatImg | MHIST weighted F1 | 0.827 | −0.008 | Tab. A4 |
+| 6 | Vision-language vs SSL | PLIP (CLIP on pathology image-text) | PanMSK weighted F1 | 0.862 | −0.088 | Tab. A4 |
+| 7 | SSL algorithm + scale | DINO_p=8 (TCGA + internal, 49 M params) | PanMSK weighted F1 | 0.903 | −0.047 | Tab. A4 |
+| 8 | Cross-site OOD (aggregator) | Pan-cancer eval on external institutions | AUC drop from internal | −0.006 | (Phikon −0.008, CTransPath −0.016) | Fig. 2b, §2.1 |
+| 9 | OOD tile distribution shift | WILDS (unseen hospital) | weighted F1 | 0.970 | tied with Phikon (0.971) | Tab. A4 |
+| 10 | Embedding pooling (qualitative) | CLS ∥ mean(patch tokens) → 2,560-dim | CoNSeP PCA cell-type separation | Emergent semantic clusters | n/a (no quantitative ablation) | Fig. 3d, §2.3 |
+| 11 | LR warmup length | 495 k iters (≈5× DINOv2 default 100 k) | Training stability | Required for convergence at this scale | not quantified | §4.2 |
+
+Top take-away: **In-domain pathology data scale is the single largest lever** — going from natural-image DINOv2 (1.1 B params, 142 M images) to Virchow (632 M params, 1.5 M WSIs / ~2 B tiles) gains +0.067 weighted F1 on PanMSK and +0.041 on CRC, and the gap widens further on small-scale pathology FMs (Phikon, CTransPath). Stain-normalization removal costs only −0.005 F1, confirming that million-scale in-domain SSL also confers stain robustness almost "for free."

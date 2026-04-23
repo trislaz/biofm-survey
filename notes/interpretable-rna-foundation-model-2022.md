@@ -36,12 +36,15 @@ tags:
 - 3d-structure
 - rna-protein-interaction
 - gene-expression
-parameters: "~99M (12-layer BERT, 640 hidden, 20 heads; not explicitly stated, estimated from architecture)"
-training_tokens: "23.7M ncRNA sequences from RNAcentral"
-training_compute: "8×A100-80GB GPUs for 1 month"
+parameters: ~99M (12-layer BERT, 640 hidden, 20 heads; not explicitly stated, estimated
+  from architecture)
+training_tokens: 23.7M ncRNA sequences from RNAcentral
+training_compute: 8×A100-80GB GPUs for 1 month
 references_chased: false
 added_at: '2026-04-22T21:55:27+00:00'
 updated_at: '2026-04-22T21:55:33+00:00'
+is_fm: true
+fm_classification_reason: 'RNA-FM: pretrained RNA LM.'
 ---
 
 ## TL;DR
@@ -116,3 +119,32 @@ RNA-FM is a BERT-style masked language model pre-trained on 23.7 million non-cod
 - No comparison with protein-RNA co-training approaches or multi-modal models
 - Published as arXiv preprint (2022); later extended into RhoFold+ (Nature Methods 2024) which builds RNA-FM into a full end-to-end 3D structure prediction pipeline
 - Code and weights at https://github.com/ml4bio/RNA-FM; web server at https://proj.cse.cuhk.edu.hk/rnafm/
+
+## Ablations (Rev 4)
+
+The paper has no dedicated "ablation" section; ablations are conducted per-task by swapping the input feature(s) into the same downstream architecture. The studies below isolate the contribution of the RNA-FM embedding versus sequence one-hot, MSA-derived features, predicted/real secondary structure, and transfer learning.
+
+| # | Task / dataset | Variant (input → downstream) | Metric | Δ vs. baseline | Source |
+|---|---|---|---|---|---|
+| A1 | Embedding quality (RNA Atlas, RNAcentral100) | Pre-trained RNA-FM vs. random-init RNA-FM vs. one-hot (UMAP) | Cluster separation by RNA type | Pre-trained → clear type clusters; random → vague; one-hot → no structure | Fig. 2a |
+| A2 | 2D structure (ArchiveII600) | RNA-FM+ResNet32 vs. UFold | F1 | 0.941 vs. 0.905 (+0.036); wins on 85.5% of instances | Table 1 |
+| A3 | 2D structure (bpRNA TS0) | RNA-FM+ResNet32 vs. UFold | F1 | 0.704 vs. 0.654 (+0.050) | Table 1 |
+| A4 | 3D closeness (RNAcontact TE80, long-range Top-L) | (a) Seq+RNAcontact 100-ensemble; (b) RNA-FM+Seq+ResNet32; (c) (b)+transfer learning from 2D-structure task | Top-L precision | 0.33 → 0.53 (+20 pts) → 0.66 (+33 pts); transfer-learnt model wins on 77.5% of instances vs. MSA-cov+PETfold-SS | Table 2 |
+| A5 | 3D distance (RNAcontact TE80, U-Net) | Seq / SS+Seq / SS+Cov+Seq / RNA-FM / RNA-FM+Seq / RNA-FM+Cov+Seq | MSE ↓ | 0.0615 / 0.0387 / 0.0338 / 0.0353 / 0.0322 / 0.0319; RNA-FM alone already beats SS+Seq; RNA-FM+Seq wins on 94.2% of instances | Table 3 |
+| A6 | RBP-RNA interaction (HeLa, 17 RBPs, CNN) | Seq / RNA-FM+Seq / RealSS+Seq (in-vivo icSHAPE) | Mean AUPRC | 0.815 / 0.824 / 0.833; RNA-FM+Seq beats Seq on 16/17 RBPs and matches RealSS+Seq on ~½ | Table 4 |
+| A7 | 5′ UTR MRL (Random7600) | Seq / Seq+SS / RNA-FM / 3DS / Seq+SS+RNA-FM / Seq+SS+3DS+RNA-FM | R² ↑ | 0.860 / 0.866 / 0.876 / 0.864 / 0.876 / 0.882 (best) | Table 5 |
+| A8 | 5′ UTR MRL (Human7600, OOD) | same set as A7 | R² ↑ | 0.814 / 0.820 / 0.816 / 0.813 / 0.811 / 0.824 (best); RNA-FM alone underperforms Seq+SS, multi-feature combo recovers SOTA | Table 5 |
+| A9 | SARS-CoV-2 evolution | Genome-level RNA-FM embeddings (sliding-window avg), no fine-tuning | Trajectory inference vs. FastME phylogeny | Recovers Alpha→Delta→Omicron 21K→21L without labels | Fig. 4d–e |
+| A10 | RNA 3D reconstruction (PDB TS1, 3dRNA pipeline) | RNA-FM-predicted SS vs. UFold SS vs. ground-truth SS | RMSD (Å) ↓ | 7.91 vs. 25.70 vs. 13.96 (RNA-FM beats even ground-truth SS, indicating 3dRNA-stage error dominates) | Suppl. Table 5 / Fig. 3d |
+
+### Take-aways
+
+1. **Single-sequence RNA-FM embeddings replace MSA-derived features.** On 3D closeness (A4) and 3D distance (A5), RNA-FM alone matches or beats MSA covariance + secondary-structure stacks, eliminating the costly MSA search step — this is the strongest practical result and the main reason RNA-FM works as a "foundation" feature extractor.
+2. **Gains are large on structural tasks, marginal on functional tasks.** +3–5 F1 on 2D, +20–33 pts Top-L on 3D closeness, but only +0.009 mean AUPRC on RBP binding (A6) and +0.01–0.02 R² on MRL (A7/A8); the Human7600 OOD set (A8) shows RNA-FM alone is *worse* than Seq+SS, hinting at distribution mismatch (ncRNA pre-training → mRNA 5′ UTR).
+3. **Transfer learning is essential for small-data 3D tasks.** Initializing the ResNet32 from the 2D-structure task adds +13 Top-L precision points on top of RNA-FM features (A4: 0.53 → 0.66), more than the gain from adding RNA-FM itself.
+4. **Pre-training matters, not just architecture.** Random-init RNA-FM produces no meaningful UMAP structure (A1); the gain is attributable to MLM pre-training on 23.7M ncRNA, not to BERT capacity alone.
+5. **Combining RNA-FM with explicit structural features still helps on functional tasks.** Best MRL numbers (A7/A8) come from Seq+SS+3DS+RNA-FM, suggesting RNA-FM embeddings are complementary to — not a replacement for — explicit predicted structure on downstream functional readouts.
+6. **Notable missing ablations.** No model-scale ablation (layers, hidden, heads), no tokenizer ablation, no pre-training-data-size ablation, no masking-rate sweep, no comparison to a protein-LM-style scaling curve. The whole-genome SARS-CoV-2 result (A9) relies on an ad-hoc sliding-window average that is itself never ablated.
+
+**Top take-away:** RNA-FM's single-sequence embeddings replace expensive MSA-derived features on RNA 3D structural tasks (Top-L precision 0.33 → 0.66 on RNAcontact TE80, +33 pts over the 100-model RNAcontact ensemble) — but only when paired with transfer learning from the 2D-structure task; gains shrink to <2 R² points on functional 5′ UTR readouts where the ncRNA pre-training distribution no longer matches.
+

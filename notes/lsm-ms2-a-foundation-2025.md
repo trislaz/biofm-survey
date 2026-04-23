@@ -39,6 +39,8 @@ training_compute: null
 references_chased: false
 added_at: '2026-04-22T19:37:05+00:00'
 updated_at: '2026-04-22T20:22:34+00:00'
+is_fm: true
+fm_classification_reason: 'LSM-MS2: pretrained foundation model for mass spectrometry.'
 ---
 
 ## TL;DR
@@ -109,3 +111,22 @@ Transformer-based foundation model for tandem mass spectrometry (MS/MS) trained 
 - No generative capability yet (planned as future work).
 - All authors are employees/shareholders of Matterworks, Inc. — potential conflict of interest.
 - evidence_quality set to `medium`: public MassSpecGym benchmark is solid, but isomer and NIST benchmarks are internal; model is closed-source; ablations are limited to baseline comparisons rather than architectural choices.
+
+## Ablations (Rev 4)
+
+Note: paper exposes **no architectural/training ablations** (model is proprietary). All "ablations" below are baseline/configuration comparisons that isolate where LSM-MS2's lift comes from.
+
+| # | Ablation / Comparison | Setting | Metric | Baseline → LSM-MS2 | Δ | Source |
+|---|---|---|---|---|---|---|
+| 1 | Retrieval method (vs Cosine Sim.) | MassSpecGym, per-spectrum | Top-1 Acc | 0.725 → 0.739 | +1.4 pp (22% of gap to 0.785 ceiling) | Table 1 |
+| 2 | Retrieval method (vs DreaMS SOTA) | MassSpecGym, per-spectrum | Top-1 Acc / Top-1 MCES | 0.726 → 0.739 / 3.52 → 3.31 | +1.3 pp / −0.21 (closer chem. space) | Table 1 |
+| 3 | TP-vs-FP score separation | MassSpecGym | ROC AUC | Cosine 0.950, DreaMS 0.965 → 0.972 | +0.007 over DreaMS | §4.1 |
+| 4 | Isomer discrimination (no explicit isomer supervision) | MWX-Isomers, 61 isomers / 22 groups | per-analyte top-1 | baselines → LSM-MS2 | +30% analytes correct, +10% balanced group acc | §4.2 / Fig.1 |
+| 5 | Leucine/Isoleucine balance | MWX-Isomers pair | mean top-1 acc | asymmetric baselines → 0.48 balanced | qualitative balance gain | §4.2 |
+| 6 | NIST plasma global ID | NIST SRM 1950, optimal F1 thresh. | TP / Precision / F1 | 125 / 24.3% / 26.1% → 178 / 32.4% / 35.9% | +42.4% TP, +33.3% Prec., +37.5% F1 | Table 2 |
+| 7 | Low-concentration robustness | NIST dilution series | Precision @ 1:80, 1:120, 1:160 | Cosine → LSM-MS2 | sig. higher (p<0.001 Welch's t) | §4.3 / App. D |
+| 8 | Cosine Sim. min-matched-signals sweep (only true ablation) | NIST, MZmine, n=1–5 matched peaks | TP & spurious hits vs threshold | LSM-MS2 dominates **all 5** configs | n/a | App. D.4 / Fig.15–16 |
+| 9 | MS1-only (precursor m/z bin vector) baseline | Antipsychotic overdose, UMAP | qualitative cluster separation | fails CPZ/PER & OLA/CLO → LSM-MS2 separates all | confirms MS2 fragmentation is essential | §5.1 / Fig.5 |
+| 10 | Embedding pipeline vs identified-metabolite pipeline | Septic shock, ED serum | Macro F1 / time | original 0.84 / days → 0.80 / <1 hr | −0.04 F1, ~100× faster, no annotation | §5.2 |
+
+**Top take-away:** No architectural ablation is reported; the only true hyperparameter ablation (Cosine Similarity min-matched-signals 1–5, App. D.4) shows LSM-MS2 dominates every Cosine configuration — i.e. its NIST gain (+42% TP, +33% precision) is **not** an artefact of a weak baseline. The MS1-only UMAP baseline (Fig. 5) further isolates that the lift comes specifically from learned MS2 fragmentation representations, not precursor mass.

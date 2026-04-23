@@ -26,12 +26,14 @@ tags:
 - benchmarking
 - ensembling
 - computational-pathology
-parameters: '307M'
-training_tokens: '456M tiles (400M seen at released ckpt)'
-training_compute: '11k GPU-hours (128× V100-32GB, 83h wall)'
+parameters: 307M
+training_tokens: 456M tiles (400M seen at released ckpt)
+training_compute: 11k GPU-hours (128× V100-32GB, 83h wall)
 references_chased: false
 added_at: '2026-04-22T19:37:16+00:00'
 updated_at: '2026-04-22T20:24:16+00:00'
+is_fm: true
+fm_classification_reason: 'Phikon-v2: large pathology feature extractor FM.'
 ---
 
 ## TL;DR
@@ -109,3 +111,21 @@ Phikon-v2 is a ViT-L/16 (307M params) trained with DINOv2 on PANCAN-XL, a public
 - Non-commercial license limits clinical deployment.
 - Would be interesting to see distillation from ViT-L to ViT-S/B for efficiency.
 - Carbon footprint is modest (0.38 tCO₂eq) compared to Virchow/GigaPath scale.
+
+## Ablations (Rev 4)
+
+The paper has no dedicated ablation section, but reports several controlled comparisons that function as ablations of pre-training method, scale, domain, ensembling, and specialization.
+
+| # | Ablated factor | Setting A → Setting B | Metric / Eval | Result | Take-away |
+|---|---|---|---|---|---|
+| 1 | SSL method × scale (DINOv2 vs iBOT, jointly scaled) | Phikon (iBOT, ViT-B/16, 43M tiles, TCGA) → Phikon-v2 (DINOv2, ViT-L/16, 456M tiles, PANCAN-XL) | Mean AUC over 8 slide-level tasks (Table 2) | 0.855 → 0.870 (+1.5 AUC, p<1e-4) | DINOv2 + larger model + larger data jointly outperform iBOT baseline; method/scale confounded. |
+| 2 | Pre-training domain (natural vs histology) | DINOv2 ViT-L on LVD-142M (ImageNet-style) → Phikon-v2 (same arch, histology) | Mean AUC, 8 tasks (Table 2) | 0.757 → 0.870 (+11.3 AUC) | Domain-specific pre-training is by far the largest single contributor; natural-image DINOv2 ranks last. |
+| 3 | SSL method at small scale (DINOv2 vs iBOT, lighter model, single cohort) | iBOT ViT-B/16 on TCGA-COAD (4M tiles) → DINOv2 ViT-B on same data | MSI prediction, 3 external cohorts (Table 4 + §4.2 text) | iBOT 0.944 > DINOv2 (slightly lower) | "DINOv2 superiority over iBOT is not straightforward for lighter models" — method advantage depends on scale. |
+| 4 | Specialist (small, in-domain) vs generalist (large FM) | iBOT ViT-B/16 Coad, 4M tiles → Virchow2 (ViT-H, 632M, ~1.4B tiles); also vs GigaPath, H-Optimus-0 | MSI mean AUC (Table 4) | 0.944 vs Virchow2 0.933 (p<0.05), GigaPath 0.939 (n.s.), H-Optimus-0 0.938 (n.s.) | A 13× smaller, 350× less-data, task-specialized model beats or matches the largest FMs on MSI; scaling is not a universal solution for biomarker tasks. |
+| 5 | Aggregation strategy (ensembling vs one-shot retraining) | Single ABMIL retrained on full train set (CV-tuned epochs) → Ensembling 25 CV models | Mean AUC across all extractors × tasks (Fig. 2, §4.3) | +1.75 AUC overall (p<0.001); +5.1 AUC for Phikon-v2 specifically (Table 2 column "↑") | Ensembling CV folds is a near-free, statistically significant improvement and should be the default for weakly-supervised slide-level evaluation. |
+| 6 | Scaling among ViT-L+ DINOv2 FMs (data/params) | Phikon-v2 (307M, 456M tiles, ~58k WSI) → UNI (307M, 100M, ~100k WSI), GigaPath (1.1B, 1.4B, 171k WSI), H-Optimus-0 (1.1B, proprietary), Virchow2 (632M) | Mean AUC, 8 tasks (Tables 2-3) | GigaPath 0.879 > H-0 0.878 > UNI 0.872 ≈ Phikon-v2 0.870 > Virchow2 0.866; top ViT-L+ block statistically separated from rest | Among large DINOv2 FMs, differences are small and task-inconsistent; rankings flip across cohorts (e.g. Phikon-v2 best on Heroe/MSI, worst on IDH1). Per-task evaluation matters more than headline averages. |
+
+**Notes / caveats**
+- No clean single-variable ablation: method (iBOT→DINOv2), arch (B→L), data size (43M→456M), and data diversity (TCGA→PANCAN-XL) all change between Phikon and Phikon-v2 simultaneously. The authors explicitly flag that iBOT-only scaling on PANCAN-XL was not tested (§5).
+- No ablation on checkpoint (released early ckpt @ ~100k/250k iters), on registers/teacher-temp DINOv2 components, or on PANCAN-XL data composition.
+- Ablation #3 is qualitative ("slightly decreased") — exact DINOv2-COAD numbers are not tabulated.

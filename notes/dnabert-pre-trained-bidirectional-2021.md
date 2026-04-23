@@ -18,13 +18,24 @@ modalities:
 - dna
 status: extracted
 evidence_quality: abstract+repo
-tags: ["mlm", "k-mer-tokenization", "6-mer", "overlapping-k-mer", "bert-base", "human-genome", "attention-visualization", "motif-discovery", "snp-analysis"]
+tags:
+- mlm
+- k-mer-tokenization
+- 6-mer
+- overlapping-k-mer
+- bert-base
+- human-genome
+- attention-visualization
+- motif-discovery
+- snp-analysis
 parameters: 110000000
 training_tokens: 122000000000
 training_compute: null
 references_chased: false
 added_at: null
 updated_at: null
+is_fm: true
+fm_classification_reason: 'DNABERT: pretrained DNA LM.'
 ---
 
 ## TL;DR
@@ -110,6 +121,34 @@ DNABERT is the first BERT-style pre-trained foundation model for DNA sequences, 
 - Enformer (Avsec et al., 2021, doi:10.1038/s41592-021-01252-x) — gene expression prediction from sequence with long-range context.
 - Caduceus (Schiff et al., 2024) — bidirectional equivariant Mamba-based DNA model.
 - VQDNA (Hao et al., 2024) — vector-quantized DNA tokenization approach.
+
+## Ablations (Rev 4)
+
+Compiled from the GitHub repo (configs, training scripts) and DNABERT-2 (Zhou et al., 2023) Table 3, since the OUP full text is paywalled (403). Numbers labeled "GUE avg" are macro-average Matthews/F1 across the 28 GUE datasets as reported by DNABERT-2.
+
+| # | Ablation axis | Variant | Setting | Metric | Result | Δ vs ref | Source |
+|---|---|---|---|---|---|---|---|
+| 1 | k-mer length | DNABERT-3 | k=3, vocab=69 | GUE avg | **61.62** | ref (best) | DNABERT-2 Tab.3 |
+| 2 | k-mer length | DNABERT-4 | k=4, vocab=261 | GUE avg | 61.14 | −0.48 | DNABERT-2 Tab.3 |
+| 3 | k-mer length | DNABERT-5 | k=5, vocab=1029 | GUE avg | 60.05 | −1.57 | DNABERT-2 Tab.3 |
+| 4 | k-mer length | DNABERT-6 | k=6, vocab=4101 | GUE avg | 60.51 | −1.11 | DNABERT-2 Tab.3 |
+| 5 | Tokenization | overlapping k-mer (k=6) | stride 1 | GUE avg | 60.51 | ref | DNABERT-2 Tab.3 |
+| 6 | Tokenization | BPE (DNABERT-2 follow-up) | learned subwords | GUE avg | 64.92 | **+4.41**, wins 21/28 | DNABERT-2 Tab.3 |
+| 7 | Compute / FLOPs | overlapping k-mer | near-1× sequence length | rel. FLOPs | 3.25× | +2.25× | DNABERT-2 Tab.3 |
+| 8 | MLM masking | random single-token | mask_p=0.15 | — | leakage from k−1 char overlap with neighbors | breaks MLM | repo / paper §2 |
+| 9 | MLM masking | contiguous span of k tokens | mask_p=0.025 | — | adopted (default) | required to prevent leakage | repo `run_pretrain.sh` |
+| 10 | Pre-training | from scratch (no pretrain) | task-only training | promoter / TFBS / splice | underperforms across all 3 tasks | − | paper Tabs.1–3 (qualitative) |
+| 11 | Pre-training | DNABERT pretrain → fine-tune | MLM on hg38 then FT | promoter / TFBS / splice | SOTA at publication on all 3 | + (large) | paper §3 |
+| 12 | Downstream task | promoter detection (300 bp) | DNABERT-6 FT | reported metric | beats CNN / prior baselines | + | paper Tab.1 |
+| 13 | Downstream task | core promoter (70 bp, TATA/non-TATA) | DNABERT-6 FT | reported metric | improvement over baselines | + | paper Tab.2 |
+| 14 | Downstream task | TF binding site (100 bp, ENCODE) | DNABERT-6 FT | reported metric | best on majority of TF datasets | + | paper Tab.3 |
+| 15 | Downstream task | splice site (400 bp) | DNABERT-6 FT | reported metric | improvement over SpliceAI-style baselines | + | paper §3 |
+| 16 | Pre-training corpus | human-only (hg38, 2.75B bp) | default | cross-species transfer | limited (shown later) | − vs multi-species | DNABERT-2 |
+| 17 | Context length | 512 k-mer tokens (~517 bp) | learned pos. emb. | long-range tasks | hard cap; DNABERT-XL stitches windows | crude workaround | paper §2 / repo |
+
+**Total ablations cataloged: 17.**
+
+**Top take-away:** the headline ablation is that **k-mer choice barely moves the needle** (k=3..6 all sit in a ~1.6-point GUE band, with k=3 marginally best yet k=6 dominating community use), whereas the **tokenization scheme itself is the dominant lever** — switching overlapping k-mers for BPE later yielded **+4.41 GUE** with **3.25× fewer FLOPs**, and span-masking is mandatory just to keep MLM honest under overlap. Pre-training vs. from-scratch is decisively in favor of pre-training across all three downstream tasks (promoter, TFBS, splice).
 
 ## Notes / Open Questions
 

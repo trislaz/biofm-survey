@@ -32,6 +32,8 @@ training_compute: 2e22 FLOPs
 references_chased: false
 added_at: null
 updated_at: null
+is_fm: true
+fm_classification_reason: 'Evo: pretrained DNA/genome FM.'
 ---
 
 ## TL;DR
@@ -154,3 +156,30 @@ Each `[sequence-modeling-and-design-2024]` citation in `insights.md` is checked 
 | 9 | 587 | Evo's protein–RNA codesign is early evidence for cross-modal transfer. | **supported** | Reasonable interpretive use. The paper demonstrates cross-modal generation (CRISPR-Cas protein + guide RNA from a DNA-only model), which qualifies as early evidence that genomic LMs can bridge modalities. |
 
 **Summary:** 5 supported, 4 partial, 0 unsupported, 0 out-of-scope. Partial verdicts stem from (a) an unsupported "multi-kingdom" attribution, (b) SSM vs deep-signal-processing terminology, (c) mischaracterisation of implicit modality unification as explicit early-fusion interleaving, and (d) "single forward pass" vs autoregressive generation.
+
+## Ablations (Rev 4)
+
+| Variable | Settings | Metric / dataset | Result | Conclusion |
+|---|---|---|---|---|
+| Architecture (compute-optimal scaling) | Transformer++, Mamba, Hyena, StripedHyena (>300 models, IsoFLOP sweep) | Perplexity vs FLOPs on byte-level DNA pretraining (OpenGenome) | Transformer++ substantially worse at all compute budgets; Hyena & StripedHyena best scaling rate (Fig. 1F–G) | Byte-level DNA needs deep-signal-processing / SSM hybrids; motivates StripedHyena for Evo |
+| Compute-suboptimal frontier (architecture × budget offset) | Same 4 architectures, training-token offset from compute-optimal (Evo run at +17% offset) | Perplexity scaling outside compute-optimal frontier (figs. S3–S7) | Transformer++ and Mamba: numerical instability + steep degradation; StripedHyena stable | StripedHyena chosen partly because real training is always compute-suboptimal |
+| Genomic context length for gene essentiality | gene-only vs 8k-token vs 66k-token context (in-silico premature stop codons) | AUROC for essentiality on 56 bacterial + 2 phage DEG genomes (Fig. 5C, fig. S27) | Big jump gene-only → 8k; small avg gain 8k → 66k (but lower-tail genomes improve); 66k reaches AUROC 0.90 (lambda phage), 0.84 (P. aeruginosa) | Long genomic context is the key enabler; whole-organism fitness signal is non-local |
+| In-silico mutagenesis strategy | 1 vs multiple stop codons inserted; full-gene deletion | Essentiality AUROC (fig. S27C) | Evo signal robust across strategies | Result is not a prompt-engineering artefact |
+| Codon LM baseline for essentiality | GenSLM vs Evo (66k context) | Essentiality association on same 58 genomes (Fig. 5C) | GenSLM shows no sensitivity to gene essentiality | Genomic-context modelling, not codon-level pretraining, drives the capability |
+| Position vs conservation vs Evo (control) | Genome position; sequence conservation; Evo gene-only; Evo + context | Essentiality association (Fig. 5C) | Position: none; conservation ≈ Evo gene-only; Evo + context > conservation | Evo's added value is from genomic context, not just conservation |
+| CRISPR-Cas: fine-tuning strategy | Pretrained-then-fine-tuned Evo vs model trained from scratch on CRISPR-Cas only | Generation quality + diversity across Cas9/12/13 (Fig. 3D) | Fine-tuned Evo higher quality and more diverse across all subtypes | Genome-scale pretraining transfers to specialised generative tasks |
+| Promoter activity: embedding × head | {one-hot, Evo embeddings} × {ridge, CNN}; plus zero-shot Evo likelihood; plus Promoter Calculator | Mean Spearman r over 4 promoter datasets (Fig. 2F, table S7) | one-hot+ridge ≪ Evo+ridge < one-hot+CNN ≈ zero-shot Evo (0.43) ≈ CNN-on-one-hot (0.44) < Evo+CNN (0.56) < Promoter Calculator (0.62) | Evo embeddings + nonlinear head approaches SOTA; CNN > linear; embeddings > one-hot |
+| Regulatory context for protein expression | RBS only; promoter only; promoter+RBS concatenated (Kosuri et al.) | Spearman r vs protein expression (Fig. 2G) | RBS 0.17, promoter 0.47, promoter+RBS 0.61 (> RBS Calculator 0.39, GC 0.47, GenSLM 0.11) | Adjacent regulatory context substantially improves zero-shot prediction |
+| Protein DMS: nucleotide LM baseline | Evo vs GenSLM and other nucleotide LMs vs protein LMs (ESM etc.) | Spearman on prokaryotic DMS (Fig. 2B, table S4) | Evo > all nucleotide LMs, competitive with protein-specific LMs | Genome pretraining suffices to match protein-only pretraining on bacterial DMS |
+| Pretraining-domain transfer | Evo (prokaryote-only) on bacterial DMS vs human DMS | Spearman, 5S rRNA growth-rate dataset, etc. (fig. S8) | Strong on bacterial proteins; fails on human proteins; perplexity correlates with predictive performance | Domain mismatch limits transfer; eukaryotic pretraining needed |
+| ncRNA LM baseline | Evo vs RNA-FM and other nucleotide LMs | Spearman on ncRNA DMS incl. 5S rRNA (Fig. 2D, table S6) | Evo beats RNA-FM and all tested nucleotide LMs (e.g. r=0.60 on 5S rRNA) | Genomic pretraining captures ncRNA function despite no RNA-specific objective |
+| Sampling hyperparameters (CRISPR-Cas) | Temperature ∈ {0.1, 0.3, 0.5} × top-k ∈ {2, 4} (exhaustive sweep) | Downstream Cas hit rate via Prodigal/HMM/MinCED filtering | All combinations pooled for downstream selection | Generation quality sensitive to T/top-k; sweep needed |
+| Sampling hyperparameters (IS200/IS605) | Temperature ∈ {0.1, 0.3, 0.5, 0.7, 0.9, 1.0, 1.3} × top-k ∈ {2, 4} | Downstream TnpA/TnpB pHMM hits | Wider temperature sweep for more diverse MGE generation | Higher-T sampling needed beyond CRISPR for system-level diversity |
+| Cas9 prompt token | "`" vs "`A" (extra random nucleotide) | Subjective generation quality | Adding a random nucleotide sometimes improves generations | Minor prompt engineering matters |
+
+**Design-choice take-aways:**
+- At byte-level (single-nucleotide) DNA resolution, deep-signal-processing / SSM hybrids (Hyena, StripedHyena) decisively outperform Transformers, especially when the model is trained beyond the compute-optimal token count — the operating regime of any real foundation model.
+- Long genomic context is the dominant lever for whole-organism phenotype tasks (gene essentiality): going from gene-only to 8 k tokens of flanking context delivers most of the gain; codon-only LMs cannot recover this signal.
+- Pretraining on whole genomes transfers cleanly to downstream generative tasks via lightweight fine-tuning (CRISPR-Cas, IS200/IS605); training the same architecture from scratch on the narrow task data is worse.
+- For supervised regulatory tasks, Evo embeddings + a nonlinear head (CNN) substantially beat one-hot or linear baselines and approach a domain-specific SOTA; concatenating adjacent regulatory elements (promoter + RBS) further boosts zero-shot scores.
+- Domain coverage of pretraining data is a hard ceiling: prokaryote-only pretraining transfers to bacterial proteins/ncRNAs but fails on human DMS, and per-sequence perplexity is a useful predictor of where Evo will and will not generalise.

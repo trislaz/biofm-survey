@@ -34,6 +34,8 @@ training_compute: null
 references_chased: false
 added_at: '2026-04-22T19:42:06+00:00'
 updated_at: '2026-04-22T20:22:39+00:00'
+is_fm: true
+fm_classification_reason: 'MedDiff-FM: pretrained diffusion FM for medical images.'
 ---
 
 ## TL;DR
@@ -103,3 +105,25 @@ MedDiff-FM is a 3D DDPM pre-trained on 5,376 CT volumes (head/neck, chest, abdom
 - Evaluation relies heavily on proxy metrics (Dice via TotalSegmentator, segmentation-based lesion Dice); no reader study or clinical validation.
 - The 5% held-out test set for synthesis partially overlaps in distribution with training; external validation on unseen institutions would strengthen claims.
 - No comparison with latent diffusion approaches for 3D medical imaging.
+
+## Ablations (Rev 4)
+
+| # | Ablation | Variant | Setting / Region | Metric | Value | Δ vs prev | Source |
+|---|---|---|---|---|---|---|---|
+| 1 | Component (Tbl III) | Patch-level DDPM baseline | Overall | FID↓ / Dice↑ | 0.1096 / 0.6466 | — | Table III |
+| 2 | Component (Tbl III) | + multi-level integration | Overall | FID↓ / Dice↑ | 0.0819 / 0.7844 | −0.0277 / +0.1378 | Table III |
+| 3 | Component (Tbl III) | + position coordinates | Overall | FID↓ / Dice↑ | 0.0667 / 0.8141 | −0.0152 / +0.0297 | Table III |
+| 4 | Component (Tbl III) | + position embedding (full MedDiff-FM) | Overall | FID↓ / Dice↑ | 0.0655 / 0.8183 | −0.0012 / +0.0042 | Table III |
+| 5 | Component (Tbl III) | Baseline → full | HaN | Dice↑ | 0.7491 → 0.8949 | +0.1458 | Table III |
+| 6 | Component (Tbl III) | Baseline → full | Chest | Dice↑ | 0.4909 → 0.7076 | +0.2167 | Table III |
+| 7 | Component (Tbl III) | Baseline → full | Abdomen | Dice↑ | 0.6998 → 0.8524 | +0.1526 | Table III |
+| 8 | Pretrain transfer (Tbl VIII) | from scratch vs fine-tune | MSD-Lung lesion gen | Dice↑ | 0.16 → 0.28 | +0.12 | Table VIII |
+| 9 | Pretrain transfer (Tbl VIII) | from scratch vs fine-tune | MSD-Liver lesion gen | Dice↑ | 0.40 → 0.48 | +0.08 | Table VIII |
+| 10 | Pretrain transfer (Tbl VIII) | from scratch vs fine-tune | MED-LN lesion gen | Dice↑ | 0.01 → 0.22 | +0.21 | Table VIII |
+| 11 | Pretrain transfer (Tbl VIII) | from scratch vs fine-tune | ABD-LN lesion gen | Dice↑ | 0.32 → 0.50 | +0.18 | Table VIII |
+| 12 | Pretrain transfer (Tbl IX) | from scratch vs fine-tune | MSD-Lung inpaint | Dice↑ | 0.42 → 0.77 | +0.35 | Table IX |
+| 13 | Pretrain transfer (Tbl IX) | from scratch vs fine-tune | MSD-Liver inpaint | Dice↑ | 0.71 → 0.71 | 0.00 | Table IX |
+| 14 | Pretrain transfer (Tbl IX) | from scratch vs fine-tune | MED-LN inpaint | Dice↑ | 0.30 → 0.34 | +0.04 | Table IX |
+| 15 | Pretrain transfer (Tbl IX) | from scratch vs fine-tune | ABD-LN inpaint | Dice↑ | 0.51 → 0.53 | +0.02 | Table IX |
+
+**Top take-away:** Multi-level (image+patch) integration is the single most impactful design choice — it alone delivers ~70% of the overall FID reduction (0.1096→0.0819) and the largest Dice jump (+0.14 overall, +0.22 on chest); position coordinates/embeddings add smaller refinements, while pre-training transfer is decisive on data-scarce, hard targets like mediastinal lymph nodes (MED-LN gen Dice 0.01→0.22, MSD-Lung inpaint 0.42→0.77).

@@ -1,6 +1,7 @@
 ---
 id: learning-inverse-folding-from-2022
-title: Learning inverse folding from millions of predicted structures (ESM-IF1, Hsu 2022 ICML)
+title: Learning inverse folding from millions of predicted structures (ESM-IF1, Hsu
+  2022 ICML)
 authors:
 - Chloe Hsu
 - Robert Verkuil
@@ -37,6 +38,9 @@ training_compute: null
 references_chased: false
 added_at: null
 updated_at: null
+is_fm: true
+fm_classification_reason: 'ESM-IF1: pretrained inverse folding model on millions of
+  predicted structures.'
 ---
 
 ## TL;DR
@@ -125,3 +129,37 @@ Lower sampling temperatures (e.g., T = 1e-6) maximize native sequence recovery; 
 - **Repository archived**: The `facebookresearch/esm` repository was archived on Aug 1, 2024. ESM-IF1 remains usable but receives no further updates.
 - **Successor**: ESM-3 (2024, EvolutionaryScale) is a multimodal generative model over sequence, structure, and function that may subsume ESM-IF1's capabilities.
 - **License**: ESM-IF1 released under MIT license. Requires PyTorch Geometric dependency for GVP layers.
+
+## Ablations (Rev 4)
+
+Verified directly from Hsu et al., ICML 2022 (PMLR v162 pp. 8946–8970), Tables 1, 2, B.1, C.1 and Figure 6/C.1. All perplexity/recovery numbers are on the CATH 4.3 topology-split test set unless noted. Note: ESM-IF1 is **structure-only** — there is no ESM-1b language-model branch in the architecture; ESM-1v/ESM-1b appear only as zero-shot *baselines* in Table 3.
+
+| # | Ablation axis | Variant | Perplexity ↓ | Recovery ↑ | Take-away |
+|---|---|---|---|---|---|
+| 1 | AF2-distilled data (12M UR50 structures) | GVP-Transformer, CATH only | 6.44 | 38.3% | Adding the 12M AlphaFold2-predicted structures yields **+13.3 pp** sequence recovery (38.3 → 51.6%) — the single largest gain in the paper. |
+| 1 | " | GVP-Transformer + AF2 (12M) | **4.01** | **51.6%** | |
+| 2 | Model capacity needed to absorb AF2 data | GVP-GNN (1M), CATH | 5.43 | 42.2% | Small models *cannot* exploit predicted data: GVP-GNN (1M) **degrades** by 3.6 pp when AF2 added. Only GVP-GNN-large (21M, +11.6 pp) and GVP-Transformer (142M, +13.3 pp) benefit. |
+| 2 | " | GVP-GNN (1M) + AF2 | 6.06 | 38.6% (−3.6) | |
+| 2 | " | GVP-GNN-large (21M), CATH | 6.17 | 39.2% | |
+| 2 | " | GVP-GNN-large (21M) + AF2 | 4.08 | 50.8% (+11.6) | |
+| 3 | Encoder architecture (with AF2) | GVP-GNN-large (pure GVP, 21M) | 4.08 | 50.8% | Hybrid GVP-encoder + generic Transformer-decoder (142M) edges out a pure-GVP scaled GNN; gain is small (+0.8 pp) — most value is in the GVP geometric front-end. |
+| 3 | " | GVP-Transformer (142M) | **4.01** | **51.6%** | |
+| 4 | # GVP encoder layers in GVP-Transformer | 0 → 4 layers (Fig C.1) | monotonic ↓ in ppl | — | GVP geometric reasoning is **complementary** to Transformer layers; 4 GVP encoder layers chosen as the sweet spot. |
+| 5 | Predicted:experimental mixing ratio (Fig 6b) | low → high predicted ratio | improves both 21M and 142M | — | A **higher** fraction of predicted data per epoch (final recipe ≈ 1:80 exp:pred, large-model sweep up to 1:40) prevents overfitting on the 16K experimental set. |
+| 6 | Train on predicted data **only** (Table C.2) | no experimental | substantially worse | — | Experimental structures still required as a "trust anchor"; pure synthetic training collapses. |
+| 7 | Span masking of backbone coords (Table C.1, 142M, 1:40) | Span mask + Gaussian noise | **4.10** | — | Span masking is best on full backbones *and* enables non-trivial sequence prediction over long masked regions; independent random masking degrades fast beyond 5-residue masks (Fig 4). |
+| 7 | " | Independent random mask + noise | 4.30 | — | |
+| 7 | " | No masking + noise | 4.20 | — | |
+| 7 | " | Span mask, **no** noise | 4.32 | — | |
+| 8 | Gaussian noise (σ=0.1 Å) on predicted coords | with noise vs without (span mask) | 4.10 vs 4.32 | — | Adding small coordinate noise to AF2 structures gives a +0.22 perplexity improvement, mirroring the back-translation noise finding of Edunov et al. 2018. |
+| 9 | pLDDT-based coord filtering | mask AF2 coords with pLDDT < 90 (~25% of residues) | (used in all "+AF2" rows) | — | Confidence-gated input is part of the recipe — disordered/low-confidence regions are hidden from the encoder. |
+| 10 | Multi-chain conditioning (Table 2, 142M+AF2) | Single-chain input | 6.32 | — | Conditioning on the **full complex backbone** drops perplexity from 6.32 → **3.81** on the same target chain — large free win for complex design despite training on single chains only. |
+| 10 | " | Full-complex input | **3.81** | — | |
+| 11 | Multi-state (dual-conformation) design (Fig 7, PDBFlex) | single-state vs dual-state | dual-state lower ppl on flexible residues | — | Geometric mean of likelihoods over two backbone conformations beats single-state design at locally flexible positions — usable for biosensor/enzyme switches. |
+| 12 | Stricter TM-score-filtered test set (Table B.1) | GVP-Transformer + AF2 | 4.34 | 49.5% | Conclusions hold under a tougher Foldseek-TMalign holdout (no train hits ≥ 0.5 TM); recovery only drops ~2 pp vs CATH topology split. |
+| 13 | Zero-shot baseline contrast (Table 3, ACE2/RBD scan) | ESM-1v / ESM-1b (sequence-only) | — | ρ = 0.03 / 0.02 | Sequence-only PLMs are near-zero on ACE2 binding; structure-conditioned ESM-IF reaches ρ = 0.69 with full coords — confirms the *structure-conditioning* (not an LM branch) is what drives binding-affinity zero-shot. |
+| 13 | " | GVP-GNN-large + AF2, all coords | — | ρ = **0.69** | |
+
+**Count: 13 distinct ablation axes** (≈20 variant rows).
+
+**Top take-away:** Capacity-gated data scaling — distilling 12 M AF2-predicted structures lifts sequence recovery by **+13.3 pp (38.3 → 51.6%)**, but *only* when the model is large enough (≥21 M params). The 1 M-param GVP-GNN actually **regresses** under the same data, making AF2 distillation a story about *jointly* scaling model and synthetic data, not architecture novelty.

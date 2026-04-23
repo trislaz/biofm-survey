@@ -28,12 +28,14 @@ tags:
 - codebook-learning
 - genome-language-model
 - masked-language-modeling
-parameters: 103_000_000
-training_tokens: 262_000_000_000
+parameters: 103000000
+training_tokens: 262000000000
 training_compute: null
 references_chased: false
 added_at: '2026-04-22T19:36:46+00:00'
 updated_at: '2026-04-22T20:28:12+00:00'
+is_fm: true
+fm_classification_reason: 'VQDNA: pretrained vector-quantized genomic FM.'
 ---
 
 ## TL;DR
@@ -146,3 +148,29 @@ VQDNA (HRQ) beats both at 32k. HyenaDNA can scale to 450k (99.40) but OOM for Tr
 - **Sequence length limited to 32k** due to Transformer quadratic attention — not competitive with HyenaDNA on 250k+ sequences. Linear attention extensions mentioned as future work.
 - **RNA/protein transfer not explored** — framework is conceptually applicable but only validated on DNA.
 - **Venue**: ICML 2024 (Proceedings of the 41st International Conference on Machine Learning).
+
+## Ablations (Rev 4)
+
+Reconstruction (Rec.) and linear-probe (Lin.) accuracy (%) on CVC dataset for tokenizer ablations; MCC (%) on H3 / CVC for MLM mask-ratio ablation.
+
+| # | Axis | Setting | VQDNA Rec. | VQDNA Lin. | +HRQ Rec. | +HRQ Lin. | Source |
+|---|------|---------|-----------:|-----------:|----------:|----------:|--------|
+| 1 | Codebook size | 128 | 98.2 | 42.1 | 98.4 | 42.8 | Table 7 |
+| 2 | Codebook size | 256 | 98.8 | 43.6 | 99.1 | 47.7 | Table 7 |
+| 3 | Codebook size | **512** (default) | 99.5 | 44.8 | 99.6 | **48.9** | Table 7 |
+| 4 | Codebook size | 1024 | 99.6 | 44.5 | 99.8 | 48.2 | Table 7 |
+| 5 | Code dim. | 256 | 99.4 | 44.3 | 99.5 | 48.2 | Table 8 |
+| 6 | Code dim. | **384** (default) | 99.5 | 44.8 | 99.6 | 48.9 | Table 8 |
+| 7 | Code dim. | 768 | 99.6 | 44.6 | 99.6 | 48.9 | Table 8 |
+| 8 | Code dim. | 1024 | 99.8 | 44.7 | 99.7 | 48.8 | Table 8 |
+
+| # | Axis | Setting | VQDNA H3 | VQDNA CVC | +HRQ H3 | +HRQ CVC | Source |
+|---|------|---------|---------:|----------:|--------:|---------:|--------|
+| 9 | MLM mask ratio | 15% | 77.9 | 72.6 | 78.3 | 73.7 | Table 9 |
+| 10 | MLM mask ratio | 20% | 78.3 | 73.4 | 78.8 | 74.2 | Table 9 |
+| 11 | MLM mask ratio | **25%** (default) | 78.6 | 73.2 | **79.2** | **74.3** | Table 9 |
+| 12 | MLM mask ratio | 30% | 77.4 | 73.0 | 78.6 | 73.9 | Table 9 |
+
+**Count**: 12 ablation rows across 3 axes (codebook size, code dimension, MLM mask ratio).
+
+**Top take-away**: HRQ's discriminative gain comes almost entirely from **codebook size** (Lin. jumps 42.8 → 48.9 going 128 → 512, then plateaus/drops), while **code dimension is largely inert** (≤0.7 pt across 256–1024) — so capacity should be spent on more codes, not wider ones. A higher MLM mask ratio (25%) than typical DNA-LMs (15%) is optimal, suggesting the VQ tokenizer encodes enough context that the MLM task needs to be made harder.

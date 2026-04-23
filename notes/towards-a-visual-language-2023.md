@@ -36,12 +36,18 @@ tags:
 - zero-shot-classification
 - captioning
 - retrieval
-parameters: ~ViT-B/16 image encoder (~86M) + 12-layer text encoder + 12-layer multimodal decoder (768-d, 3072 hidden); total estimated ~300M
-training_tokens: 1.17M image-caption pairs (human-only), 40 epochs; unimodal image pretrain on 16M tiles, 80 epochs; unimodal text pretrain on ~1M pathology texts, 15k steps
-training_compute: 8×A100-80GB (VL pretrain); 4×A100-80GB (unimodal image); 4×A100-80GB (unimodal text)
+parameters: ~ViT-B/16 image encoder (~86M) + 12-layer text encoder + 12-layer multimodal
+  decoder (768-d, 3072 hidden); total estimated ~300M
+training_tokens: 1.17M image-caption pairs (human-only), 40 epochs; unimodal image
+  pretrain on 16M tiles, 80 epochs; unimodal text pretrain on ~1M pathology texts,
+  15k steps
+training_compute: 8×A100-80GB (VL pretrain); 4×A100-80GB (unimodal image); 4×A100-80GB
+  (unimodal text)
 references_chased: false
 added_at: '2026-04-22T21:55:58+00:00'
 updated_at: '2026-04-22T21:56:03+00:00'
+is_fm: true
+fm_classification_reason: MI-Zero/PLIP-style pathology VL FM.
 ---
 
 ## TL;DR
@@ -161,3 +167,20 @@ CONCH is a CoCa-based visual-language foundation model for computational patholo
 | 4 | "CONCH requires unimodal pre-initialisation (separate image and text pretraining) before vision-language alignment for best results" (L288) | **supported** | Same evidence as #3. Paper explicitly states this substantially improves zero-shot transfer and implements it for both image (iBOT) and text (causal LM → split init) encoders. |
 | 5 | "CONCH (~300 M, CoCa) trained on 1.17 M image–caption pairs. Enables zero-shot WSI classification (90 % NSCLC, 89.3 % RCC). Unimodal pre-initialisation critical." (L537–538) | **partial** | CoCa ✓, 1.17 M ✓, zero-shot 90.0 % NSCLC and 89.3 % RCC ✓ (line 141), unimodal pre-init ✓. However, **~300 M parameter count is never stated in the paper**; it is an estimate derived from architecture dimensions (see Notes in this file). |
 | 6 | "CONCH demonstrates this paradigm for histopathology specifically." (L566) | **supported** | The paper positions CONCH as a VL foundation model for computational pathology using contrastive + captioning pretraining (lines 23–31, 78–82). Context sentence mentions "CLIP-style contrastive pretraining"; CONCH uses CoCa which extends CLIP with captioning — minor simplification but claim is accurate. |
+
+
+## Ablations (Rev 4)
+
+| Variable | Settings | Metric / dataset | Result | Conclusion |
+|---|---|---|---|---|
+| Pretraining objective | CoCa (contrastive + captioning) vs. CLIP (contrastive only), both on human-only data (n=1,170,647) | Zero-shot subtyping/grading (TCGA BRCA/RCC/NSCLC, DHMC LUAD, CRC100k, WSSS4LUAD, SICAP) — bal. acc / κ | CONCH (CoCa, human-only) best on average across the 7 zero-shot classification tasks (Ext. Fig. 8a, lines 934–940) | Adding the captioning loss to contrastive pretraining (CoCa) improves downstream zero-shot classification over CLIP-style contrastive-only |
+| Pretraining objective for retrieval | CoCa vs. CLIP, both human-only | Cross-modal retrieval mean recall on Source A (n=797), Source B (n=1,755), TCGA LUAD (n=165) | CONCH (CLIP) performs best on average for retrieval (Ext. Fig. 8b, lines 941–942) | Contrastive-only objective is slightly stronger for cross-modal retrieval; captioning loss helps classification more than retrieval |
+| Pretraining-data filtering | (i) full unfiltered PMC-Path+EDU (n=1,786,362) vs. (ii) human-only (n=1,170,647) vs. (iii) human + H&E-only (n=457,372) | Same 7 zero-shot classification tasks (Ext. Fig. 8a) | Human-only (1.17 M) achieves best average performance; both unfiltered and the more aggressive H&E-only filter are worse (lines 478–481, 934–940) | Filtering out non-human animal histology helps; over-filtering down to H&E-only loses too much data and hurts performance — keep human-only |
+| Prompt strategy at inference | Single randomly sampled prompt (50 samples) vs. ensembled mean text embedding over prompt pool | Zero-shot classification on 4 slide-level + ROI-level tasks across CONCH, PLIP, BiomedCLIP, OpenAICLIP (Ext. Fig. 2; Ext. Tables 1–14) | Prompt ensembling substantially boosts zero-shot accuracy over the median single-prompt run for most models on most tasks; exception is when single-prompt median is near chance (e.g. OpenAICLIP, PLIP on TCGA BRCA), where ensembling does not help (lines 867–881) | Always ensemble class-name × template prompts at inference; ensembling cannot rescue a model that fundamentally fails on the task |
+| Unimodal pre-initialisation of towers | With unimodal pretraining (image encoder via iBOT on 16 M tiles; text encoder/decoder split-init from causal LM) vs. random init | Downstream zero-shot transfer | "Performing self-supervised pretraining of unimodal modules … can substantially improve downstream zero-shot transfer performance" (lines 541–543, attributed to MI-Zero and adopted by CONCH) | Pre-train each tower unimodally before vision-language alignment — critical for zero-shot transfer in histopathology |
+
+**Design-choice take-aways:**
+- Combine contrastive + captioning losses (CoCa) for classification; pure contrastive (CLIP) is marginally better only for retrieval.
+- Filter pretraining captions to **human histology** but do not over-filter to H&E-only — data volume matters.
+- **Ensemble prompts** (class-name × template pool) at zero-shot inference; it is a near-free accuracy boost when the model is competent.
+- **Pre-train both towers unimodally** (iBOT for the ViT, causal-LM init for text encoder + decoder) before aligning — needed to make pathology VL transfer work.

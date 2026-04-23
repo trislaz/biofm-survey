@@ -12,7 +12,7 @@ authors:
 - Alexander Rives
 year: 2021
 venue: ICML 2021
-arxiv: null  # bioRxiv only; no arxiv ID
+arxiv: null
 doi: 10.1101/2021.02.12.430858
 url: https://proceedings.mlr.press/v139/rao21a.html
 pdf_path: null
@@ -21,8 +21,8 @@ modalities:
 - protein-sequence
 - protein-structure
 parameters: 100M
-training_tokens: null  # not explicitly reported; trained on ~26M MSAs from UniRef50
-training_compute: ~21500 V100 GPU-hours  # 128 V100 GPUs × 7 days
+training_tokens: null
+training_compute: ~21500 V100 GPU-hours
 tags:
 - MSA
 - axial-attention
@@ -36,6 +36,8 @@ evidence_quality: abstract+repo
 references_chased: false
 added_at: null
 updated_at: null
+is_fm: true
+fm_classification_reason: 'MSA Transformer: pretrained protein LM over MSAs.'
 ---
 
 ## TL;DR
@@ -102,6 +104,37 @@ MSA Transformer is a 100M-parameter protein language model that operates on mult
 7. **Ho et al. (2019)** – Axial attention / axial-transformer; factored attention for images that inspired the MSA architecture.
 8. **Lin et al. (2023)** – ESM-2 & ESMFold; successor single-sequence models that match MSA-based accuracy without alignment (Science 379).
 9. **Meier et al. (2021)** – ESM-1v; variant-effect prediction from ESM-1b architecture on UniRef90.
+
+## Ablations (Rev 4)
+
+Source: Rao et al., ICML 2021, Appendix A.3 (Table A.2, Fig. A.3) plus Sec. 5.1 (Fig. 4) and Sec. 5.3 (Fig. 6). Validation = unsupervised contact prediction on the trRosetta dataset; metric = top-L long-range (sep ≥ 24) precision (P@L). Base run: D=768, block order Row→Column, **sqrt-normalised tied row attention**, uniform masking (p=0.15), no MSA positional embedding, log-uniform subsampling, batch 512, 100k updates. Ablations vary one hyperparameter at a time.
+
+| # | Ablation axis | Setting | P@L (100k) | Δ vs base | Notes |
+|---|---|---|---|---|---|
+| 1 | Embedding dim **D** | 768 (base) | 56.3 | — | Ppl 3.01 |
+|   |   | 384 (≈30M params) | 52.8 | −3.5 | Still beats 650M ESM-1b (41.1) and 3B single-seq models |
+| 2 | Block order | Row→Column (base) | 56.3 | — |   |
+|   |   | Column→Row | 55.7 | −0.6 | Marginal |
+| 3 | **Row-attention tying** | Sqrt-norm tied (base) | 56.3 | — | Final model |
+|   |   | Mean-norm tied | 50.1 | −6.2 |   |
+|   |   | Untied | 42.1 | **−14.2** | Largest single design penalty after column masking; tying is the critical inductive bias |
+| 4 | **Masking pattern** | Uniform over MSA (base) | 56.3 | — |   |
+|   |   | Whole-column masking | 38.8 | **−17.5** | Removes within-column signal → catastrophic |
+| 5 | Mask probability | 0.15 (base) | 56.3 | — | Matches BERT/ESM convention |
+|   |   | 0.20 | 56.6 | +0.3 | Not statistically significant |
+| 6 | MSA positional embedding | Off (base) | 56.3 | — |   |
+|   |   | On (learned per-row) | 56.5 → **57.1** @150k | +0.2 / +0.8 | Adopted in final released model |
+| 7 | Training-time subsampling | Log-uniform N/L (base) | 56.3 | — |   |
+|   |   | Always full N/L | 56.5 → 56.1 @150k | +0.2 / −0.2 | n.s.; final model uses "full" variant |
+| 8 | Inference-time MSA selection (Fig. 4, fixed pre-trained model, varying # input seqs) | MaxHamming / hhfilter | best | — | Diversity-max strategies surpass ESM-1b with **only 16 input sequences** |
+|   |   | Random subsample | ≈ best | small −Δ | Model is robust → learned to compensate during training |
+|   |   | MinHamming (low-diversity) | worst | large −Δ | Needs **256** seqs to match ESM-1b; 1 high-diversity seq > 31 low-diversity |
+| 9 | Covariance vs pattern inference (Fig. 6, 1024 hhfilter rows; base P@L = 52.9) | Shuffle columns (kill covariance, keep PSSM) | 15.9 | −37.0 | Potts collapses to null; MSA-Tx still > random → uses **pattern memory** |
+|   |   | Shuffle column order (kill positional patterns, keep covariance) | 27.9 | −25.0 | ESM-1b collapses to null; MSA-Tx still > random → uses **direct covariance** |
+
+**Count: 9 ablation axes (≈18 perturbed configurations).**
+
+**Top take-away:** the model's win comes overwhelmingly from two inductive choices about *how* attention sees the alignment, not from scale. Disabling **tied row attention** costs ~14 pp P@L and switching to **whole-column masking** costs ~17.5 pp — each ablation alone wipes out roughly the entire margin over ESM-1b (650M params), while halving the embedding dim costs only 3.5 pp and 33% more masking is a no-op. Tied-row attention + uniform within-MSA masking are what let a 100M-parameter model use covariance and pattern-based inference simultaneously (Fig. 6), and at inference even 16 diverse sequences are enough to beat single-sequence and Potts baselines.
 
 ## Notes / Open Questions
 

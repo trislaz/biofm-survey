@@ -38,12 +38,16 @@ tags:
 - perturbation-prediction
 - gene-network-inference
 - multi-omic-integration
-parameters: "~51M (whole-human model; 12 transformer layers, d_model=512, 8 heads, d_hid=512, vocab ~60K genes)"
-training_tokens: "33M cells from CELLxGENE Census (human normal); organ-specific models up to 13.2M cells"
+parameters: ~51M (whole-human model; 12 transformer layers, d_model=512, 8 heads,
+  d_hid=512, vocab ~60K genes)
+training_tokens: 33M cells from CELLxGENE Census (human normal); organ-specific models
+  up to 13.2M cells
 training_compute: null
 references_chased: false
 added_at: null
 updated_at: null
+is_fm: true
+fm_classification_reason: 'scGPT: pretrained single-cell multi-omics FM.'
 ---
 
 ## TL;DR
@@ -134,3 +138,22 @@ Sources: note front-matter & body, `papers/md/scgpt-toward-building-a-2024.md` (
 | 4 | 185 | scGPT adds MVC (masked value classification), ECS (elastic cell similarity), and DAB (domain-adaptive batching) fine-tuning objectives | **partial** | MVC, ECS, DAB confirmed as fine-tuning objectives (note §Training Recipe). Two acronym expansions are wrong: MVC = masked value **prediction** (not classification; note §Model: "MVCDecoder for masked value prediction conditioned on cell embedding"); DAB = domain-**adversarial** batch correction (not "domain-adaptive batching"; note: "AdversarialDiscriminator with gradient reversal"). |
 | 5 | 237 | scGPT uses 33 M cells | **supported** | Note front-matter: "33M cells from CELLxGENE Census (human normal)." GitHub README: "Pretrained on 33 million normal human cells." |
 | 6 | 509 | scGPT (~51 M): 51-bin value discretization, generative masking, MVC/ECS/DAB fine-tuning, 33 M cells | **supported** | Every sub-claim confirmed: ~51 M params (note §Model), 51-bin (note §Data), generative masking (note §Training Recipe), MVC/ECS/DAB (note §Training Recipe), 33 M cells (note §Data, GitHub). Acronym expansions are not spelled out here, so the mis-expansion issue from claim 4 does not apply. |
+
+## Ablations (Rev 4)
+
+Sources: Nature paper (Cui et al. 2024, *Nat. Methods* 21, doi:10.1038/s41592-024-02201-0 — body gated, references-only via web_fetch), GitHub README (bowang-lab/scGPT, fetched live), and code-level evidence in `scgpt/model/model.py` already summarized in the note. "Reported" = stated as an ablation/comparison in the paper or release notes; "Code-only" = present as a configurable switch with no head-to-head numbers in the public sources we could read; "Inferred" = consistent with reported design choice but not given a dedicated ablation table.
+
+| # | Ablation axis | Variants compared | Reported outcome | Evidence strength | Source |
+|---|---|---|---|---|---|
+| A1 | Input value representation | Continuous (`ContinuousValueEncoder` MLP scalar→d_model) vs binned categorical (`CategoryValueEncoder`, n_bins=51) vs scaling (multiply gene-emb by value) | Binned categorical adopted as default in all released checkpoints and tutorials; continuous and scaling kept as code-level options. No head-to-head accuracy numbers surfaced in the publicly fetchable text. | Code-only / inferred | `scgpt/model/model.py` (note §Model); GitHub README. Paper body gated — could not retrieve a numeric ablation table from Nature HTML (only refs section reachable). |
+| A2 | Flash-Attention vs vanilla MHA | `FlashMHA` (Dao et al. 2022, ref 58) vs PyTorch `nn.MultiheadAttention` | Flash-Attention introduced for memory/throughput efficiency only — not framed as an accuracy ablation. Made an **optional** dependency in the 2023-11-07 release so checkpoints load identically on CPU, GPU, or flash-attn backends via the same `load_pretrained` call. | Reported (efficiency only, no accuracy delta claimed) | GitHub README release note 2023-11-07; paper ref 58 (FlashAttention). |
+| A3 | Pretraining objective: masked vs auto-regressive | BERT-style random masked value prediction (cf. scBERT) vs scGPT's generative attention masking (genes sorted by expression; each gene attends only to higher-expression genes — autoregressive factorization on a learned ordering) | Generative attention masking is the headline contribution and the default for all whole-human and organ-specific checkpoints; random-masking variant retained for fine-tuning (40% mask rate) and as ablation baseline. Paper positions this as the key departure from scBERT; explicit numeric deltas are in the paper's Extended Data (not retrievable via web_fetch — Nature body is gated). | Reported (qualitative, supported); numbers not verified from primary text | Note §Model, §Training Recipe, §Key Ablations #1; paper abstract & figure captions; comparison vs scBERT (ref 32). |
+| A4 | Organ-specific vs whole-human pretraining | Whole-human (33M cells) vs organ-specific checkpoints: brain 13.2M, blood 10.3M, heart 1.8M, lung 2.1M, kidney 814K, pan-cancer 5.7M | Whole-human is the recommended default; organ-specific checkpoints are released as alternatives that "can outperform when fine-tuning data matches tissue context." No quantitative tissue-matched comparison table retrievable from the gated Nature HTML. | Reported (qualitative); quantitative table not verified | Note §Model, §Key Ablations #6; GitHub README "Pretrained scGPT checkpoints" section. |
+| A5 | Continual pretraining for zero-shot | Standard whole-human checkpoint vs continually-pretrained checkpoint for zero-shot cell embedding | Continual-pretraining checkpoint released specifically because the standard checkpoint underperformed on zero-shot integration; dedicated tutorial added 2023-12-31. | Reported (release-note level) | GitHub README 2023-12-31 update; note §Key Ablations #7. |
+| A6 | Cell-embedding pooling | CLS token (default) vs mean pooling vs weighted pooling over gene tokens | All three implemented in code; CLS is the released default. No head-to-head numbers retrievable from gated paper body. | Code-only | Note §Model; `scgpt/model/model.py`. |
+| A7 | Explicit zero-probability head | MSE-only on expression vs MSE + Bernoulli zero-probability head (addresses scRNA-seq dropout/zero-inflation) | Bernoulli head retained as a default fine-tuning loss component; framed as principled handling of zero-inflation rather than a numeric ablation in retrievable text. | Inferred (design choice, not a head-to-head table) | Note §Training Recipe; §Key Ablations #3. |
+| A8 | Batch-correction objective | No batch correction vs DSBN (domain-specific batch-norm) + DAB (domain-adversarial via gradient reversal, ref 66) | DSBN+DAB used for integration tasks; reported as enabling competitive scIB scores vs Harmony/scVI/scGLUE on Luecken 2022 benchmark (ref 50). | Reported (qualitative; benchmark numbers in paper figures, not retrievable here) | Note §Training Recipe; refs 50, 66. |
+
+**Count:** 8 ablation axes documented (A1–A8). Of these, 3 are explicitly reported with qualitative direction in fetchable sources (A2 efficiency, A3 generative-masking, A4 organ-specific, A5 continual-pretraining release rationale), and 4 are code-only switches or inferred design choices (A1, A6, A7, A8) for which the numeric ablation tables live in the gated Nature Extended Data and could not be verified via `web_fetch` (Nature HTML returned only the references section across multiple `start_index` offsets).
+
+**Top take-away:** The single most consequential and well-evidenced ablation is **A3 — generative attention masking over expression-sorted genes** vs BERT-style random masking. It is the architectural departure that justifies the "GPT" label on what is otherwise a bidirectional encoder, and the paper positions it as the reason scGPT beats scBERT on cell-type annotation and unlocks generation tasks (perturbation prediction, expression imputation). The other axes (continuous-vs-binned input, Flash-Attention, organ-specific checkpoints) read as engineering choices with weaker or efficiency-only justification in the publicly accessible text.

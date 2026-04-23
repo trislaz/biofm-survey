@@ -27,12 +27,14 @@ tags:
 - long-context
 - dna-language-model
 - variant-effect-prediction
-parameters: "1.9M (Caduceus-PS/Ph); range 470k–1.9M across configs"
-training_tokens: "~35B nucleotide tokens (HG38 human reference genome)"
+parameters: 1.9M (Caduceus-PS/Ph); range 470k–1.9M across configs
+training_tokens: ~35B nucleotide tokens (HG38 human reference genome)
 training_compute: null
 references_chased: false
 added_at: '2026-04-22T19:58:54+00:00'
 updated_at: '2026-04-22T20:02:47+00:00'
+is_fm: true
+fm_classification_reason: 'Caduceus: pretrained long-range DNA FM.'
 ---
 
 ## TL;DR
@@ -113,3 +115,25 @@ Caduceus is the first family of **RC-equivariant, bi-directional, long-range DNA
 - **VEP evaluation uses frozen embeddings + SVM**: End-to-end fine-tuning on VEP is not explored. Would Caduceus still dominate with gradient-based fine-tuning on long-range VEP?
 - **Comparison fairness**: Caduceus uses 131k context for VEP while NT-v2 uses only 12k (its training context). A fairer comparison would require retraining NT-v2 at longer contexts.
 - **Concurrent work**: Zhu et al. (2024) independently proposed bidirectional Mamba — comparison not provided.
+
+## Ablations (Rev 4)
+
+The paper does not use the word "ablation" but presents several controlled architecture-variant comparisons (§5.1 "Effect of …" and the `Caduceus w/o Equiv.` column in Table 1). Below are all such comparisons.
+
+| # | Variable ablated | Settings compared | Metric / Dataset | Key results | Conclusion |
+|---|------------------|-------------------|------------------|-------------|------------|
+| 1 | Inner sequence-mixer backbone | **Mamba** vs **HyenaDNA** (same param budget, MLM pre-training, seq lengths 1k → 131k) | MLM cross-entropy on HG38 (Fig 3a) | Mamba achieves strictly lower CE than HyenaDNA at every sequence length tested | Use Mamba (selective SSM) as the inner block; it scales better with context than implicit-conv Hyena. |
+| 2 | How to make Mamba bi-directional | **BiMamba w/ parameter sharing** (Eq. 4, weight-tied fwd/RC projections, deeper) vs **naive bi-Mamba** (independent fwd + reverse Mamba modules, half depth, same params) | MLM CE on HG38, seq lengths 1k → 131k (Fig 3b) | Weight-tied/deeper BiMamba reaches lower pre-training loss across all lengths | Parameter sharing buys depth at fixed param count and outperforms the naive 2-module bidirectional design. |
+| 3 | Reverse-complement equivariance in the LM | **RC-equivariant Caduceus-PS** vs **non-equivariant** (BiMamba only) | MLM CE on HG38, seq lengths 1k → 131k (Fig 3c) | Equivariant variant has lower MLM loss at every length | RC equivariance is a useful architectural prior even at pre-training, not just downstream. |
+| 4 | RC-equivariance mechanism on downstream classification | **Caduceus w/o Equiv.** vs **Caduceus-Ph** (post-hoc conjoining, RC data aug.) vs **Caduceus-PS** (parameter sharing) — all ≈470k params, 4 layers | Top-1 accuracy on 8 Genomics Benchmark tasks (Table 1, 5-fold CV) | Caduceus-Ph or -PS wins all 8 tasks vs w/o Equiv. Examples: Human Enhancer Ensembl 0.883 → 0.893 (Ph) / 0.900 (PS); Mouse Enhancers 0.770 → 0.793 (PS); Human Regulatory 0.872 → 0.881 (Ph) | RC equivariance — whether built-in (PS) or post-hoc (Ph) — is the dominant factor on short/medium-range classification. |
+| 5 | Built-in vs post-hoc RC equivariance | **Caduceus-PS** (parameter sharing during training+inference) vs **Caduceus-Ph** (BiMamba + RC data-aug at training, average fwd+RC at inference) | Genomics Benchmark (Table 1) and Nucleotide Transformer 18 tasks (Table 2) | Ph wins more Genomics Benchmark tasks (5/8 ties or wins); on NT both are competitive with the 500M Nucleotide Transformer-v2 at <0.5% of its params | Ph is a surprisingly strong, simpler baseline; PS is preferable when the downstream task itself depends on RC symmetry. |
+| 6 | Sequence range / RC equivariance for long-range VEP | **Caduceus-PS / -Ph / w/o Equiv. (131k bp ctx)** vs **HyenaDNA (160k)**, **NT-v2 500M (12k)**, **Enformer (196k)** — frozen embeddings + RBF-SVM, stratified by distance to nearest TSS | AUROC on Avsec et al. variant-effect-on-expression task, 3 strata: 0–30k, 30–100k, >100k bp (Fig 4, Table 7) | Caduceus-PS leads at >100k bp, surpassing NT-v2 (≈250× larger) and Enformer; gap to non-equivariant Caduceus widens with TSS distance | RC-equivariant parameter sharing is the decisive ingredient for long-range variant effect prediction; advantage over non-equivariant SSM grows with range. |
+| 7 | RC data augmentation for HyenaDNA pre-training (per-task baseline tuning) | RC aug. **on** vs **off** during HyenaDNA pre-training, picked per Genomics Benchmark task (Table 4) | Top-1 accuracy, 5-fold CV | Best setting splits 4–4 across the 8 tasks (e.g., Human-vs-Worm prefers RC aug; Mouse Enhancers prefers no aug) | RC data augmentation alone is task-dependent and brittle — motivates a built-in equivariant inductive bias instead. |
+
+### Design take-aways from the ablations
+- **Mamba > Hyena** as the inner DNA sequence mixer at matched parameter count (ablation 1).
+- **Weight-tied BiMamba > naive bidirectional Mamba** — share parameters and spend the saved capacity on depth (ablation 2).
+- **RC equivariance helps even at pre-training**, not just on downstream RC-symmetric tasks (ablation 3).
+- **Either flavor of RC equivariance (PS or Ph) beats no equivariance** on every Genomics Benchmark task (ablation 4); post-hoc Ph is a strong, cheaper baseline (ablation 5).
+- **Parameter-sharing PS dominates at long range**: at >100k bp from the TSS for variant-effect prediction, Caduceus-PS beats Enformer and the 500M NT-v2 despite being orders of magnitude smaller (ablation 6).
+- **RC data augmentation alone is unreliable** and task-specific; an equivariant architecture removes that hyperparameter (ablation 7).

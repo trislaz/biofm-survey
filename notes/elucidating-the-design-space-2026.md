@@ -32,6 +32,8 @@ training_compute: 986 ExaFLOPs (≈1 ZettaFLOP, pretrained variant)
 references_chased: false
 added_at: '2026-04-22T19:42:01+00:00'
 updated_at: '2026-04-22T20:19:23+00:00'
+is_fm: false
+fm_classification_reason: Flow matching design-space study for cellular microscopy.
 ---
 
 ## TL;DR

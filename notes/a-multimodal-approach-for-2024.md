@@ -25,6 +25,9 @@ training_compute: null
 references_chased: false
 added_at: '2026-04-22T19:42:17+00:00'
 updated_at: '2026-04-22T20:16:45+00:00'
+is_fm: false
+fm_classification_reason: Application of BiomedCLIP-PubMedBERT to VCE images; no new
+  pretrained FM.
 ---
 
 ## TL;DR

@@ -1,7 +1,12 @@
 ---
 id: predicting-rna-seq-coverage-2023
 title: Predicting RNA-seq coverage from DNA sequence as a unifying model of gene regulation
-authors: [Johannes Linder, Divyanshi Srivastava, Han Yuan, Vikram Agarwal, David R. Kelley]
+authors:
+- Johannes Linder
+- Divyanshi Srivastava
+- Han Yuan
+- Vikram Agarwal
+- David R. Kelley
 year: 2023
 venue: Nature Genetics (2025)
 arxiv: null
@@ -12,9 +17,11 @@ md_path: /home/t-tlazard/projects/maira-report-gen/survey-bio-fm/papers/md/predi
 modalities:
 - epigenome
 - rna
-parameters: "~250M (full model; not explicitly stated — comparable to Enformer; ablation mini models ~30M)"
-training_tokens: "~10K coverage tracks (7,611 human + 2,608 mouse) × tiled 524 kb genome windows"
-training_compute: "~25 days per replicate on 2× NVIDIA A100 (40 GB); 4 replicates trained"
+parameters: ~250M (full model; not explicitly stated — comparable to Enformer; ablation
+  mini models ~30M)
+training_tokens: ~10K coverage tracks (7,611 human + 2,608 mouse) × tiled 524 kb genome
+  windows
+training_compute: ~25 days per replicate on 2× NVIDIA A100 (40 GB); 4 replicates trained
 status: extracted
 evidence_quality: abstract+repo
 tags:
@@ -31,6 +38,9 @@ tags:
 references_chased: false
 added_at: null
 updated_at: null
+is_fm: true
+fm_classification_reason: 'Borzoi: large pretrained sequence-to-coverage model, widely
+  used as backbone.'
 ---
 
 ## TL;DR
@@ -105,6 +115,25 @@ Borzoi is a convolutional + transformer + U-Net model from Calico (Linder & Kell
 - **CATlas** (Zhang et al., Cell 2021) — scATAC-seq atlas used for ATAC training data.
 - **BPNet** (Avsec et al., Nat Genet 2021) — profile prediction with Poisson multinomial loss decomposition.
 - **Borzoi-paper repo** (github.com/calico/borzoi-paper) — full replication scripts for training, evaluation, data processing.
+
+## Ablations (Rev 4)
+
+Conducted on a "mini-Borzoi" (~30M params, 393,192 bp input, 4 attention heads) so the full ablation grid would fit on RTX 4090 / TITAN RTX hardware. Each condition trained for 2 CV folds (4 for the all-features baseline); 30–90 days per run. Reported in Methods §"Model ablation experiments" and Supplementary Figs 7a–c (RNA-seq accuracy + enhancer–gene linking) and 9d (eQTL classification).
+
+| # | Ablation axis | Conditions compared | Finding (Rev 4) |
+|---|---|---|---|
+| 1 | **Auxiliary assays vs RNA-only** | Multispecies (CAGE+DNase+ATAC+ChIP+RNA) vs Multispecies (D/A/RNA) vs Multispecies (RNA) | Adding DNase/ATAC (and further CAGE/ChIP) to RNA-seq consistently improved RNA-seq test accuracy, eQTL classification, and CRISPR enhancer–gene linking AUPRC. Strongest single contributors are DNase + ATAC. |
+| 2 | **Multispecies vs human-only** | Multispecies (full) vs Human (full); same comparison for D/A/RNA and RNA-only subsets | Including mouse training data substantially improved eQTL effect-size Spearman R and held-out RNA-seq accuracy at matched data composition. |
+| 3 | **U-Net hourglass vs no U-Net** | Multispecies (full, 32 bp output via U-Net) vs Multispecies (No U-Net, 128 bp output) | U-Net upsampling from 128 → 32 bp is required for splice-site-resolution coverage; without it exon boundaries are blurred and gene-level shape correlation degrades. Architecture-only ablation. |
+| 4 | **Cell-line scope** | K562 (full) vs K562 (D/A/RNA) vs K562 (RNA) | Within a single cell line the same ordering holds: auxiliary assays > D/A/RNA > RNA-only — ruling out that the multispecies/multi-assay gains come purely from cross-tissue diversity. |
+| 5 | **GTEx-only RNA training** | Human (GTEx RNA) vs Human (full) | Restricting to 89 GTEx RNA tracks alone underperforms the full ENCODE+GTEx multi-assay setup, motivating the heterogeneous track set. |
+| 6 | **Context length (524 kb vs 196 kb)** | Borzoi (524 kb, 32 bp) vs Enformer (196 kb, 128 bp) on enhancer–gene linking and eQTLs (Figs 4c–d, 5b–d) | Borzoi achieves higher AUPRC at every TSS-distance bin (incl. 98–262 kb, unreachable by Enformer) and higher eQTL AUROC (0.794 vs 0.747) and effect-size Spearman R (0.334 vs 0.227). |
+| 7 | **eQTL aggregation statistic** | Differential log-sum across exons vs L2 norm of differential coverage (Fig 5b) | L2 norm beats the original sum statistic (AUROC 0.794 vs 0.772 with the same Borzoi ensemble); Borzoi+sum still beats Enformer+sum. |
+| 8 | **Ensembling (4 replicates)** | Single replicate vs 4-replicate ensemble | Modest but consistent gains: bin-level R 0.74 → 0.75 (RNA-seq), gene-level R 0.86 → 0.87, eQTL Spearman 0.292 → 0.334. |
+
+**Count: 8 ablation axes.**
+
+**Top take-away:** the biggest single quality lever is **co-training on epigenomic assays (DNase/ATAC, plus CAGE/ChIP) alongside RNA-seq** — it improves RNA-seq prediction itself, eQTL discrimination, and enhancer–gene linking, and the effect replicates within a single cell line (K562). Mouse data and the U-Net hourglass are necessary complements (mouse for variant-effect generalisation, U-Net for sub-128 bp splice resolution), but the multi-assay choice is what makes Borzoi a unifying regulatory model rather than just an Enformer-with-RNA-seq.
 
 ## Notes / Open Questions
 

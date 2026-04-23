@@ -1,5 +1,5 @@
 {
-  "count": 154,
+  "count": 169,
   "papers": [
     {
       "id": "a-deep-generative-model-2017",
@@ -38,6 +38,30 @@
       "references_chased": false,
       "added_at": "2026-04-22T21:55:20+00:00",
       "updated_at": "2026-04-22T21:55:20+00:00"
+    },
+    {
+      "id": "a-foundation-model-of-2025",
+      "title": "A foundation model of transcription across human cell types",
+      "authors": [],
+      "year": 2025,
+      "venue": null,
+      "arxiv": null,
+      "doi": "10.1038/s41586-024-08391-z",
+      "url": null,
+      "pdf_path": null,
+      "md_path": "/home/t-tlazard/projects/maira-report-gen/survey-bio-fm/papers/md/a-foundation-model-of-2025.md",
+      "modalities": [
+        "epigenome"
+      ],
+      "status": "fetched",
+      "evidence_quality": "full-text",
+      "tags": [],
+      "parameters": null,
+      "training_tokens": null,
+      "training_compute": null,
+      "references_chased": false,
+      "added_at": null,
+      "updated_at": null
     },
     {
       "id": "a-general-purpose-self-2023",
@@ -230,6 +254,30 @@
       "updated_at": "2026-04-22T20:17:22+00:00"
     },
     {
+      "id": "a-visual-language-foundation-2024",
+      "title": "A visual-language foundation model for computational pathology (CONCH)",
+      "authors": [],
+      "year": 2024,
+      "venue": null,
+      "arxiv": null,
+      "doi": "10.1038/s41591-024-02856-4",
+      "url": null,
+      "pdf_path": null,
+      "md_path": "/home/t-tlazard/projects/maira-report-gen/survey-bio-fm/papers/md/a-visual-language-foundation-2024.md",
+      "modalities": [
+        "imaging-pathology"
+      ],
+      "status": "fetched",
+      "evidence_quality": "full-text",
+      "tags": [],
+      "parameters": null,
+      "training_tokens": null,
+      "training_compute": null,
+      "references_chased": false,
+      "added_at": null,
+      "updated_at": null
+    },
+    {
       "id": "a-whole-slide-foundation",
       "title": "A whole-slide foundation model for digital pathology from real-world data",
       "authors": [],
@@ -346,6 +394,54 @@
       "references_chased": false,
       "added_at": "2026-04-22T19:36:49+00:00",
       "updated_at": "2026-04-22T20:16:24+00:00"
+    },
+    {
+      "id": "accurate-structure-prediction-of-2024",
+      "title": "Accurate structure prediction of biomolecular interactions with AlphaFold 3",
+      "authors": [],
+      "year": 2024,
+      "venue": null,
+      "arxiv": null,
+      "doi": "10.1038/s41586-024-07487-w",
+      "url": null,
+      "pdf_path": null,
+      "md_path": "/home/t-tlazard/projects/maira-report-gen/survey-bio-fm/papers/md/accurate-structure-prediction-of-2024.md",
+      "modalities": [
+        "protein-structure"
+      ],
+      "status": "fetched",
+      "evidence_quality": "full-text",
+      "tags": [],
+      "parameters": null,
+      "training_tokens": null,
+      "training_compute": null,
+      "references_chased": false,
+      "added_at": null,
+      "updated_at": null
+    },
+    {
+      "id": "aido-accurate-model-of-2024",
+      "title": "AIDO: Accurate model of biology through a foundation model of DNA, RNA and protein",
+      "authors": [],
+      "year": 2024,
+      "venue": null,
+      "arxiv": null,
+      "doi": "10.1101/2024.12.02.626322",
+      "url": null,
+      "pdf_path": null,
+      "md_path": "/home/t-tlazard/projects/maira-report-gen/survey-bio-fm/papers/md/aido-accurate-model-of-2024.md",
+      "modalities": [
+        "multimodal"
+      ],
+      "status": "abstract-only",
+      "evidence_quality": "abstract+metadata",
+      "tags": [],
+      "parameters": null,
+      "training_tokens": null,
+      "training_compute": null,
+      "references_chased": false,
+      "added_at": null,
+      "updated_at": null
     },
     {
       "id": "alignment-or-integration-rethinking-2026",
@@ -969,6 +1065,30 @@
       "references_chased": false,
       "added_at": "2026-04-22T19:37:18+00:00",
       "updated_at": "2026-04-22T20:17:42+00:00"
+    },
+    {
+      "id": "cellplm-pre-training-of-2023",
+      "title": "CellPLM: pre-training of cell language model beyond single cells",
+      "authors": [],
+      "year": 2023,
+      "venue": null,
+      "arxiv": null,
+      "doi": "10.1101/2023.10.03.560734",
+      "url": null,
+      "pdf_path": null,
+      "md_path": "/home/t-tlazard/projects/maira-report-gen/survey-bio-fm/papers/md/cellplm-pre-training-of-2023.md",
+      "modalities": [
+        "scrna"
+      ],
+      "status": "abstract-only",
+      "evidence_quality": "abstract+metadata",
+      "tags": [],
+      "parameters": null,
+      "training_tokens": null,
+      "training_compute": null,
+      "references_chased": false,
+      "added_at": null,
+      "updated_at": null
     },
     {
       "id": "cellpose-a-morphological-analysis-2024",
@@ -2043,6 +2163,78 @@
       "references_chased": false,
       "added_at": "2026-04-22T19:42:06+00:00",
       "updated_at": "2026-04-22T20:20:03+00:00"
+    },
+    {
+      "id": "genept-a-simple-but-2023",
+      "title": "GenePT: a simple but effective foundation model for genes and cells using ChatGPT",
+      "authors": [],
+      "year": 2023,
+      "venue": null,
+      "arxiv": null,
+      "doi": "10.1101/2023.10.16.562533",
+      "url": null,
+      "pdf_path": null,
+      "md_path": "/home/t-tlazard/projects/maira-report-gen/survey-bio-fm/papers/md/genept-a-simple-but-2023.md",
+      "modalities": [
+        "scrna"
+      ],
+      "status": "fetched",
+      "evidence_quality": "full-text",
+      "tags": [],
+      "parameters": null,
+      "training_tokens": null,
+      "training_compute": null,
+      "references_chased": false,
+      "added_at": null,
+      "updated_at": null
+    },
+    {
+      "id": "generalized-biomolecular-modeling-and-2024",
+      "title": "Generalized biomolecular modeling and design with RoseTTAFold All-Atom",
+      "authors": [],
+      "year": 2024,
+      "venue": null,
+      "arxiv": null,
+      "doi": "10.1126/science.adl2528",
+      "url": null,
+      "pdf_path": null,
+      "md_path": "/home/t-tlazard/projects/maira-report-gen/survey-bio-fm/papers/md/generalized-biomolecular-modeling-and-2024.md",
+      "modalities": [
+        "protein-structure"
+      ],
+      "status": "abstract-only",
+      "evidence_quality": "abstract+metadata",
+      "tags": [],
+      "parameters": null,
+      "training_tokens": null,
+      "training_compute": null,
+      "references_chased": false,
+      "added_at": null,
+      "updated_at": null
+    },
+    {
+      "id": "genome-modeling-and-design-2025",
+      "title": "Genome modeling and design across all domains of life with Evo 2",
+      "authors": [],
+      "year": 2025,
+      "venue": null,
+      "arxiv": null,
+      "doi": "10.1101/2025.02.18.638918",
+      "url": null,
+      "pdf_path": null,
+      "md_path": "/home/t-tlazard/projects/maira-report-gen/survey-bio-fm/papers/md/genome-modeling-and-design-2025.md",
+      "modalities": [
+        "dna"
+      ],
+      "status": "abstract-only",
+      "evidence_quality": "abstract+metadata",
+      "tags": [],
+      "parameters": null,
+      "training_tokens": null,
+      "training_compute": null,
+      "references_chased": false,
+      "added_at": null,
+      "updated_at": null
     },
     {
       "id": "geometric-deep-learning-for-2023",
@@ -3441,6 +3633,30 @@
       "updated_at": "2026-04-22T20:23:03+00:00"
     },
     {
+      "id": "nicheformer-a-foundation-model-2024",
+      "title": "Nicheformer: a foundation model for single-cell and spatial omics",
+      "authors": [],
+      "year": 2024,
+      "venue": null,
+      "arxiv": null,
+      "doi": "10.1101/2024.04.15.589472",
+      "url": null,
+      "pdf_path": null,
+      "md_path": "/home/t-tlazard/projects/maira-report-gen/survey-bio-fm/papers/md/nicheformer-a-foundation-model-2024.md",
+      "modalities": [
+        "scrna"
+      ],
+      "status": "abstract-only",
+      "evidence_quality": "abstract+metadata",
+      "tags": [],
+      "parameters": null,
+      "training_tokens": null,
+      "training_compute": null,
+      "references_chased": false,
+      "added_at": null,
+      "updated_at": null
+    },
+    {
       "id": "on-the-conversion-from-2019",
       "title": "On the conversion from OSA-UCS to CIEXYZ",
       "authors": [
@@ -4282,6 +4498,30 @@
       "updated_at": "2026-04-22T20:25:20+00:00"
     },
     {
+      "id": "robust-deep-learning-based-2022",
+      "title": "Robust deep learning-based protein sequence design using ProteinMPNN",
+      "authors": [],
+      "year": 2022,
+      "venue": null,
+      "arxiv": null,
+      "doi": "10.1126/science.add2187",
+      "url": null,
+      "pdf_path": null,
+      "md_path": "/home/t-tlazard/projects/maira-report-gen/survey-bio-fm/papers/md/robust-deep-learning-based-2022.md",
+      "modalities": [
+        "protein-sequence"
+      ],
+      "status": "fetched",
+      "evidence_quality": "full-text",
+      "tags": [],
+      "parameters": null,
+      "training_tokens": null,
+      "training_compute": null,
+      "references_chased": false,
+      "added_at": null,
+      "updated_at": null
+    },
+    {
       "id": "rudolfv-a-foundation-model-2024",
       "title": "RudolfV: A Foundation Model by Pathologists for Pathologists",
       "authors": [
@@ -4560,6 +4800,30 @@
       "updated_at": null
     },
     {
+      "id": "scimilarity-rapid-annotation-of-2023",
+      "title": "scimilarity: rapid annotation of cell types in human scRNA-seq via cell similarity",
+      "authors": [],
+      "year": 2023,
+      "venue": null,
+      "arxiv": null,
+      "doi": "10.1101/2023.07.18.549537",
+      "url": null,
+      "pdf_path": null,
+      "md_path": "/home/t-tlazard/projects/maira-report-gen/survey-bio-fm/papers/md/scimilarity-rapid-annotation-of-2023.md",
+      "modalities": [
+        "scrna"
+      ],
+      "status": "abstract-only",
+      "evidence_quality": "abstract+metadata",
+      "tags": [],
+      "parameters": null,
+      "training_tokens": null,
+      "training_compute": null,
+      "references_chased": false,
+      "added_at": null,
+      "updated_at": null
+    },
+    {
       "id": "scinterpreter-training-large-language-2024",
       "title": "scInterpreter: Training Large Language Models to Interpret scRNA-seq Data for Cell Type Annotation",
       "authors": [
@@ -4631,6 +4895,30 @@
       "updated_at": "2026-04-22T20:25:51+00:00"
     },
     {
+      "id": "scmulan-a-multitask-generative-2024",
+      "title": "scMulan: a multitask generative pre-trained language model for single-cell analysis",
+      "authors": [],
+      "year": 2024,
+      "venue": null,
+      "arxiv": null,
+      "doi": "10.1101/2024.01.25.577152",
+      "url": null,
+      "pdf_path": null,
+      "md_path": "/home/t-tlazard/projects/maira-report-gen/survey-bio-fm/papers/md/scmulan-a-multitask-generative-2024.md",
+      "modalities": [
+        "scrna"
+      ],
+      "status": "abstract-only",
+      "evidence_quality": "abstract+metadata",
+      "tags": [],
+      "parameters": null,
+      "training_tokens": null,
+      "training_compute": null,
+      "references_chased": false,
+      "added_at": null,
+      "updated_at": null
+    },
+    {
       "id": "segment-anything-for-cell-2025",
       "title": "Segment Anything for Cell Tracking",
       "authors": [
@@ -4692,6 +4980,30 @@
       "parameters": "7B",
       "training_tokens": "340B",
       "training_compute": "2e22 FLOPs",
+      "references_chased": false,
+      "added_at": null,
+      "updated_at": null
+    },
+    {
+      "id": "simulating-500-million-years-2024",
+      "title": "Simulating 500 million years of evolution with a language model (ESM-3)",
+      "authors": [],
+      "year": 2024,
+      "venue": null,
+      "arxiv": null,
+      "doi": "10.1101/2024.07.01.600583",
+      "url": null,
+      "pdf_path": null,
+      "md_path": "/home/t-tlazard/projects/maira-report-gen/survey-bio-fm/papers/md/simulating-500-million-years-2024.md",
+      "modalities": [
+        "protein-sequence"
+      ],
+      "status": "abstract-only",
+      "evidence_quality": "abstract+metadata",
+      "tags": [],
+      "parameters": null,
+      "training_tokens": null,
+      "training_compute": null,
       "references_chased": false,
       "added_at": null,
       "updated_at": null
@@ -5493,6 +5805,30 @@
       "updated_at": "2026-04-22T20:52:46+00:00"
     },
     {
+      "id": "universal-cell-embeddings-a-2023",
+      "title": "Universal Cell Embeddings: a foundation model for cell biology",
+      "authors": [],
+      "year": 2023,
+      "venue": null,
+      "arxiv": null,
+      "doi": "10.1101/2023.11.28.568918",
+      "url": null,
+      "pdf_path": null,
+      "md_path": "/home/t-tlazard/projects/maira-report-gen/survey-bio-fm/papers/md/universal-cell-embeddings-a-2023.md",
+      "modalities": [
+        "scrna"
+      ],
+      "status": "abstract-only",
+      "evidence_quality": "abstract+metadata",
+      "tags": [],
+      "parameters": null,
+      "training_tokens": null,
+      "training_compute": null,
+      "references_chased": false,
+      "added_at": null,
+      "updated_at": null
+    },
+    {
       "id": "unveiling-latent-knowledge-in-2025",
       "title": "Unveiling Latent Knowledge in Chemistry Language Models through Sparse Autoencoders",
       "authors": [
@@ -5585,6 +5921,45 @@
       "references_chased": false,
       "added_at": "2026-04-22T19:37:16+00:00",
       "updated_at": "2026-04-22T20:28:05+00:00"
+    },
+    {
+      "id": "virchow2-scaling-self-supervised-2024",
+      "title": "Virchow2: Scaling Self-Supervised Mixed Magnification Models in Pathology",
+      "authors": [
+        "Eric Zimmermann",
+        "Eugene Vorontsov",
+        "Julian Viret",
+        "Adam Casson",
+        "Michal Zelechowski",
+        "George Shaikovski",
+        "Neil Tenenholtz",
+        "James Hall",
+        "David Klimstra",
+        "Razik Yousfi",
+        "Thomas Fuchs",
+        "Nicolo Fusi",
+        "Siqi Liu",
+        "Kristen Severson"
+      ],
+      "year": 2024,
+      "venue": null,
+      "arxiv": "2408.00738",
+      "doi": null,
+      "url": "https://arxiv.org/abs/2408.00738v3",
+      "pdf_path": "papers/virchow2-scaling-self-supervised-2024.pdf",
+      "md_path": "papers/md/virchow2-scaling-self-supervised-2024.md",
+      "modalities": [
+        "other"
+      ],
+      "status": "converted",
+      "evidence_quality": "unknown",
+      "tags": [],
+      "parameters": null,
+      "training_tokens": null,
+      "training_compute": null,
+      "references_chased": false,
+      "added_at": "2026-04-23T09:52:50+00:00",
+      "updated_at": "2026-04-23T09:52:53+00:00"
     },
     {
       "id": "vitally-consistent-scaling-biological-2024",

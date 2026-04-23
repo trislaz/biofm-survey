@@ -32,6 +32,8 @@ training_compute: null
 references_chased: false
 added_at: '2026-04-22T19:36:46+00:00'
 updated_at: '2026-04-22T20:17:15+00:00'
+is_fm: true
+fm_classification_reason: 'PhyloGPN: pretrained genomic LM with phylogenetic objective.'
 ---
 
 ## TL;DR
@@ -91,6 +93,30 @@ PhyloGPN is an 83 M-parameter CNN (adapted from ByteNet/CARP) that models nucleo
 - **Yang et al. / CARP (ref 41):** Convolutional architecture ancestor (protein LM from which PhyloGPN is adapted).
 - **Marin et al. 2024 / BEND (ref 22):** The benchmark suite used for embedding evaluation (ICLR 2024).
 - **Zoonomia Consortium alignment (ref 44 + ref 20):** 241-mammal + primate extension to 447 species; the key data resource.
+
+## Ablations (Rev 4)
+
+Single ablation reported (§4.3, Fig. 6, Table S2): a generalization study where a model is trained from scratch on Subset 1 (odd chromosomes + X, 2 epochs) and evaluated on held-out Subset 2 (even chromosomes + Y), versus the epoch-1 PhyloGPN baseline trained on all positions. Same effective data budget. Metric = AUROC on ClinVar variant classification stratified by category.
+
+| # | Variant category | Baseline (epoch-1, full genome) | Ablated (Subset 1 only, 2 epochs) | Δ (Abl − Base) |
+|---|---|---|---|---|
+| 1 | All | 0.85 | **0.87** | +0.02 |
+| 2 | 3′UTR | 0.84 | **0.87** | +0.03 |
+| 3 | 5′UTR | 0.81 | **0.83** | +0.02 |
+| 4 | Intronic | 0.81 | **0.84** | +0.03 |
+| 5 | Noncoding | 0.82 | **0.85** | +0.03 |
+| 6 | Missense | 0.72 | 0.72 | 0.00 |
+| 7 | Synonymous | 0.64 | **0.71** | +0.07 |
+| 8 | Splice Acceptor | 0.69 | **0.71** | +0.02 |
+| 9 | Splice Donor | 0.70 | **0.71** | +0.01 |
+| 10 | Start Codon | 0.49 | 0.49 | 0.00 |
+| 11 | Stop Lost | 0.65 | **0.67** | +0.02 |
+| 12 | Upstream of Transcript | 0.68 | **0.75** | +0.07 |
+| 13 | Downstream of Transcript | **0.76** | 0.70 | −0.06 |
+
+Companion panels in Fig. 6 (b, c) show the ablated model also matches baseline on pathogenic regulatory-variant discrimination and on DMS rank prediction.
+
+**Take-away:** Holding out half the genome from training barely changes — and on most categories slightly improves — variant-effect AUROC, indicating PhyloGPN learns broadly transferable sequence features rather than memorizing chromosome-specific context. No architectural / loss-component ablations are reported.
 
 ## Notes / Open Questions
 

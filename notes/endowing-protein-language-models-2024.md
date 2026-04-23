@@ -19,13 +19,23 @@ modalities:
 - protein-structure
 status: extracted
 evidence_quality: medium
-tags: [structure-aware, graph-transformer, parameter-efficient, ESM-2, GNN, masked-language-modeling]
-parameters: "1137M (650M-base PST; 486M trainable structure extractors). Also 8M/35M/150M base variants."
-training_tokens: "542K protein structures (AlphaFold SwissProt subset)"
-training_compute: "~10 hours per model on 4× H100 GPUs"
+tags:
+- structure-aware
+- graph-transformer
+- parameter-efficient
+- ESM-2
+- GNN
+- masked-language-modeling
+parameters: 1137M (650M-base PST; 486M trainable structure extractors). Also 8M/35M/150M
+  base variants.
+training_tokens: 542K protein structures (AlphaFold SwissProt subset)
+training_compute: ~10 hours per model on 4× H100 GPUs
 references_chased: false
 added_at: '2026-04-22T19:36:52+00:00'
 updated_at: '2026-04-22T20:19:38+00:00'
+is_fm: true
+fm_classification_reason: 'PST: new pretrained structure-augmented PLM (MLM on AlphaFold
+  structures).'
 ---
 
 ## TL;DR
@@ -115,3 +125,23 @@ Protein Structure Transformer (PST) augments pretrained ESM-2 by injecting light
 - Edge attribute negative transfer is intriguing; would contrastive or denoising objectives help?
 - No protein-protein interaction or ligand design tasks evaluated.
 - Structure inputs come from AlphaFold predictions; unclear how robust to prediction errors or experimental structures with missing residues.
+
+## Ablations (Rev 4)
+
+| # | Ablation axis | Variant | Setup / control | Metric | Result | Δ vs baseline | Take-away |
+|---|---|---|---|---|---|---|---|
+| 1 | Structure injection | PST vs ESM-2 (650M, fixed repr) | Same backbone, +GIN extractors | EC Fmax | 0.899 vs 0.892 | +0.007 | Structure helps even at 650M |
+| 2 | Structure injection | PST vs ESM-2 (650M, fixed repr) | same | GO-BP Fmax / AUPR | 0.513/0.371 vs 0.509/0.355 | +0.004 / +0.016 | Largest GO gain on AUPR |
+| 3 | Structure injection | PST vs ESM-2 (650M) | same | Fold-Superfamily ACC | 83.6 vs 80.4 | +3.2 | Strongest gain on remote homology |
+| 4 | Structure injection | PST vs ESM-2 (650M) | same | Zero-shot VEP mean \|ρ\| | 0.501 vs 0.489 | +0.012 | Generalises to unsupervised VEP |
+| 5 | Edge attributes | + 16-dim Gaussian RBF distance edges | 6-layer PST, ProteinShake | Pretraining MLM acc | 47% → 55% | +8 pp | Helps pretraining |
+| 6 | Edge attributes | + distance edges | 6-layer PST | All ProteinShake downstream | Underperforms no-edge variant on every task | negative | MLM too weak to exploit richer geometry → negative transfer |
+| 7 | Model size scaling | 8M / 35M / 150M / 650M | PST vs ESM-2 across sizes | Multiple downstream | Gap largest at 8M & 35M, tapers at 650M | shrinking Δ | Explicit structure most useful at small scale; large PLMs implicitly encode it |
+| 8 | Pretraining strategy | "Struct Only" (freeze ESM-2, train extractors) vs "Full" | All sizes, ProteinShake | Downstream perf | ≈ Full update | ~0 | Frozen-backbone training matches full pretraining → 486M params suffice |
+| 9 | Pretraining strategy | "Struct Only + Seq" (avg struct & seq repr at inference) | 650M, ProteinShake | Downstream perf | > Struct Only on multiple tasks | + | One model dual-purposes as sequence and structure encoder |
+| 10 | Head adaptation | Fine-tune PST vs frozen repr + MLP | 650M, EC / GO-BP | Fmax | FT 0.897 / 0.489 vs frozen 0.899 / 0.513 | −0.002 / −0.024 | Fine-tuning does not help; fixed reps preferred |
+| 11 | End-to-end baseline | PST (frozen) vs ESM-1b-GearNetMVC (E2E) | EC | Fmax | 0.899 vs 0.894 | +0.005 | Beats E2E structure-aware baseline without FT |
+
+**Count: 11 ablation rows.**
+
+**Top take-away:** PST shows that a *frozen* ESM-2 backbone augmented with lightweight per-layer GIN structure extractors (trained alone) matches full-model pretraining and beats end-to-end structure-aware baselines — but only with *minimal* geometric input (8 Å contact graph, no edge distances): richer edge features improve MLM accuracy yet cause negative transfer downstream, and the structural advantage shrinks monotonically with backbone scale, indicating large PLMs already implicitly encode structure.

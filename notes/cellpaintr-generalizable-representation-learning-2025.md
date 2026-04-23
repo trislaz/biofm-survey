@@ -31,6 +31,9 @@ training_compute: null
 references_chased: false
 added_at: '2026-04-22T19:37:18+00:00'
 updated_at: '2026-04-22T20:17:42+00:00'
+is_fm: true
+fm_classification_reason: 'CellPainTR: self-supervised pretrained transformer for
+  Cell Painting.'
 ---
 
 ## TL;DR
@@ -97,3 +100,20 @@ Three-stage curriculum, all using AdamW optimizer:
 - The trade-off between batch correction and bio signal is task-dependent; optimal curriculum stage may vary by downstream application.
 - Code available at https://github.com/CellPainTR/CellPainTR — worth checking for architecture details and parameter count.
 - Only compound perturbations used for training/eval; generalization to genetic perturbations (ORF, CRISPR) not tested.
+
+## Ablations (Rev 4)
+
+Source: §4.4 "Ablation Study: Dissecting the Training Stages" (Table 1, in-distribution benchmark). Each row is a successive training stage of the same model; baselines (no model / ComBat / Harmony) included for reference.
+
+| Variant | Training stage / change | Graph Conn. | Silh. Batch | Batch Corr. (agg.) | Leiden NMI | Leiden ARI | Silh. Label | mAP | Bio Metrics (agg.) | Overall | Take-away |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| Baseline (raw) | No correction | 0.12 | 0.58 | 0.63 | 0.08 | 0.01 | 0.18 | 0.05 | 0.08 | 0.26 | Reference floor. |
+| ComBat | Classical batch correction | 0.08 | 0.65 | 0.54 | 0.09 | 0.01 | 0.27 | 0.05 | 0.11 | 0.26 | No overall gain vs baseline. |
+| Harmony | Classical batch correction | 0.11 | 0.58 | 0.61 | 0.08 | 0.01 | 0.18 | 0.05 | 0.08 | 0.25 | No overall gain vs baseline. |
+| CellPainTR (1) | Stage 1 only: self-supervised pre-training (masked feature reconstruction) | 0.15 | 0.76 | 0.82 | 0.08 | 0.01 | 0.34 | 0.05 | 0.12 | 0.35 | Strong batch correction but weak biological signal. |
+| CellPainTR (2) | + Stage 2: intra-source contrastive learning | 0.32 | 0.82 | 0.82 | 0.13 | 0.02 | 0.36 | 0.06 | 0.14 | 0.39 | Boosts bio metrics (Silh. Label 0.52→0.70 per text) at slight cost to batch correction. |
+| CellPainTR (full) | + Stage 3: inter-source contrastive learning | 0.32 | 0.82 | 0.85 | 0.16 | 0.03 | 0.33 | 0.07 | 0.15 | 0.40 | Best overall — recovers batch correction (0.76 agg per text) while keeping bio signal. |
+
+**Count:** 6 ablation/comparison rows (3 training-stage ablations + 3 baseline references).
+
+**Top take-away:** The multi-stage curriculum is essential and exposes a fundamental trade-off — Stage 1 (SSL) maximizes batch correction but discards biological structure; Stage 2 (intra-source contrastive) reverses the trade-off; only the full three-stage curriculum (adding inter-source contrastive) strikes the balance, yielding the best overall score (0.40) and showing that no single objective alone is sufficient.

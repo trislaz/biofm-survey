@@ -18,7 +18,7 @@ md_path: papers/md/graphgpt-generative-pre-trained-2023.md
 modalities:
 - other
 status: extraction-failed
-reason: "not a bio-FM"
+reason: not a bio-FM
 evidence_quality: high
 tags:
 - graph-foundation-model
@@ -26,12 +26,16 @@ tags:
 - eulerian-path
 - general-purpose
 - not-bio-fm
-parameters: "up to 2B (XXL); main Base variant ~113M"
-training_tokens: "1–20B graph tokens depending on dataset (e.g. 1×10⁹ for PCQM4Mv2-Base, 2×10¹⁰ for ogbl-ppa)"
-training_compute: "~63 V100-GPU-hours PT + ~3 V100-GPU-hours/epoch FT for Base on PCQM4Mv2; 8× L20 or V100 clusters"
+parameters: up to 2B (XXL); main Base variant ~113M
+training_tokens: 1–20B graph tokens depending on dataset (e.g. 1×10⁹ for PCQM4Mv2-Base,
+  2×10¹⁰ for ogbl-ppa)
+training_compute: ~63 V100-GPU-hours PT + ~3 V100-GPU-hours/epoch FT for Base on PCQM4Mv2;
+  8× L20 or V100 clusters
 references_chased: false
 added_at: '2026-04-22T19:37:10+00:00'
 updated_at: '2026-04-22T20:20:21+00:00'
+is_fm: false
+fm_classification_reason: Generic graph FM; frontmatter explicitly notes 'not a bio-FM'.
 ---
 
 ## TL;DR

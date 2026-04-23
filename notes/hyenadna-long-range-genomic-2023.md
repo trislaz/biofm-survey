@@ -26,13 +26,24 @@ modalities:
 - dna
 status: extracted
 evidence_quality: full-text
-tags: ["hyena", "long-context", "single-nucleotide", "implicit-convolution", "sub-quadratic", "in-context-learning", "soft-prompting", "sequence-length-warmup"]
-parameters: "6.6M (largest); suite from 0.44M to 6.6M"
-training_tokens: "up to ~2T tokens (1M context × 10–20k steps)"
-training_compute: "1.3 GPU-hrs (small models on 1×A100-40GB, 80 min); largest 1M model ~4 weeks"
+tags:
+- hyena
+- long-context
+- single-nucleotide
+- implicit-convolution
+- sub-quadratic
+- in-context-learning
+- soft-prompting
+- sequence-length-warmup
+parameters: 6.6M (largest); suite from 0.44M to 6.6M
+training_tokens: up to ~2T tokens (1M context × 10–20k steps)
+training_compute: 1.3 GPU-hrs (small models on 1×A100-40GB, 80 min); largest 1M model
+  ~4 weeks
 references_chased: false
 added_at: '2026-04-22T19:54:18+00:00'
 updated_at: '2026-04-22T19:58:48+00:00'
+is_fm: true
+fm_classification_reason: 'HyenaDNA: pretrained long-range genomic FM.'
 ---
 
 ## TL;DR
@@ -116,3 +127,26 @@ HyenaDNA is a genomic foundation model that replaces attention with the Hyena op
 - Soft prompting results are promising but still below full fine-tuning on most tasks. Can the gap be closed with more prompt tokens or better prompt optimization?
 - The paper does not explore variant effect prediction or clinical genomics applications—important future direction.
 - Training compute is remarkably low for short-range tasks but the 1M context model still requires ~4 weeks—practical scaling questions remain.
+
+## Ablations (Rev 4)
+
+| Variable | Settings | Metric / dataset | Result | Conclusion |
+|---|---|---|---|---|
+| Tokenization (single-nt vs 6-mer) | HyenaDNA char-level vs HyenaDNA k-mer (k=6), trained from scratch | Top-1 acc, GenomicBenchmarks (8 datasets, Tab. A.4) | 6-mer drops accuracy on majority of datasets by up to ~10 pts (e.g. Mouse Enhancers 84.7→81.8; Human Nontata Promoters 93.3→83.5; Human OCR 78.8→70.2); only Human Enhancers Ensembl improves (85.7→88.0) | Single-nucleotide tokenization is a major contributor to HyenaDNA's performance; aggregating k-mer tokenizers hurt fine-grained tasks |
+| Directionality (causal vs bidirectional) | Causal HyenaDNA vs bidirectional Hyena via circular FFT padding, both from scratch | Top-1 acc, GenomicBenchmarks (Tab. A.4) | Bidirectional degrades 7/8 datasets, avg −3.8 acc pts (e.g. Mouse Enhancers 84.7→80.6; Human Nontata 93.3→88.5) | Causal next-token pretraining is preferable; naive bidirectional Hyena (without MLM pretraining) underperforms |
+| Pretraining vs from-scratch (short-range) | HyenaDNA pretrained vs scratch | GenomicBenchmarks Top-1 (Tab. A.4) | Pretraining gives mild–moderate gains (e.g. Human OCR 78.8→80.9; Human Nontata 93.3→96.6); GPT also benefits (e.g. Human OCR 68.3→79.9) | Pretraining helps but gains are modest because GenomicBenchmarks are near saturation |
+| Pretraining vs from-scratch (NT benchmark) | HyenaDNA 1.6M, pretrained vs scratch | MCC / F1, 18 NT datasets (Tab. A.6) | Big gains on hard histone tasks: H3K4me3 40.2→61.2 (+21), H3K4me2 34.5→53.9, H4ac 43.5→63.7; near-zero gain on splice/promoter tasks (already saturated, ≤1 pt) | Pretraining matters most on harder, lower-baseline tasks (especially histone marks) |
+| Mixing layer (Hyena vs attention) | HyenaDNA 1.6M (pretrained) vs GPT 1.6M (pretrained) vs NT 2.5B | NT benchmarks (Tab. A.6) | HyenaDNA beats same-size GPT on nearly all 18 datasets (e.g. H3K4me3 28.3→61.2; H4ac 36.4→63.7); matches/exceeds 2.5B NT on 12/18 | Hyena operator outperforms attention at matched parameter count and competes with models 1500× larger |
+| Pretraining × sequence length (long-range) | HyenaDNA scratch vs pretrained at 1k / 32k / 250k / 450k | Top-1, 5-way species classification (Tab. A.11) | 1k: 53.9→61.1 (+7.2); 32k: 70.7→93.4 (+22.7); 250k: 65.7→97.9 (+32.2); 450k: 71.4→99.4 (+28.0) | Pretraining benefit grows dramatically with context length; longer context models are unusable without pretraining |
+| Sequence-length warm-up scheduler | Direct training vs staged length warm-up (start L=64, double per stage) at 450k context | Training time & species-classification acc (Fig. 3.2) | Training time −40%; accuracy +7.5 pts | Length warm-up is critical for stability and efficiency at ultralong (≥200k) sequences |
+| Pretraining context length | Models pretrained at varying context lengths on human genome | Pretraining perplexity (Fig. 1.2) | Longer context → lower perplexity, but only if model is deep enough; shallow models show inflection / degradation at long context; longer context costs more tokens/time | Context length acts as a regularization dimension; tradeoff between speed (short) and final quality (long) |
+| Soft prompt length (in-context adaptation) | 2 → 32k learnable tokens prepended, model frozen | GenomicBenchmarks accuracy (Fig. 4.2) | Performance increases monotonically with # tuneable tokens; saturates near full-fine-tune baseline (Tab. 4.1) on most tasks | Long-context window enables competitive parameter-efficient adaptation purely via soft prompts; longer prompts → better |
+| Model & pretraining-data scale (cross-architecture) | HyenaDNA 1.6M / 1 genome vs NT 500M–2.5B / 1–3,202 genomes | NT benchmarks (Tab. 4.2) | HyenaDNA SotA on 12/18 with ≥300× fewer params and ≥850× fewer genomes | Architecture (subquadratic + single-nt) and pretraining recipe matter more than parameter/data scale at this regime |
+
+**Design-choice take-aways from this paper's ablations:**
+- Single-nucleotide tokenization beats k-mer aggregation for most genomic classification tasks — preserve resolution.
+- Causal next-token pretraining works well; bidirectional Hyena variants do not pay off out of the box.
+- Pretraining benefit scales with task difficulty and especially with input sequence length — long-context models essentially require pretraining.
+- A staged sequence-length warm-up schedule is essential to train stably at 200k+ tokens (40% speedup, +7.5 acc on species classification at 450k).
+- Hyena operator matches or beats attention at equal parameter count, and the right architecture+recipe (subquadratic, single-nt, pretrained) can outperform models 100–1000× larger.
+- Soft prompts of growing length recover most of full fine-tuning performance; long context unlocks parameter-efficient adaptation.

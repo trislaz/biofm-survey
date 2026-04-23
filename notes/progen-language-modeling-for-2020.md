@@ -30,10 +30,12 @@ tags:
 - zero-shot-fitness
 parameters: 1.2B
 training_tokens: null
-training_compute: "256× TPU-v3 cores, ~2 weeks, 1M iterations"
+training_compute: 256× TPU-v3 cores, ~2 weeks, 1M iterations
 references_chased: false
 added_at: '2026-04-22T19:36:59+00:00'
 updated_at: '2026-04-22T20:24:30+00:00'
+is_fm: true
+fm_classification_reason: 'ProGen: pretrained protein generative LM.'
 ---
 
 ## TL;DR
@@ -126,3 +128,18 @@ ProGen is a 1.2B-parameter autoregressive Transformer (CTRL-style) trained on ~2
 - GB1 zero-shot evaluation is on single-position mutants at 4 epistatic sites — not tested on multi-position combinatorial variants
 - No comparison to MSA-based generative methods (e.g., profile HMMs) which are the traditional baseline for protein family modeling
 - Subsequent work (ProGen2, 2023) scaled to 6.4B parameters and included experimental validation of generated lysozymes — worth chasing for updated results
+
+## Ablations (Rev 4)
+
+| # | Ablation axis | Variants compared | Metric | Result | Take-away |
+|---|---|---|---|---|---|
+| 1 | Train-distribution generalisation | ID-test vs OOD-test (held-out protein families) | Perplexity / hard-acc | 8.17 / 45 → 13.34 / 22 | Performance degrades on unseen families but stays well above empirical baseline (18.14) |
+| 2 | Warm-start from pre-trained ProGen | OOD-test-20: random init vs fine-tuned from ProGen (5 epochs) | Perplexity / hard-acc | 17.78 / 9 → 7.45 / 50 | Pre-training is essential — fine-tuning more than halves PPL and 5× hard-acc on novel families |
+| 3 | Amino-acid context length | Sequence proportion as context (0.5 → 0.9), Fig 3/5 | Perplexity, seq-similarity | PPL drops monotonically (~4.0 → 2.4) | More residue context narrows the next-token distribution; benefit holds across all sampling settings |
+| 4 | # conditioning tags | [0,2] vs [3,7] vs [8,20] tags, Figs 4/6/7 | PPL, seq-sim, 2° structure acc | ≥3 tags exceed 50% mutation baseline; ≥8 tags approach 25% baseline and surpass it on 2° structure (≈0.84 vs 0.78) | Conditioning tags carry real predictive signal; rich tag sets are needed for controllable, structurally-faithful generation |
+| 5 | Sampling strategy | top-k ∈ {1,3} × repetition-penalty ∈ {0, 1.2}, Fig 5 | Sequence similarity vs context | Greedy (k=1) + rep-penalty 1.2 wins at every context length | Near-greedy decoding with a 4-token repetition penalty is the right default for protein generation |
+| 6 | Generation w/o initial AA context (tag-only) | Sample from conditioning tags alone, App. A.2 / Fig 13 | MSA alignment to FMN family | Multiple generated sequences align well to the target family from tags only | Conditioning tags alone can steer de novo generation without any seed residues |
+
+**Count: 6 ablations.**
+
+**Top take-away:** Conditioning tags are the dominant lever — given ≥8 tags, ProGen's generations cross the 25% mutation baseline on secondary-structure accuracy even though sequence-similarity errors persist, confirming that the tags steer generation toward functionally meaningful (BLOSUM-acceptable) substitutions rather than exact sequence reproduction.

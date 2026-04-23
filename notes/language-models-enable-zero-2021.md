@@ -36,6 +36,8 @@ training_compute: null
 references_chased: false
 added_at: null
 updated_at: null
+is_fm: true
+fm_classification_reason: 'ESM-1v: zero-shot variant effect via pretrained PLM.'
 ---
 
 ## TL;DR
@@ -123,3 +125,35 @@ ESM-1v zero-shot predictions match or exceed dedicated family-specific models (E
 - **HuggingFace model card**: The HuggingFace page for `facebook/esm1v_t33_650M_UR90S_1` has no model card — only download stats (~68K monthly downloads). All documentation is in the GitHub repo.
 - **License**: MIT license (same as all ESM models).
 - **Superseded by**: For practical variant prediction, ESM-2 (650M or larger) is now generally recommended. For specialized variant scoring, ProteinGym benchmarks and methods like Tranception, EVE, and ESM-1v ensembles remain competitive.
+
+## Ablations (Rev 4)
+
+Source: Meier et al. 2021 NeurIPS, main paper + Supplementary (Tables 4, 5, 7, 8, 10; Figs. 4, 9). All numbers are mean |Spearman ρ| on the single-mutation validation set unless noted; 650M-param model trained for 170k updates.
+
+| # | Ablation axis | Variant | |Spearman ρ| | Δ vs. ref | Source | Take-away |
+|---|---|---|---|---|---|---|
+| 1 | UniRef clustering (pre-training data) | UR30 | 0.456 | −0.108 | Tab. 4 / Fig. 4 | Too aggressive dedup hurts. |
+| 2 | UniRef clustering | UR50 (≈ ESM-1b regime) | 0.537 | −0.027 | Tab. 4 | Reference setting. |
+| 3 | UniRef clustering | UR70 | 0.552 | −0.012 | Tab. 4 | Monotonic gain up to 90%. |
+| 4 | UniRef clustering | **UR90 (ESM-1v)** | **0.564** | — | Tab. 4 | **Best clustering threshold.** |
+| 5 | UniRef clustering | UR100 | 0.458 | −0.106 | Tab. 4 | Collapses early in training (overfits redundant seqs); val perplexity also degrades (Tab. 10: 5.56 → 6.05). |
+| 6 | Scoring strategy (single-mut val) | Pseudo-likelihood | 0.552 | −0.030 | Tab. 5 | Most expensive (L passes), worst of the four. |
+| 7 | Scoring strategy | Wildtype marginal (1 fwd pass) | 0.572 | −0.010 | Tab. 5 | Cheapest; only 1% drop — strong default for large-scale scans. |
+| 8 | Scoring strategy | Mutant marginal | 0.578 | −0.004 | Tab. 5 | Comparable to masked. |
+| 9 | Scoring strategy | **Masked marginal** | **0.582** | — | Tab. 5 | **Best.** Used as default. On PABP doubles, masking all mutated sites *jointly* (variant a) gives 0.692 vs. 0.482–0.483 if masked one-at-a-time (Tab. 7). |
+| 10 | Ensembling (5 seeds, UR90) | Single ESM-1v model (avg of 5) | 0.484 (full) / 0.482 (test) | — | Tab. 2 | Per-seed baseline. |
+| 11 | Ensembling | **Ensemble of 5 ESM-1v models** | **0.509 (full) / 0.510 (test)** | +0.025 / +0.028 | Tab. 1, Tab. 2 | Cheap, consistent gain at inference time. |
+| 12 | Model scale (UR90, masked-marginal) | 13M params | ≈0.30 | −0.25 | Fig. 9 | Clear scaling trend. |
+| 13 | Model scale | 85M params | ≈0.42 | −0.13 | Fig. 9 | |
+| 14 | Model scale | 393M params | ≈0.50 | −0.05 | Fig. 9 | |
+| 15 | Model scale | **649M params** | **≈0.55** | — | Fig. 9 | Best; authors note continued scaling should help further (motivates ESM-2). |
+| 16 | MSA-augmented inference (MSA Transformer subsample) | Diversity-minimizing, 256 seqs | 0.255 | −0.323 | Tab. 8 | Near-duplicate context destroys signal. |
+| 17 | MSA subsample strategy | Random, 256 seqs | 0.535 ± 0.024 | −0.043 | Tab. 8 | |
+| 18 | MSA subsample strategy | HHFilter (cov 75, id 99), 256 seqs | 0.550 ± 0.015 | −0.028 | Tab. 8 | |
+| 19 | MSA subsample strategy | **Sequence reweighting, 256 seqs** | **0.578 ± 0.005** | — | Tab. 8 | Best MSA-aug recipe; *still* matches/loses to single-sequence ESM-1v ensemble (0.582 masked-marginal val / 0.510 test) at much higher inference cost. |
+| 20 | Spiked unsupervised fine-tuning on MSA | ESM-1v zero-shot (ref) | 0.510 | — | §4.4 | Baseline (full 41-set average). |
+| 21 | Spiked unsupervised fine-tuning | ESM-1v + spiked MSA fine-tune | 0.537 | +0.027 | §4.4 | Naïve MSA fine-tune overfits; spiking pre-train tokens (ratio 0.01) regularizes — modest but real lift. |
+
+**Count: 21 ablation rows across 6 axes** (UR clustering × 5, scoring strategy × 4, ensembling × 2, model scale × 4, MSA subsampling × 4, MSA fine-tuning × 2).
+
+**Top take-away:** Pre-training **data distribution dominates** for zero-shot variant prediction — the UR50 → UR90 swap alone gives a +0.027 |Spearman ρ| jump (0.537 → 0.564), the same magnitude as 5×-seed ensembling *and* spiked MSA fine-tuning combined, while UR100 collapses entirely. Choice of clustering threshold matters more than scoring strategy (≤0.030 spread) and is comparable to a >50× scale-up in parameters (13M → 649M ≈ +0.25). The paper's central design choice — re-train ESM at UR90 instead of UR50 — is the single highest-leverage knob.

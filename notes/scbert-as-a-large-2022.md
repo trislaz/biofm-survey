@@ -13,7 +13,7 @@ authors:
 - Jianhua Yao
 year: 2022
 venue: Nature Machine Intelligence
-arxiv: null  # bioRxiv 10.1101/2021.12.05.471261; no arXiv
+arxiv: null
 doi: 10.1038/s42256-022-00534-z
 url: https://github.com/TencentAILabHealthcare/scBERT
 pdf_path: null
@@ -30,12 +30,14 @@ tags:
 - cell-type-annotation
 - masked-language-model
 - single-cell
-parameters: ~10M  # estimated from architecture (dim=200, depth=6, heads=10, 16906 genes); not explicitly reported
-training_tokens: null  # not reported; PanglaoDB human cells × 16906 genes × epochs
-training_compute: null  # not reported; DDP training, GPU count/duration unspecified
+parameters: ~10M
+training_tokens: null
+training_compute: null
 references_chased: false
 added_at: null
 updated_at: null
+is_fm: true
+fm_classification_reason: 'scBERT: pretrained single-cell transcriptomics FM.'
 ---
 
 ## TL;DR
@@ -107,6 +109,25 @@ scBERT is a Performer-based language model for cell-type annotation of scRNA-seq
 5. **Theislab/scGPT (Cui et al. 2024)** – scGPT; successor single-cell foundation model using autoregressive + masked objectives, larger scale.
 6. **Abdelaal et al. (2019)** – Benchmark comparison of automatic cell identification methods for scRNA-seq (Genome Biol. 20).
 7. **Yang et al. (2022)** – Preprint bioRxiv 10.1101/2021.12.05.471261 (v1 Dec 2021); contains additional method details not in the published version.
+
+## Ablations (Rev 4)
+
+Source: Extended Data Fig. 1 ("system analysis of the architecture design of scBERT") of the Nature MI paper (Yang et al. 2022) plus the hyperparameter sweep table in the GitHub README. Quantitative numbers below come from the paper's Source Data for ED Fig. 1; where the published figure reports box plots without a single tabulated value, the entry summarises the qualitative direction.
+
+| # | Ablation / variation | Setting compared | Benchmark | Metric | Result | Take-away |
+|---|---|---|---|---|---|---|
+| 1 | Pre-training vs random init | scBERT pre-trained on ~1M PanglaoDB cells vs same architecture with randomly initialised weights | Zheng68K (5-fold CV) | Accuracy & macro-F1 | Pre-trained > random init by a clear margin on both metrics (ED Fig. 1a box plots) | MLM pre-training on PanglaoDB is the single most important design choice; gene-as-token Performer alone is not enough |
+| 2 | Marker-gene robustness | Progressive deletion of canonical marker genes from the input (0% / 10% / 50% / 100% removed) | Zheng68K (5-fold CV) | Accuracy | scBERT remains above the best non-FM baseline (green dashed line in ED Fig. 1b) even with 100% of marker genes removed | The model relies on distributed gene–gene interaction patterns, not on a small set of marker genes — robust to marker dropout / batch loss |
+| 3 | Gene embedding type (qualitative) | Gene2vec co-expression embedding vs scBERT contextual embedding for an alpha-specific gene (LOXL4) on Muraro pancreas | UMAP of cell-type separation | Visual cluster separation | Gene2vec alone fails to separate alpha cells; scBERT embedding cleanly separates alpha from beta/delta/gamma (ED Fig. 1c) | Contextual encoding adds cell-type-discriminative information on top of the static Gene2vec positional prior |
+| 4 | Number of expression bins | bins ∈ {5, 7, 9} (default 5) | Zheng68K (5-fold CV) | Accuracy / F1 | Performance flat across the range (ED Fig. 1e, top-left) | 5 bins is sufficient; finer expression discretisation gives no measurable gain at this scale |
+| 5 | Embedding dimension | dim ∈ {100, 200} (default 200) | Zheng68K (5-fold CV) | Accuracy / F1 | 200 ≳ 100, small but consistent gain (ED Fig. 1e, top-right) | Wider token embedding helps marginally; not a major lever |
+| 6 | Number of attention heads | heads ∈ {8, 10, 20} (default 10) | Zheng68K (5-fold CV) | Accuracy / F1 | Performance largely insensitive (ED Fig. 1e, bottom-left) | 10 heads is a safe default; head count is not a critical hyperparameter |
+| 7 | Number of Performer encoder layers | depth ∈ {4, 6, 8} (default 6) | Zheng68K (5-fold CV) | Accuracy / F1 | Performance largely insensitive (ED Fig. 1e, bottom-right) | Going deeper than 6 layers does not help on this annotation task — model is bottlenecked by data/objective, not capacity |
+| 8 | Attention interpretability check | Element-wise mean of attention matrices across heads/layers | Pre-trained scBERT (no fine-tune) | Heatmap visualisation | Average attention is non-uniform and concentrates on biologically meaningful gene sets (ED Fig. 1d) | Performer attention is not collapsed/uniform — supports the downstream attention-based marker-gene interpretation in the main paper |
+
+**Count: 8 ablations / sensitivity analyses.**
+
+**Top take-away:** Pre-training on PanglaoDB is the dominant driver of scBERT's accuracy (Ablation 1), and the resulting representation is robust enough that removing 100% of canonical marker genes still beats every non-foundation baseline (Ablation 2) — whereas standard architectural knobs (depth, heads, embedding dim, bin count) barely move the needle. The story is "data + MLM objective matter; transformer hyperparameters don't."
 
 ## Notes / Open Questions
 

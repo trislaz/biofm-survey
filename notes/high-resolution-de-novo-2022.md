@@ -44,6 +44,9 @@ training_compute: null
 references_chased: false
 added_at: null
 updated_at: null
+is_fm: true
+fm_classification_reason: 'OmegaFold/OmegaPLM: ~670M-param pretrained PLM + structure
+  model.'
 ---
 
 ## TL;DR
@@ -117,6 +120,30 @@ OmegaFold is the first computational method to predict high-resolution protein 3
 - RoFormer: Enhanced Transformer with Rotary Position Embedding (Su et al. 2021) — RoPE used in OmegaPLM
 - RoseTTAFold: Accurate Prediction of Protein Structures and Interactions Using a Three-Track Neural Network (Baek et al. 2021, Science) — primary MSA-based baseline
 - ProtTrans: Toward Understanding the Language of Life Through Self-Supervised Learning (Elnaggar et al. 2022, TPAMI) — early PLM for proteins
+
+## Ablations (Rev 4)
+
+Source: OmegaFold preprint Supplementary Table S4 (CAMEO validation set, TM-score). The
+biorxiv full text and supplement could not be fetched directly (HTTP 403); values below are
+taken from a web summary of Table S4 and should be treated as approximate until cross-checked
+against the official supplement PDF.
+
+| # | Configuration                                       | TM-score (CAMEO) | Δ vs full | Take-away |
+|---|-----------------------------------------------------|------------------|-----------|-----------|
+| 1 | OmegaFold full (ensemble)                           | ~0.837           | —         | Reference (best) |
+| 2 | OmegaFold single model (no ensemble)                | ~0.825           | −0.012    | Ensembling adds a small but consistent gain |
+| 3 | − OmegaPLM (PLM features removed/replaced)          | ~0.783           | −0.054    | PLM-derived node + pairwise features supply most of the missing co-evolutionary signal |
+| 4 | − GeoFormer (geometry-aware trunk removed)          | ~0.722           | −0.115    | **Largest single drop** — GeoFormer's triangle/edge updates are critical for translating PLM features into geometry |
+| 5 | AlphaFold2, single-sequence input (no retraining)   | ~0.764           | −0.073    | Off-the-shelf AF2 degrades sharply without an MSA |
+| 6 | AlphaFold2 retrained on single sequences            | ~0.758           | −0.079    | Retraining AF2 in single-seq mode does not recover; a dedicated PLM trunk is needed |
+| 7 | Reduced recycling cycles (default = 10 → fewer)     | monotonic drop   | small     | Recycling helps but is the least critical lever; "degrades but not catastrophically" |
+
+**Top take-away:** The GeoFormer geometry trunk is the single most important component
+(~0.115 TM-score loss when removed) — more than the OmegaPLM features themselves
+(~0.054) and far more than recycling. MSA-free competitiveness with AlphaFold2 requires
+*both* a strong protein language model *and* a dedicated geometry-aware structure trunk;
+neither retraining AF2 on single sequences nor swapping in a generic transformer recovers
+the gap.
 
 ## Notes / Open Questions
 

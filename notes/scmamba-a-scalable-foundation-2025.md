@@ -29,12 +29,14 @@ tags:
 - scRNA-seq
 - scATAC-seq
 - CITE-seq
-parameters: null  # not reported in paper
-training_tokens: null  # not reported
-training_compute: null  # not reported
+parameters: null
+training_tokens: null
+training_compute: null
 references_chased: false
 added_at: '2026-04-22T19:37:14+00:00'
 updated_at: '2026-04-22T20:25:51+00:00'
+is_fm: true
+fm_classification_reason: 'scMamba: pretrained single-cell multi-omics FM.'
 ---
 
 ## TL;DR
@@ -126,3 +128,16 @@ scMamba is a Mamba2-based (state-space duality) foundation model for single-cell
 - **Single-omics generalisation**: the paper shows one cross-modal transfer experiment (multi-omics reference → scRNA-only query for brain 3k), but broader single-omics fine-tuning or zero-shot transfer is not explored.
 - **Causal mask direction**: genes/peaks are ordered by genomic coordinate and processed causally (left→right). No bidirectional variant (cf. Vision Mamba) is explored; effect of ordering direction is unknown.
 - Evidence quality rated **medium**: strong benchmark coverage (7 baselines × 8 datasets) with appropriate metrics, but missing ablation depth (no backbone swap, no hyperparameter sensitivity) and no pre-training at scale.
+
+## Ablations (Rev 4)
+
+Only one explicit ablation appears in the main text; it studies the input feature-set size (raw features vs. highly variable feature selection). All other "design choice" claims (SSD encoder, cosine-similarity regularisation, patch tokenisation, genomic ordering) are motivated qualitatively without controlled ablations.
+
+| # | Ablation | Variants compared | Dataset / setup | Reported effect | Source |
+|---|----------|-------------------|-----------------|-----------------|--------|
+| 1 | Number of highly variable features fed to **scMamba** | 4k HVGs + 8k HVPs → 8k HVGs + 16k HVPs → all genes + all peaks (raw) | Multi-omics integration benchmark (Supplementary Table 1) | Performance is **optimal with all raw features**; moving 4k/8k → 8k/16k already "significantly improves the conservation of biological variation"; raw features give the best aggregate score | §Results, p. 375–380 / Suppl. Table 1 |
+| 2 | Same HVG/HVP sweep applied to **baseline methods** (scCLIP and others) | 4k/8k → 8k/16k → larger HVG/HVP counts | Same multi-omics benchmark (Suppl. Tables 2–4) | scCLIP improves modestly with more HVGs/HVPs but stays low overall; remaining baselines do **not** improve — indicates they cannot exploit high-dimensional sparse inputs | §Results, p. 380–388 / Suppl. Tables 2–4 |
+
+**Ablations not run (gaps):** SSM/Mamba2 vs. Transformer backbone; with vs. without cosine-similarity regulariser L_sim; patch size P sensitivity; genomic-coordinate ordering vs. random/bidirectional; embedding dim / depth scaling; pre-training corpus size.
+
+**Top take-away:** the only controlled ablation in the paper is the feature-selection sweep, and it supports a single message — *processing all raw genes/peaks (no HVG/HVP filtering) yields the best integration performance*, and this gain is unique to scMamba because competing methods fail to benefit (or degrade) when given the same high-dimensional sparse input. Every other architectural design choice (SSD encoder, cosine regulariser, patch tokenisation) is asserted but not ablated.

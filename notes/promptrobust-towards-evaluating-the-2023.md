@@ -32,6 +32,8 @@ training_compute: null
 references_chased: false
 added_at: '2026-04-22T20:31:22+00:00'
 updated_at: '2026-04-22T20:37:19+00:00'
+is_fm: false
+fm_classification_reason: LLM robustness benchmark; not bio-specific.
 ---
 
 ## Abstract (from arxiv)

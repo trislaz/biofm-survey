@@ -47,6 +47,8 @@ training_compute: 16xA100-40GB_625k-iters
 references_chased: false
 added_at: '2026-04-22T19:37:15+00:00'
 updated_at: '2026-04-22T20:25:23+00:00'
+is_fm: true
+fm_classification_reason: 'RudolfV: pathology FM.'
 ---
 
 ## TL;DR
@@ -122,6 +124,24 @@ RudolfV is a ViT-L/14 pathology foundation model (304M params) trained with DINO
 - How does the approach scale to larger models (ViT-H, ViT-G) and larger datasets?
 - Comparison to Virchow limited to 3 benchmarks due to availability constraints
 - Evidence quality rated "medium": strong benchmark suite but proprietary data/models and no isolated ablations
+
+## Ablations (Rev 4)
+
+The paper presents **no controlled component-wise ablations** (no isolation of stain augmentation, slide grouping, tissue clustering, init strategy, or balanced sampling). Only the following comparison-style "quasi-ablations" are reported:
+
+| # | Comparison | Setting / Benchmark | Baseline | RudolfV | Δ | Source |
+|---|------------|---------------------|----------|---------|---|--------|
+| 1 | With vs. without pathology FM (cross-indication generalization) | TME cell classification, trained on NSCLC only, eval on 4 other indications | 36.2% bal. acc (no FM) | 65.5% bal. acc | +29.3 pp | §2.2, Fig. 3D, lines 220–225 |
+| 2 | With vs. without FM (rare disease retrieval, top-1) | 178 rare-disease cases (34 rare diseases of colon/stomach), single returned case | 0% correct | 41% correct | +41 pp | §2.5, Fig. 4B, lines 326–328 |
+| 3 | With vs. without FM (rare disease retrieval, top-10) | Same as above, 10 returned cases | 1.7% correct | 67% correct | +65.3 pp | §2.5, Fig. 4B, lines 325–328 |
+| 4 | Linear probe vs. full finetuning of FM encoder | Histological + molecular benchmarks (Fig. 6B), avg over tasks | Linear-probe (frozen FM) baseline | Finetuned encoder | +22.9% avg relative improvement | §2.6, Fig. 6B, lines 369–370 |
+| 5 | Balanced (group/cluster-aware) sampling vs. random sampling | Qualitative illustration only — Fig. 2C vs 2D | — | — | No quantitative number reported | Fig. 2C–D, lines 191–192 |
+| 6 | RudolfV vs. UNI (similar slide count, ~100k) | 12 benchmarks / 31 datasets | UNI [19] | RudolfV wins 10/12 benchmarks, 27/31 datasets | — | §2.1, lines 206–209 |
+| 7 | RudolfV (304M, 134k slides) vs. Virchow (632M, 1.5M slides) | 3 available benchmarks | Virchow [20] | RudolfV wins 2/3 | — | §2.1, lines 209–212 |
+
+**Count: 7 reported comparisons** (4 quantitative quasi-ablations rows 1–4; 1 qualitative row 5; 2 cross-model comparisons rows 6–7). No isolation of individual design choices (grouping, clustering, stain augmentation, diversity weighting, init).
+
+**Top take-away:** The strongest reported effect is that *using any pathology FM at all* dominates absolute gains (+29 pp cross-indication TME accuracy; +41/+65 pp rare-disease retrieval) — but the paper provides **no evidence isolating which of RudolfV's distinguishing design choices** (pathologist-guided grouping, 100→9 tissue clustering, staining augmentation, balanced sampling) actually drive its margin over UNI/Virchow. Efficiency claims ("similar gains as 10× more data") rest on cross-model comparisons confounded by architecture, dataset composition, and training compute, not on ablations.
 
 ## Abstract (from arxiv)
 

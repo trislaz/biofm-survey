@@ -26,6 +26,8 @@ training_compute: ~3 days on 12× V100-32GB (3 nodes × 4 GPUs, DeepSpeed)
 references_chased: false
 added_at: null
 updated_at: null
+is_fm: true
+fm_classification_reason: 'Geneformer: pretrained single-cell transcriptomics FM.'
 ---
 
 ## TL;DR
@@ -156,3 +158,30 @@ Fine-tuning datasets (all small, task-specific):
 - Model is relatively small (~10M params, 6 layers) compared to later scRNA FMs (scGPT, scFoundation). Depth limited by data size at the time.
 - In-silico perturbation assumes removing/adding a gene from the rank encoding faithfully models biological loss/gain-of-function — a strong simplifying assumption.
 - Cell embeddings are simple mean-pooling of gene embeddings; no [CLS] token or learnt aggregation.
+
+## Ablations (Rev 4)
+
+| # | Ablation / variable | Variants compared | Metric | Result | Source |
+|---|---|---|---|---|---|
+| 1 | Pretraining corpus size | Subsets of Genecorpus-30M up to full 30M cells, fixed fine-tune set | Downstream classification accuracy (dosage sensitivity, bivalent chromatin, long-range TF) | Monotonic gain with corpus size; full corpus best across all 3 tasks | Fig. 2b |
+| 2 | MLM masking ratio | 5% vs **15%** vs 30% | Pretraining val loss / downstream acc | 15% marginally best; 5% under-trains, 30% destabilises | Ext. Data Fig. 1e |
+| 3 | Overlap of fine-tune cells in pretrain corpus | Included vs excluded | Downstream classification acc | No measurable difference — objectives are independent | Ext. Data Fig. 1f |
+| 4 | Pretraining vs random init | Pretrained Geneformer vs from-scratch fine-tune | AUC across 4 gene-classification tasks | Pretrained substantially > scratch on every task; gap widens as fine-tune set shrinks | Fig. 3 / Ext. Data Fig. 3 |
+| 5 | Fine-tune sample size | 30k generic ECs vs 5k ECs vs **884 disease-relevant ECs** | N1 centrality AUC | 884 relevant > 30k generic; 5k retains near-full perf → **relevance ≫ quantity** | Fig. 4 |
+| 6 | Layer-freezing schedule | Vary # frozen transformer layers per task | Downstream acc | Freeze more for tasks close to MLM (gene-level); unfreeze more for distant tasks (cell/disease) | Methods |
+| 7 | Fine-tune epochs | 1 vs >1 epoch | Val acc | 1 epoch optimal; more epochs overfit on small labelled sets | Methods |
+| 8 | Fine-tune hyperparams | Single fixed recipe (LR 5e-5, bs 12, AdamW) across all tasks | Acc vs per-task tuning | Intentionally un-tuned; reported numbers are a lower bound on achievable performance | Methods |
+| 9 | Batch / platform integration | Geneformer (zero-shot + fine-tuned) vs ComBat vs Harmony | Drop-seq ↔ DroNc-seq mixing | Fine-tuned Geneformer integrates better than ComBat/Harmony; pretrained embeddings already platform-robust | Ext. Data Fig. 2a, 4 |
+| 10 | Length-grouped dynamic padding | Naive pad-to-max vs megabatch length-sorted dynamic pad | Throughput | **29.4× speedup** with no quality loss | Methods |
+| 11 | In-silico perturbation: zero-shot vs fine-tuned | Pretrained-only vs disease-fine-tuned classifier for target discovery | Hit recovery (GSN, PLN, TEAD4) | Zero-shot suffices for dosage screens; fine-tuned needed for disease-specific therapeutic targets | Figs. 5–6 |
+| 12 | Combinatorial in-silico deletion | Single (GATA4) + single (TBX5) vs joint deletion | Δ cosine on co-bound targets | Joint > sum of singles → model captures synergistic TF interactions | Fig. 5 |
+| 13 | Cell-embedding aggregation | Mean-pool of penultimate gene embeddings (no [CLS]) | Downstream cell-level tasks | Simple mean works; no dedicated [CLS] token used or compared | Methods (open question) |
+
+### Take-aways
+
+- **Top take-away: relevance of fine-tuning data dominates quantity** — 884 disease-context ECs beat 30k generic ECs (ablation 5). This is the strongest practical lesson: curate, don't just scale, the labelled set.
+- Pretraining scale matters monotonically (1); pretraining itself is the dominant contributor (4) — random init collapses on small fine-tune sets.
+- Recipe choices (15% mask, 1 epoch, fixed LR) are mostly first-order insensitive; the paper deliberately under-tunes to demonstrate generality, so reported AUCs are a lower bound (2, 7, 8).
+- Engineering wins are large and orthogonal to modelling: dynamic length-grouped padding gives a 29.4× throughput boost (10).
+- In-silico perturbation is validated as a usable interface: zero-shot for screening, fine-tuned for therapeutic targets, and combinatorial deletions recover known TF synergy (11, 12).
+- Open ablation gaps: no [CLS]-vs-mean aggregation comparison (13), no architecture-size sweep, and no cross-species transfer test.

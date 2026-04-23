@@ -31,12 +31,15 @@ tags:
 - zero-shot
 - ESM2
 - LoRA
-parameters: '35M / 150M / 650M (ESM2 backbone scales)'
+parameters: 35M / 150M / 650M (ESM2 backbone scales)
 training_tokens: null
-training_compute: '~1 hour on 4×A100 (fine-tuning 150M backbone)'
+training_compute: ~1 hour on 4×A100 (fine-tuning 150M backbone)
 references_chased: false
 added_at: '2026-04-22T19:36:52+00:00'
 updated_at: '2026-04-22T20:21:53+00:00'
+is_fm: false
+fm_classification_reason: 1-hour fine-tuning recipe of ESM2; not a new pretrained
+  FM.
 ---
 
 ## TL;DR

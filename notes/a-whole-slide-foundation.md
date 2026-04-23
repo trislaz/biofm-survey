@@ -25,12 +25,16 @@ tags:
 - vision-language
 - CLIP
 - open-weight
-parameters: ~1.13B tile encoder (ViT-giant, 1536-d) + ~86M slide encoder (LongNet 12L 768d); small variant 23M
+parameters: ~1.13B tile encoder (ViT-giant, 1536-d) + ~86M slide encoder (LongNet
+  12L 768d); small variant 23M
 training_tokens: 1.3B image tiles (tile SSL) + 171k slides × 30 epochs (slide SSL)
-training_compute: 3,072 A100 GPU-hours (slide encoder only); tile encoder compute not reported
+training_compute: 3,072 A100 GPU-hours (slide encoder only); tile encoder compute
+  not reported
 references_chased: false
 added_at: null
 updated_at: null
+is_fm: true
+fm_classification_reason: 'Prov-GigaPath: whole-slide pathology foundation model.'
 ---
 
 ## TL;DR
@@ -156,3 +160,20 @@ Each claim from `insights.md` tagged `[a-whole-slide-foundation]` is checked aga
 | 7 | L542–543 | "ViT-giant tiles (1.13 B) + LongNet slide encoder (86 M) on 1.3 B tiles from 171 K slides; DINOv2 > SimCLR > MAE; LongNet significantly outperforms ABMIL-only" | **partial** | Data scale, architecture, DINOv2 ranking, and LongNet vs ABMIL (P < 0.012) all confirmed. Parameter counts (1.13 B, 86 M) not in paper text (inferred from model card). |
 
 **Summary:** 2 supported, 4 partial (parameter counts sourced from model card, not paper; or architectural characterisation imprecise), 1 unsupported (131 k max tiles should be ~70 k).
+
+## Ablations (Rev 4)
+
+Ablations reported in the paper (Main §"Comparison on cancer subtyping" L65, Supplementary Figs. 4–5, Extended Data Figs. 6–8) on cancer subtyping (avg AUROC over 9 cancer types, n=10 runs) and gene-mutation prediction.
+
+| # | Component varied | Variant | Baseline | Δ / metric | Significance | Source | Take-away |
+|---|---|---|---|---|---|---|---|
+| 1 | Slide-encoder pretraining | LongNet randomly initialised | LongNet pretrained on Prov-Path | AUROC 0.886 vs **0.903** (−0.017) | P < 2.0 × 10⁻³ | Main §L65, Supp. Fig. 5 | Slide-level MAE pretraining on 171 K WSIs is necessary; random init loses ~1.7 AUROC pts on subtyping. |
+| 2 | LongNet fine-tuning regime | Frozen vs unfrozen during downstream training | — | "comparable" (no significant gap) | n.s. | Main §L65, Supp. Fig. 5 | Pretrained representations are strong enough to be used frozen — important for compute-limited deployment. |
+| 3 | Slide aggregator | ABMIL only (drop LongNet) | LongNet + ABMIL head | LongNet > ABMIL on average AUROC | P < 0.012 | Main §L65, Supp. Fig. 5 | Long-range dilated self-attention adds value beyond a simple attention-MIL pooler; modelling cross-tile dependencies matters for subtyping. |
+| 4 | Tile-encoder SSL objective | SimCLR; MAE; SL-ImageNet (supervised) | DINOv2 | DINOv2 > SimCLR > MAE > SL-ImageNet | reported as significant | Main §L53, §L83, Supp. Fig. 4 | DINOv2 is the best tile-level SSL recipe for pathology at this scale; supervised ImageNet transfer is clearly inferior, motivating SSL foundation models. |
+| 5 | Tile-encoder pretraining data | Same GigaPath arch pretrained on TCGA (~29 K slides) | Pretrained on Prov-Path (171 K slides, 1.3 B tiles) | Substantial drop on TCGA LUAD 5-gene mutation | reported as substantial (no exact P) | Main §L53, §L83, Ext. Data Fig. 6 | Data scale + diversity (real-world Providence corpus) drives gains beyond what TCGA alone delivers — evidence of (informal) data-scaling. |
+| 6 | Slide-level architecture | HIPT (hierarchical ViT) trained on Prov-Path | GigaPath (LongNet) trained on Prov-Path | GigaPath > HIPT | reported as significant | Main §L53, §L83, Ext. Data Figs. 7–8 | At matched data, LongNet's dilated long-context attention outperforms HIPT's hierarchical pooling for whole-slide modelling. |
+
+**Count:** 6 ablation comparisons (3 from Supp. Fig. 5 in-text; 1 tile-SSL sweep from Supp. Fig. 4; 2 data/architecture comparisons from Ext. Data Figs. 6–8).
+
+**Top take-away:** The single most informative ablation is #1 — pretraining the LongNet slide encoder on Prov-Path lifts mean subtyping AUROC from 0.886 to 0.903 (P < 2 × 10⁻³), directly justifying the costly second-stage WSI-level MAE (3,072 A100 GPU-hours). Combined with #3 (LongNet > ABMIL), this establishes that *both* slide-level pretraining *and* long-context attention — not just a strong tile encoder — are required to reach GigaPath's reported performance.

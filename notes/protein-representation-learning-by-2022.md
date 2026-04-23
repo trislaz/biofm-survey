@@ -33,12 +33,14 @@ tags:
 - edge-message-passing
 - protein-function
 - fold-classification
-parameters: 42_000_000
+parameters: 42000000
 training_tokens: null
 training_compute: null
 references_chased: false
 added_at: '2026-04-22T21:55:34+00:00'
 updated_at: '2026-04-22T21:55:38+00:00'
+is_fm: true
+fm_classification_reason: 'GearNet: self-supervised pretrained protein structure encoder.'
 ---
 
 ## TL;DR
@@ -140,3 +142,16 @@ Six claims referencing `[protein-representation-learning-by-2022]` found in `ins
 | 6 | 485 | "GearNet with edge message passing on 805K AF structures matches sequence models at orders-of-magnitude more data" | **supported** | Same evidence as Claim 5; adds edge message passing attribution which is accurate (GearNet-Edge is the pretrained model for EC/GO/Reaction). |
 
 **Summary:** 5 supported, 1 partial (Claim 3 — "reconstruction-based" should read "self-prediction").
+
+## Ablations (Rev 4)
+
+| Variable | Settings | Metric | Result | Conclusion |
+|---|---|---|---|---|
+| Relational graph convolution (GearNet-Edge encoder) | GearNet-Edge (6 layers, 42M params, w/ rel. conv.) vs. plain GCN baselines (single shared kernel) at 6/8/10 layers (23M/39M/60M) | Fmax on EC | 0.810 (rel. conv.) vs. 0.752 / 0.754 / 0.744 (no rel. conv., increasing depth) | Treating edges as different types is essential; param-matched plain GCN cannot recover the gap, even with more layers/params. |
+| Edge message passing (Table 2 reference) | GearNet vs. GearNet-Edge (adds edge-level message passing) | Fmax on EC/GO function tasks | Consistent improvement after enabling edge message passing | Explicit edge-edge interaction modeling is beneficial across function prediction tasks. |
+| Multiview Contrast augmentation: cropping × noise (deterministic vs. random) | Random sampling (default) vs. four deterministic combos: {subsequence, subspace} × {identity, random edge masking} | Fmax on EC / GO-BP / GO-MF / GO-CC | Random: **0.874 / 0.490 / 0.654 / 0.488**; subseq+identity 0.866/0.477/0.627/0.473; subspace+identity 0.872/0.480/0.640/0.468; subseq+edgemask 0.869/0.484/0.641/0.471; subspace+edgemask 0.876/0.481/0.645/0.470 | All four deterministic combinations work, so each cropping/noise scheme yields informative views; randomly sampling combinations gives the most diverse views and is best on 3 of 4 GO/EC metrics. |
+
+**Take-aways:**
+- Relational (edge-typed) convolution is the single most impactful architectural choice: +~0.06 Fmax on EC over a parameter-matched plain GCN, an effect that does not close with extra depth.
+- Edge message passing gives a smaller but consistent additional gain on function tasks, justifying the GearNet-Edge variant as the default pretraining backbone.
+- Multiview Contrast is robust to the specific augmentation choice (any cropping × noise combo trains usefully); the win from random sampling comes from view diversity rather than any single augmentation, supporting the contrastive-learning rationale.

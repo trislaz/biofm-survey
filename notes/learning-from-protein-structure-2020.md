@@ -31,6 +31,8 @@ training_compute: null
 references_chased: false
 added_at: '2026-04-22T21:55:39+00:00'
 updated_at: '2026-04-22T21:55:41+00:00'
+is_fm: false
+fm_classification_reason: 'GVP: architecture/methodology paper, no large pretraining.'
 ---
 
 ## TL;DR

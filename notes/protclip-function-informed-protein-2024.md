@@ -28,12 +28,15 @@ tags:
 - function-prediction
 - segment-wise-objectives
 - noisy-label-learning
-parameters: null  # ESM-2-650M + PubMedBERT (~110M) + cross-attn/MLP heads; total not stated
-training_tokens: null  # 251.5M protein-text pairs; token count not reported
+parameters: null
+training_tokens: null
 training_compute: 10000 V100 GPU-hours
 references_chased: false
 added_at: '2026-04-22T19:37:10+00:00'
 updated_at: '2026-04-22T20:24:35+00:00'
+is_fm: true
+fm_classification_reason: 'ProtCLIP: pretrained function-informed protein multimodal
+  FM.'
 ---
 
 ## TL;DR
@@ -100,3 +103,16 @@ ProtCLIP is a CLIP-style protein–biotext contrastive model that improves on pr
 - Evaluation uses ESM-2-650M for the main model but ablations use ESM-2-150M—unclear how findings transfer across scales.
 - No comparison with structure-aware protein models (e.g., those using 3D coordinates).
 - ProtAnno dataset availability/release status not clarified in the paper.
+
+## Ablations (Rev 4)
+
+| # | Ablation | Setup | Key Finding |
+|---|----------|-------|-------------|
+| 1 | Pre-training data composition | ProtAnno-S vs ProtAnno-D vs Pretrain+finetune vs property-driven sampling (ESM-2-150M; eval Sub Acc, EC AUPR/Fmax, Prot2MF MRR) | Property-driven sampling on ProtAnno-D is best (Sub 75.77, EC AUPR 0.384, Fmax 0.441, MRR 0.299), beating naive single-source and pretrain→finetune; low-quality data is valuable when properly sampled. |
+| 2 | Pre-training objectives | Remove L_BSR, remove L_PDA, full loss | Both objectives needed; removing PDA hurts more (Sub 73.64 vs full 76.52; EC AUPR 0.136 vs 0.204) — function-grounded PDA is the key signal. |
+| 3 | Loss weights (λ₁ for BSR vs MLM) | Sweep λ₁ over Sub-cellular & location benchmarks; loss-curve inspection | Without weighting, BSR and MLM losses interfere (no convergence); λ₁=0.7, λ₂=0.3 is optimal — segment reconstruction must dominate token MLM. |
+| 4 | PDA threshold θ | θ ∈ {0.1,…,0.9} on Sub | Performance fluctuates 0.1–0.6, peaks at θ=0.3, collapses for θ≥0.7 (too many functional residues masked); θ=0.3 chosen. |
+
+**Count:** 4 ablations.
+
+**Top take-away:** The function-informed PDA objective is the single most important design choice — removing it causes the largest performance drop (e.g., EC AUPR 0.204 → 0.136), and its threshold (θ=0.3) and loss-weight balance (λ_BSR=0.7) are both critical to make function-grounded segment alignment work without destroying unimodal protein representations.

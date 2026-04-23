@@ -33,6 +33,9 @@ training_compute: 2× NVIDIA 2080 Ti per experiment; hours-scale per task
 references_chased: false
 added_at: '2026-04-22T21:55:48+00:00'
 updated_at: '2026-04-22T21:55:53+00:00'
+is_fm: false
+fm_classification_reason: 'CLAM: MIL aggregator on frozen ResNet, not a pretrained
+  FM.'
 ---
 
 ## TL;DR

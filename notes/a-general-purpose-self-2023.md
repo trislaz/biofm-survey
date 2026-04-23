@@ -50,6 +50,8 @@ training_compute: null
 references_chased: false
 added_at: '2026-04-22T21:55:57+00:00'
 updated_at: '2026-04-22T21:55:57+00:00'
+is_fm: true
+fm_classification_reason: 'UNI: large self-supervised pathology foundation model.'
 ---
 
 ## TL;DR
@@ -177,3 +179,25 @@ All six citations refer to genuine findings in the paper. The core quantitative 
 
 1. **Conflation of data-scaling and few-shot results.** The paper's data-scaling ablation (Mass-1K/22K/100K on OT-43/108) and the 16× few-shot label efficiency (SimpleShot ROI evaluation) are independent experiments; insights sometimes merge them into a single causal claim.
 2. **TCGA contamination framing.** UNI is the model that *avoids* TCGA contamination by design; it identifies the problem in competitors. Several insights are ambiguous about which model is contaminated.
+
+## Ablations (Rev 4)
+
+| Variable | Settings | Metric / dataset | Result | Conclusion |
+|---|---|---|---|---|
+| Pretraining data scale | Mass-1K (1M patches / 1,404 WSIs); Mass-22K (16M / 21,444); Mass-100K (100M / 100,426) — same ViT-L/16 + DINOv2 | Top-1 acc on OT-43 (43-class cancer) and OT-108 (108-class OncoTree), in-house BWH WSIs | OT-43: +4.2% (1K→22K) and +3.6% (22K→100K) top-1 (both p<0.05); monotonic gains on OT-108 too | SSL in pathology benefits from data scale up to ≥100M patches / 100K WSIs; no saturation observed at 100K-slide scale |
+| Pretrained encoder (controlled comparison) | UNI (ViT-L/16, DINOv2, Mass-100K) vs ResNet-50 (IN-1K) vs CTransPath (Swin, TCGA+PAIP) vs REMEDIS (ResNet-152, TCGA) | OT-43 top-5 / AUROC; 15 slide-tasks bal-acc; 10 ROI linear-probe; 8 SegPath dice | OT-43: 93.8% top-5, 0.976 AUROC (+6.3% / +0.022 over REMEDIS); ROI linear probe avg: +19.9% / +9.5% / +7.7% over RN50/CTransPath/REMEDIS; SegPath epithelial/SM/RBC dice 0.827/0.690/0.803 (+0.003/+0.016 over REMEDIS) | DINOv2 + ViT-L + 100K-slide diverse pretraining beats both ImageNet-supervised CNNs and prior pathology SSL (CTransPath, REMEDIS) despite UNI seeing 4–13× fewer total images |
+| Few-shot label efficiency (slide MIL) | K ∈ {1,2,4,8,16,32} slides/class, ABMIL on frozen features; 5 runs; UNI vs RN50/CTransPath/REMEDIS | Bal-acc on 15 slide tasks (CAMELYON16, PANDA, EBRAINS, NSCLC, RCC, …) | UNI 4-shot ≥ next-best 32-shot on most tasks (≥8× label-eff); on EBRAINS UNI 4-shot ≈ REMEDIS 32-shot; 1-shot UNI sometimes worse than baselines (e.g. BRACS, glioma IDH1) | Strong SSL features give large label-efficiency wins from K≥4; 1-shot remains noisy across all encoders |
+| Few-shot label efficiency (ROI SimpleShot) | K ∈ {1,2,…,256}/class as nearest-prototype; 1000 runs | Bal-acc on PRAD (AGGC), UniToPatho, pan-cancer TCGA, etc. | UNI 8-shot ≥ next-best 128- or 256-shot (16–32× label-eff); UNI std 0.32–1.59% at 256-shot; lowest UNI 32-shot run > best CTransPath run on PRAD | Class-prototype (parameter-free) probes work extremely well with high-quality SSL features; representation quality dominates over classifier complexity |
+| Image resolution / magnification sensitivity | Resize-and-crop ROIs to 224², 448², 896², 1344²/1792² (BRCA-BACH; CRC polyp UniToPatho), linear and KNN probing | Bal-acc, BRCA subtyping (BACH); CRC polyp (UniToPatho) | At 224²: UNI > CTransPath by +5.0% (linear) / +15.0% (KNN) on BACH; at 1344²: +25.0% linear (p<0.05). Margins widen with resolution | DINOv2-style high-res pretraining yields resolution-agnostic features; advantage of UNI grows at native histology magnifications |
+| Probing protocol | Linear probe vs KNN probe on frozen features | 10 ROI tasks, all encoders | UNI leads under both; gap larger under KNN, indicating cleaner embedding geometry | UNI's features are linearly separable AND metric-meaningful — important for retrieval / prototyping use cases |
+| In-domain vs out-of-domain eval (data contamination) | TCGA-internal test fold vs external cohort (CPTAC/DHMC/EBRAINS); UNI vs CTransPath vs REMEDIS | Bal-acc on NSCLC, RCC, glioma IDH1, glioma histomolecular | REMEDIS RCC: 97.3% (TCGA) → 79.0% (CPTAC); UNI: 94.7% → 96.3%. Glioma IDH1: CTransPath 89.1→83.6, REMEDIS 81.9→79.2, UNI 80.8→85.6 | TCGA-pretrained encoders are optimistically biased on TCGA-derived benchmarks; out-of-domain generalization is the right metric for pathology FMs |
+| Slide classifier head | MI-SimpleShot (prototype, 0 trainable params) vs ABMIL (trainable MIL); K ∈ {1,2,4,8,16,32} slides/class | Bal-acc on NSCLC and RCC subtyping (TCGA→CPTAC) | MI-SimpleShot > ABMIL at K=1,2,4; comparable at higher K. UNI MI-SimpleShot has 8× label-efficiency over other encoders' MI-SimpleShot | In very-low-label regimes, parameter-free prototype classifiers outperform trainable MIL — over-parameterised heads overfit when shots are scarce |
+
+**Design-choice take-aways from this paper's ablations:**
+- **Scale of diverse pretraining slides matters more than total image count**: Mass-100K (100K WSIs across 20 organs) beats CTransPath/REMEDIS despite those models seeing 4–13× more total images — slide diversity > raw image volume.
+- **DINOv2 + ViT-L is the right recipe for pathology SSL** at this scale — same architecture, same data, but DINOv2 self-distillation + masked-image-modeling yields large gains over MoCo/SimCLR-style baselines.
+- **Avoid TCGA in pretraining if you want to evaluate on TCGA-derived benchmarks**: data contamination inflates in-domain numbers by 10–18 pts (e.g. REMEDIS RCC 97→79 across domain shift), so OOD eval is mandatory.
+- **Frozen + prototype/KNN probes are sufficient** for strong few-shot performance — UNI's 8-shot SimpleShot beats competitors' 128/256-shot, suggesting the encoder, not the head, drives label efficiency.
+- **Pretrain at multiple resolutions** (DINOv2's high-res stage) to get resolution-agnostic features that work from 224² up to 1344²+ — pathology tasks are magnification-sensitive.
+- **Plain ViT-L still trails hierarchical backbones on dense prediction** (segmentation gains are smaller than classification gains) — future bio-FMs may want hierarchical / adapter designs for segmentation.
+

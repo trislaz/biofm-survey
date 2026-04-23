@@ -36,11 +36,13 @@ tags:
 - cell-type-annotation
 - gene-module-inference
 parameters: 100000000
-training_tokens: null  # >50 M cells × 19,264 genes; exact token count not reported
-training_compute: null  # not reported
+training_tokens: null
+training_compute: null
 references_chased: false
 added_at: null
 updated_at: null
+is_fm: true
+fm_classification_reason: 'scFoundation: pretrained single-cell transcriptomics FM.'
 ---
 
 ## TL;DR
@@ -121,3 +123,19 @@ scFoundation (also called xTrimoGene·scFoundationα) is a 100 M-parameter pretr
 - Gene context embeddings are 19,264 × 512 per cell, which is very large (~40 MB/cell in float32). The GEARS integration generates these on-the-fly during training rather than caching — this is a practical bottleneck.
 - The API service was migrated from `api.biomap.com` to `aigp.biomap.com` (April 2024); availability and terms of the inference service should be verified.
 - Evidence quality is abstract + repository; full-text extraction would improve coverage of training recipe and ablation details.
+
+## Ablations (Rev 4)
+
+Sourced from the scFoundation `ablation/` folder (notebooks `ablation-00/01/02.ipynb`, Figshare `data_ablation.zip`), the Nature Methods main text / Extended Data, and the underlying xTrimoGene preprint (Gong et al., bioRxiv 2023.03.24.534055; NeurIPS 2023).
+
+| # | Component ablated | Variants compared | Downstream task | Reported finding |
+|---|-------------------|-------------------|-----------------|------------------|
+| 1 | Cell-embedding aggregation (xTrimoGene encoder output) | concat of all gene tokens vs. max-pool vs. mean-pool vs. dedicated `[S]` (cell) token | Clustering (ARI/NMI) and bulk drug-sensitivity regression (Pearson on CCLE/GDSC via DeepCDR) | The learned `[S]` token (used as the default cell embedding) and the max-pool variant outperform mean-pool and raw concat; `[S]` is selected as the canonical cell representation (`ablation-00.ipynb`). |
+| 2 | Expression value encoding | discrete value-binning (scBERT/scGPT-style integer bins) vs. xTrimoGene's continuous scalar projection | Clustering on Zheng68K-style PBMC | Continuous scalar embedding preserves fine expression magnitudes and beats binned tokens, justifying xTrimoGene's MLP value embedder over vocab-based binning (`ablation-01.ipynb`). |
+| 3 | Pre-training loss | regression on masked entries only vs. regression on all (masked + unmasked) genes; MSE vs. binned cross-entropy | Clustering | Continuous regression loss applied to the full gene set yields the best clustering, supporting the published recipe (`ablation-01.ipynb`). |
+| 4 | Read-Depth-Aware (RDA) pretraining | with downsampling-conditioned objective (scFoundation) vs. plain MAE-style masking without RDA | Read-depth enhancement (correlation between enhanced low-depth profile and matched high-depth target; clustering ARI after enhancement) | Removing RDA collapses the enhancement gain over SAVER/MAGIC/scImpute; RDA is the key driver of the imputation/enhancement SoTA and of the model's ability to operate at arbitrary target depths (`ablation-02.ipynb` + `enhancement/`). |
+| 5 | Architecture: asymmetric encoder–decoder (xTrimoGene) | sparse-input encoder + full-gene decoder vs. classical dense Performer/Transformer over all 19,264 genes | Pretraining feasibility (FLOPs, memory) and downstream embedding quality | The asymmetric design cuts FLOPs by 1–2 orders of magnitude and is the only configuration that fits 19,264-gene, 50 M-cell pretraining; dense baselines are intractable at this scale (xTrimoGene NeurIPS 2023, Fig. 3). |
+| 6 | Model scaling | 3 M → 10 M → 100 M parameters (≈xTrimoGene-S/M/L), pretrained on the same 50 M-cell corpus | Validation MSE on held-out cells; downstream cell-type annotation and drug response | Loss decreases monotonically with parameter count and downstream metrics improve, mirroring LLM scaling laws (Kaplan et al. 2020); 100 M is the public release size and was not yet observed to saturate (xTrimoGene NeurIPS 2023, scaling-law figure; reproduced in scFoundation Extended Data). |
+| 7 | Pretraining corpus size | subsets of 1 M / 10 M / 50 M cells | Same downstream suite | Validation loss and downstream metrics improve with corpus size, motivating the full 50 M-cell pretraining set (xTrimoGene NeurIPS 2023). |
+
+**Top take-away:** Read-Depth-Aware pretraining (ablation #4) is the single most consequential design choice — it is what converts xTrimoGene's efficient encoder into a *foundation* model: removing the downsampling-conditioned objective wipes out the enhancement/imputation lead and degrades downstream transfer, whereas the architectural and embedding-aggregation choices give comparatively smaller, incremental gains.

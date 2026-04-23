@@ -28,6 +28,9 @@ training_compute: null
 references_chased: false
 added_at: '2026-04-22T19:37:00+00:00'
 updated_at: '2026-04-22T20:21:36+00:00'
+is_fm: true
+fm_classification_reason: Pretrains GPT-2 on DNA+protein+English from scratch; small
+  but is an FM.
 ---
 
 ## TL;DR
@@ -98,3 +101,18 @@ Trains a GPT-2 Small (~117M params) from scratch on English + DNA + protein data
 - Single GPU (4090) training with a 117M-param model is very small by current genomic FM standards; unclear how this scales.
 - No comparison to established DNA segmentation baselines (e.g., gene annotation, repeat masking, chromatin domain callers).
 - GitHub: https://github.com/maris205/genome_book
+
+## Ablations (Rev 4)
+
+| # | Ablation / Design choice | Variant A (chosen) | Variant B (alternative) | Metric / Dataset | Result | Source | Take-away |
+|---|---|---|---|---|---|---|---|
+| 1 | Cross-lingual transfer: English-similarity FT → DNA similarity (testDna150s) | gpt2-gene-eng-ft (PAWS-X EN FT) | — (no DNA-labelled FT) | Accuracy, DNA150s | 0.92 | Table 2, p.~6 (lines 158–161) | EN→DNA transfer works on short DNA pairs without any DNA supervision. |
+| 2 | Cross-lingual transfer on longer DNA pairs | gpt2-gene-eng-ft | — | Accuracy, DNA150 | 0.79 | Table 2 | Transfer degrades on longer sequences (~13 pt drop) — length sensitivity. |
+| 3 | Cross-lingual transfer on medium DNA pairs | gpt2-gene-eng-ft | — | Accuracy, DNA50 | 0.86 | Table 2 | All three lengths >79% → transfer is robust but length-dependent. |
+| 4 | Effect of EN-similarity fine-tuning on embedding geometry | After PAWS-X FT (gpt2-gene-eng-ft) | Pre-trained only (gpt2-gene-eng) | Qualitative PCA of DNA vs EN word vectors | DNA & EN clusters overlap post-FT; clearly separated pre-FT | Fig. 3 A vs B, p.~6 | Shared BPE + EN similarity FT is what aligns DNA and EN representations (mechanism behind row 1–3). |
+| 5 | Segmentation task formulation | Strategy 1: causal LM predicts `<p_end>` next-token | Strategy 2: per-position binary classification head | Author judgment (no quantitative comparison) | Strategy 1 chosen for simplicity; "efficiently and accurately identifies sentence boundaries" | §2.4 lines 179–187, §2.5 lines 220–225 | Generative next-token marker prediction avoids extra heads and integrates cleanly with LM objective — but never benchmarked against Strategy 2. |
+| 6 | Inference-time vocabulary masking for DNA→EN summarisation | Dynamic mask: set non-DNA-relevant token logits to −∞ | Unconstrained decoding | Author judgment (no numbers) | Improves accuracy of generated DNA-relevant titles | §2.6 lines 241–245 | Constrained decoding is needed to keep summariser outputs in-domain when transferring EN→DNA. |
+
+**Count: 6 ablations / design comparisons** (only rows 1–3 are quantitative; rows 4–6 are qualitative/asserted).
+
+**Top take-away:** A shared BPE tokenizer plus a single English semantic-similarity fine-tune is sufficient to transfer sentence-pair similarity capability to DNA at 79–92% accuracy (Table 2), with PCA (Fig. 3) confirming the fine-tune is what collapses the DNA↔English embedding gap — but every other "transfer" claim (segmentation, summarisation) rests on unbenchmarked design choices, not measured ablations.

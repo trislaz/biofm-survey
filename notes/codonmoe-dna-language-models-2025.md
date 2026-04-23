@@ -18,13 +18,22 @@ modalities:
 - rna
 status: extracted
 evidence_quality: moderate
-tags: [mixture-of-experts, adapter, codon-level, cross-modality, parameter-efficient, SSM, DNA-to-RNA]
-parameters: "7.5M (HyenaDNA+CodonMoE-pro); adapter adds 3.4–76.2M on top of backbone"
+tags:
+- mixture-of-experts
+- adapter
+- codon-level
+- cross-modality
+- parameter-efficient
+- SSM
+- DNA-to-RNA
+parameters: 7.5M (HyenaDNA+CodonMoE-pro); adapter adds 3.4–76.2M on top of backbone
 training_tokens: null
-training_compute: "single NVIDIA A100 GPU"
+training_compute: single NVIDIA A100 GPU
 references_chased: false
 added_at: '2026-04-22T19:36:46+00:00'
 updated_at: '2026-04-22T20:19:06+00:00'
+is_fm: false
+fm_classification_reason: Adapter (MoE) on top of frozen DNA LMs; no new pretraining.
 ---
 
 ## TL;DR

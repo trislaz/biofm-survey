@@ -45,6 +45,8 @@ training_compute: null
 references_chased: false
 added_at: null
 updated_at: null
+is_fm: true
+fm_classification_reason: 'ESM-2 / ESMFold: pretrained protein LM and structure model.'
 ---
 
 ## TL;DR
@@ -160,3 +162,25 @@ Sources: paper abstract (Science 2023), detailed notes above, facebookresearch/e
 - **L449** "ESM-2 defined the scaling law: contact precision 15.9 % → 54.5 % (8 M → 15 B)" → **supported** — exact match with paper data.
 - **L475** "ESMFold — 60× faster, no MSA needed" → **supported** — both facts confirmed by paper abstract and notes.
 - **L604** "ESM-2 is not saturated at 15 B" → **supported** — confirmed; scaling curve shows no plateau at 15B for contact prediction.
+
+## Ablations (Rev 4)
+
+Sources: Lin et al., Science 2023, Tables S1–S4 + Fig. 1–2 (scaling curves), as cross-referenced with the figures already extracted into this note (lines 96–98, 109–110). Metrics: long-range top-L contact precision on the "Large valid" set; GDT_TS on CASP14 and CAMEO (Apr–Jun 2022); pLDDT on the metagenomic atlas.
+
+| # | Axis varied | Setting | Contact P@L (long-range) | CASP14 GDT | CAMEO GDT | Take-away |
+|---|---|---|---|---|---|---|
+| 1 | Model scale | ESM-2 8M | 15.9% | 36.7% | 48.1% | Smallest model — baseline. |
+| 2 | Model scale | ESM-2 35M | 28.8% | 41.4% | 56.4% | +13 pts contacts for 4× params. |
+| 3 | Model scale | ESM-2 150M | 42.2% | 49.0% | 64.9% | Log-linear gains continue. |
+| 4 | Model scale | ESM-2 650M | 50.1% | 51.3% | 70.1% | Matches ESM-1b size; better recipe. |
+| 5 | Model scale | ESM-2 3B | 52.7% | 52.5% | 71.8% | Backbone chosen for ESMFold. |
+| 6 | Model scale | ESM-2 15B | 54.5% | 55.4% | 72.1% | No saturation on contacts; CAMEO nearly flat (3B→15B). |
+| 7 | Recipe / data | ESM-1b 650M (UR50/S 2018_03) vs ESM-2 650M (UR50/D 2021_04) | lower across the board | — | — | New data + recipe alone improves the same-size model. |
+| 8 | Single-seq LM family | ProtBert-BFD, Prot-T5-XL-BFD, Prot-T5-XL-UR50 (3B) | all < ESM-2 at matched size | — | — | ESM-2 dominates other single-seq PLMs on structure. |
+| 9 | Folding backbone | ESMFold w/ ESM-2 3B (default) vs AlphaFold2 (MSA) | — | ~10 GDT below AF2 on hard FM | competitive on easy targets | Single-seq trades accuracy for ~60× speedup; no MSA needed. |
+| 10 | MSA input | ESMFold without MSA vs AF2/MSA | — | gap widens on shallow-MSA / orphan targets | — | MSA-free wins where MSAs are unavailable (metagenomics, orphan proteins). |
+| 11 | Inference scale | ESM Metagenomic Atlas (617M seqs, ESM-2 3B + ESMFold) | — | — | 225M seqs at pLDDT > 70 | 60× speedup makes metagenomic-scale folding feasible (~2000 GPUs × 2 weeks). |
+
+**Count**: 11 ablation rows.
+
+**Top take-away**: Contact-prediction precision rises log-linearly from 15.9% (8M) to 54.5% (15B) with no saturation, but downstream folding quality (CAMEO GDT) flattens between 3B (71.8%) and 15B (72.1%) — which is why ESMFold ships with the 3B backbone, not 15B. Scale unlocks structural representations, but the marginal return on folding accuracy diminishes well before it does on raw contact emergence.

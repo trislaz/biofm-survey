@@ -39,6 +39,9 @@ training_compute: null
 references_chased: false
 added_at: null
 updated_at: null
+is_fm: true
+fm_classification_reason: ESM-based protein design; uses pretrained ESM; release of
+  designs/models.
 ---
 
 ## TL;DR
@@ -116,6 +119,24 @@ This paper demonstrates that ESM-2, a masked-language-model protein transformer 
 6. **Hsu et al. 2022** — "Learning Inverse Folding from Millions of Predicted Structures" (bioRxiv 2022.04.10.487779). ESM-IF1 inverse folding model.
 7. **Ferruz et al. 2022** — "ProtGPT2: Deep Unsupervised Language Modelling for Protein Design" (Nature Comm.). Autoregressive protein generation baseline.
 8. **Jumper et al. 2021** — "Highly accurate protein structure prediction with AlphaFold" (Nature). AlphaFold2 used for in-silico structure validation of designs.
+
+## Ablations (Rev 4)
+
+Source: abstract (Semantic Scholar) + released `lm-design` repo (`conf/config.yaml`, `paper-data/README`). The full bioRxiv text is Cloudflare-protected and could not be fetched, so quantitative per-axis sweeps (success rate vs. temperature, vs. ESM-2 size, vs. masking %) are not directly verifiable here; entries marked **(repo-default)** come from the released config and entries marked **(not in abstract/repo)** require the paper PDF to confirm.
+
+| Axis | Setting | Reported / configured value | Effect (per abstract+repo) |
+|------|---------|-----------------------------|----------------------------|
+| Decoding: MCMC vs. greedy | **MCMC (Metropolis–Hastings)** with simulated annealing | 170,000 iters/design; accept-reject with composite energy `struct_w=3, LM_w=2, ngram_w=1` (repo-default) | Only MCMC is released and used to produce the 228 wet-lab designs (152/228 = 67% success). Greedy is not in the released config; head-to-head numbers (not in abstract/repo). |
+| Decoding: free-generation backbone resample | Resample target structure every *k* steps at temperature `T_y` | `resample_y_every: 3`, `resample_y_temp: 1` (repo-default) | Enables co-discovery of sequence + structure in unconstrained mode; 71/129 = 55% experimental success. |
+| ESM-2 model size | 8M / 35M / 150M / 650M / 3B / 15B available | **650M** (`esm2_t33_650M_UR50D`) used for all released designs (repo-default) | Larger checkpoints exist but the design pipeline ships pinned to 650M; per-size sweep (not in abstract/repo). |
+| Sampling temperature (sequence) | Annealed Metropolis temperature (StepLR) | initial `T=8`, `step_size=10000`, `gamma=0.5` → halves every 10k steps over 170k iters (repo-default) | High initial T encourages exploration; geometric cooling drives convergence to high-likelihood, structure-compatible sequences. Per-T success curves (not in abstract/repo). |
+| Sampling temperature (structure resample, free-gen only) | `resample_y_temp` | `1.0` (repo-default) | Held fixed in released runs; sweep (not in abstract/repo). |
+| Masking % (per-step substitutions) | Fraction of positions proposed for resampling per MCMC step | Not exposed as a config knob in the released `config.yaml`; pipeline scores single-position MLM substitutions rather than block-masked reconstructions | Per-mask-rate sweep (not in abstract/repo). |
+| Energy-term weights | `struct_w : LM_w : ngram_w` | **3 : 2 : 1** with n-gram orders {1,2,3} (repo-default) | Structure dominates to enforce foldability; LM term enforces native-likeness; n-gram regularizes amino-acid composition. Per-weight ablation (not in abstract/repo). |
+| Amino-acid alphabet | Cysteine suppression | `suppress_AA: 'C'` (repo-default) | Removes disulfide complications from wet-lab characterization; effect on success rate (not in abstract/repo). |
+| Baseline comparators (in 228-design pool) | LM-design vs. AlphaFold-hallucination vs. AF + n-gram vs. ground truth | 228× LM, 20× AF, 20× AF+ngram, 8× GT (`paper-data/data.csv`) | LM-design is reported in the abstract as achieving 67% overall success; per-baseline success rates require the paper text. |
+
+**Top take-away**: With ESM-2 650M frozen and no fine-tuning, a single, fixed MCMC recipe (`struct:LM:ngram = 3:2:1`, annealed `T 8 → … → 0` over 170k steps, cysteine masked out) is enough to wet-lab-validate de novo proteins at 67% success (152/228), including 35 designs with no detectable homology to UniRef90 — i.e. the design quality demonstrated in the paper is driven by the energy composition + annealing schedule, not by scaling the base LM beyond 650M.
 
 ## Notes / Open Questions
 

@@ -42,6 +42,8 @@ training_compute: null
 references_chased: false
 added_at: null
 updated_at: null
+is_fm: true
+fm_classification_reason: 'ESM-1b: protein LM pretrained on 250M sequences.'
 ---
 
 ## TL;DR
@@ -202,3 +204,23 @@ Six claims in `insights.md` cite `[biological-structure-and-function-2021]`. Eac
 | 441 | Internal representations' structural content linearly correlates with ECE; diversity outperforms quantity | **supported** | Fig. 6 and text: "Fig. 6 shows a linear relationship between the language modeling objective and information about structure, which is maintained over the course of pretraining." Diversity: Table 1 as above. |
 
 **Summary: 6/6 supported, 0 partial, 0 unsupported, 0 out-of-scope.**
+
+## Ablations (Rev 4)
+
+Seven ablation axes are reported in the main text (Tables 1, 3, 4, 5, 6, 7 and the Single-vs-Multifamily section). Headline numbers are pulled directly from the paper.
+
+| # | Axis | Variants compared | Metric | Result | Take-away |
+|---|------|-------------------|--------|--------|-----------|
+| 1 | Architecture family | n-gram (best ctx=4) vs LSTM-small 25 M / LSTM-large 113 M vs Transformer-6L 42.6 M / 12L 85.1 M (all on UR50/S) | UniRef50 held-out ECE | n-gram 17.18; LSTM-S 14.4; LSTM-L 13.5; Tr-6L 11.79; Tr-12L 10.45 | Transformer dominates LSTM at equal-or-fewer params; attention is the right inductive bias for protein MLM. |
+| 2 | Model capacity (depth / parameters) | 6L (42.6 M) → 12L (85.1 M) → 34L (~670 M), UR50/S held fixed | ECE; downstream contact top-L | ECE drops monotonically; 34L best. Contact precision (Table 5) similarly increases with depth | Scaling capacity improves both LM fidelity and structural content; underfitting still observed at 650 M → motivates ESM-2 scaling. |
+| 3 | Pretraining-data diversity | UR100 vs UR50/S vs UR50/D (34L Transformer) | ECE | UR100 9.83; UR50/S 9.27; UR50/D **8.46** | Diversity (cluster-balanced sampling) beats raw quantity; clustered sampling reweights loss toward rare families. |
+| 4 | Pretraining-data quantity | 0.1 %, 1 %, 10 %, 100 % of UR50/S (34L) | ECE | Monotone improvement with more data; 100 % still underfit | Data scaling helps, but the model is data-limited *and* capacity-limited at 650 M. |
+| 5 | Single-family vs multi-family pretraining | 12L Transformer trained on Pfam ABC / kinase / response-regulator MSAs vs same arch on full UniParc | 8-class SSP accuracy, in-family and cross-family (SI Table S2) | Full-UniParc model beats every single-family model **even on the same family** | Cross-family evolutionary signal transfers; single-MSA pretraining generalises poorly. |
+| 6 | Pretraining vs no pretraining (linear-probe) | Untrained init vs trained Transformer, 5-fold family/superfamily/fold split (Table 3) | 8-class SSP acc; top-L long-range contact precision | Untrained ≈ chance for contacts/SSP; trained recovers strong signal that generalises to held-out folds and beats CCMpred & sequence-profile probes | The structural information is *learned* by MLM, not an architectural artefact; it generalises across folds. |
+| 7 | Feature-combination strategy with MSA pipelines | `direct` (single-seq embed) vs `avg` (MSA-averaged embed) vs `cov` (MSA covariance of PCA-projected embed); added to NetSurf SSP head and to RaptorX contact ResNet (Tables 6, 7) | CB513 / CASP13 SSP acc; top-L long-range contact precision on RaptorX/CASP11/12/13 | SSP: direct +0.9 %, avg +2.5 % over NetSurf baseline. Contacts: cov > avg > direct; cov gives +3.9 % on RaptorX test, +1.8 % on CASP13 over RaptorX features alone | Embeddings carry information not in MSAs; pairwise MSA-covariance of embeddings is the most effective injection scheme — foreshadows MSA-Transformer / row-attention contact extraction. |
+
+**Bonus (Sec. "Relationship between Language Modeling and Structure Learning", Fig. 6):** A *non-traditional* ablation across pretraining checkpoints shows a **linear** relationship between pretraining ECE and both SSP accuracy and contact precision on held-out folds — i.e. ECE is a faithful proxy for downstream structural quality, validating LM loss as a scaling-law target.
+
+### Top take-away
+
+**Pretraining-data diversity is the single highest-leverage knob, and at 650 M parameters the model is still underfit.** UR50/D cuts ECE from 9.83 (UR100) to 8.46 with the *same* architecture and roughly the same compute, while every capacity/data-fraction sweep continues to improve monotonically with no plateau. Together these two findings establish the central scaling thesis of the ESM line: *cluster-balanced evolutionary diversity + more capacity* (rather than more raw sequences) is the path forward — the empirical foundation that directly motivated ESM-2's push to 15 B parameters.

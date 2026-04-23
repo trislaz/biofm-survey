@@ -36,6 +36,8 @@ training_compute: 16xA100 3 days
 references_chased: false
 added_at: '2026-04-22T19:36:52+00:00'
 updated_at: '2026-04-22T20:19:46+00:00'
+is_fm: true
+fm_classification_reason: 'ESM-AA: new pretrained multi-scale protein/molecule FM.'
 ---
 
 ## TL;DR
@@ -122,3 +124,28 @@ All ablations on Enzyme-Substrate Affinity Regression (ESAR) unless noted:
 - No comparison against recent structure-aware PLMs like ESM-IF or ProteinMPNN.
 - Coordinate noise ε=1Å for PDR — sensitivity to this threshold not explored.
 - The approach processes proteins as 1D sequences with optional atom unzipping; it does not model full 3D protein structure at inference time (unzip is off during fine-tuning).
+
+## Ablations (Rev 4)
+
+Main ablation (Table 3) on Enzyme-Substrate Affinity Regression (ESAR); deltas relative to full ESM-AA (MSE 0.627, R² 0.546). Lower MSE / higher R² is better.
+
+| # | Variant | MSE ↓ (Δ) | R² ↑ (Δ) | Scope | Take-away |
+|---|---------|-----------|----------|-------|-----------|
+| 1 | w/o ASPE (atom-scale position encoding) | 0.639 (+0.012) | 0.537 (-0.009) | ESAR | Atoms lose positional identity; degrades fusion. |
+| 2 | w/o RSPE (residue-scale RoPE) | 0.676 (+0.049) | 0.511 (-0.035) | ESAR | Largest single-component drop on ESAR — residue PE is critical. |
+| 3 | w/o MLM loss | 0.642 (+0.015) | 0.535 (-0.011) | ESAR | Modest on ESAR, but catastrophic on Contact Prediction (P@L drops to ~0.03). |
+| 4 | w/o PDR loss (pairwise distance recovery) | 0.645 (+0.018) | 0.533 (-0.013) | ESAR | Bigger hit than removing MLM → atom-scale structure signal matters more than atom MLM. |
+| 5 | w/o molecule data | 0.648 (+0.021) | 0.531 (-0.015) | ESAR | Unzip op partially compensates by giving model atomic exposure. |
+| 6 | w/o protein data | 0.708 (+0.081) | 0.487 (-0.059) | ESAR | Worst overall — protein knowledge is the dominant pillar. |
+| 7 | w/o unzip operation | 0.638 (+0.011) | 0.538 (-0.008) | ESAR | Smallest ESAR hit, but devastating for molecule-only tasks (BACE 83.5→61.6). |
+| 8 | Encoder combo: ESM-2 + Uni-Mol (no ESM-AA) | 0.642 (+0.035 vs unified) | 0.536 (-0.024) | ESAR / App. G Tab. 11 | Two separate SOTA models < one unified ESM-AA. |
+| 9 | Encoder combo: ESM-AA (protein) + Uni-Mol (molecule) | 0.638 (+0.031) | 0.539 (-0.021) | ESAR / App. G | Even partial use of ESM-AA helps via implicit alignment. |
+| 10 | Encoder combo: ESM-2 (protein) + ESM-AA (molecule) | 0.622 (+0.015) | 0.550 (-0.010) | ESAR / App. G | Same conclusion — unified ESM-AA on both sides wins. |
+| 11 | w/o RSPE — Contact Prediction | P@L long-range 0.02 vs 0.29 | — | App. G Tab. 12 | Removing residue PE collapses long-range contact signal. |
+| 12 | w/o MLM — Contact Prediction | P@L long-range 0.03 vs 0.29 | — | App. G Tab. 12 | MLM is the *primary* driver of protein semantic learning. |
+| 13 | w/o ASPE — Molecule tasks (BACE/BBBP/MUV/HIV) | BACE 73.99 vs 83.5 | — | App. G Tab. 13 | Atom PE is the unique atom identifier; biggest molecule-side drop alongside w/o Unzip. |
+| 14 | w/o Unzip — Molecule tasks | BACE 61.57 vs 83.5; MUV 59.59 vs 76.2 | — | App. G Tab. 13 | Unzip is essential for atom-scale representation despite being optional at fine-tune. |
+
+**Count: 14 ablation conditions** across one main table (7 component knock-outs on ESAR) and three appendix tables (encoder combinations, protein-only contact prediction, molecule-only property prediction).
+
+**Top take-away:** No single component dominates universally — *which* component matters most depends on the downstream scale. On the joint protein-molecule ESAR task, **removing protein pre-training data is by far the worst (+0.081 MSE)**, confirming protein knowledge is the backbone. But the component-level story is task-dependent: **RSPE + MLM are indispensable for residue-scale tasks** (long-range contact P@L collapses to ~0.02–0.03 without them), while **ASPE + the Unzip operation are indispensable for atom-scale molecular tasks** (BACE drops ~22 points without Unzip). The PDR loss matters more than atom-MLM, showing that *structural* atom signal beats *categorical* atom signal. Finally, App. G Table 11 shows a unified ESM-AA encoder on both modalities beats any combination of separately pre-trained ESM-2 + Uni-Mol — validating the central thesis that joint multi-scale pre-training is more than the sum of its parts.

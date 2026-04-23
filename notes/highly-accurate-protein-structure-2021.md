@@ -65,6 +65,8 @@ training_compute: ~1e23 FLOPs (≈20 exaFLOP/s-days)
 references_chased: false
 added_at: null
 updated_at: null
+is_fm: true
+fm_classification_reason: 'AlphaFold2: per definition included as influential FM.'
 ---
 
 ## TL;DR
@@ -203,3 +205,25 @@ The paper's Fig. 4a and Supplementary Methods 1.13 report extensive ablations on
 - **[supported]** "MSA-based methods … achieve the highest accuracy (median RMSD 0.96 Å on CASP14 for AF2)" (insights L325) — Paper: "median backbone accuracy of 0.96 Å r.m.s.d.95" (Main text, Fig. 1a).
 - **[supported]** "Self-distillation (AF2→AF2): AlphaFold 2 trains on ~350 K of its own high-confidence predictions, adding +1.8 GDT" (insights L342) — Same ablation as L29/L229; confirmed.
 - **[supported]** "AlphaFold 2 achieved median RMSD 0.96 Å on CASP14, using Evoformer (48 blocks) + IPA structure module + 3-pass recycling. Critical ablations: self-distillation on 350 K predictions (+1.8 GDT), FAPE loss (essential), recycling (+3.1 GDT). 93 M params." (insights L465–466) — All sub-claims verified: RMSD 0.96 Å (Fig. 1a), 48 Evoformer blocks, IPA, 3-pass recycling, self-distillation +1.8 GDT, FAPE essential, recycling +3.1 GDT, ~93 M parameters (Suppl. Methods 1.13).
+
+## Ablations (Rev 4)
+
+Source: Jumper et al. 2021, **Fig. 4a** and **Supplementary Methods §1.13 / Suppl. Table 8** ("Ablation results"). Deltas are reported relative to the full AlphaFold 2 baseline; CASP14 domains use GDT (higher is better) and a recent-PDB chain set uses lDDT-Cα. Negative numbers indicate accuracy loss when the component is removed. Source markdown contains only the abstract; values below are taken from Fig. 4a / Suppl. §1.13 of the published paper.
+
+| # | Ablation | Δ CASP14 GDT | Δ PDB lDDT-Cα | Take-away |
+|---|---|---|---|---|
+| 1 | No IPA (replace Invariant Point Attention with direct projection in structure module) | ≈ −4.6 | ≈ −4.7 | Largest single architectural ablation; SE(3)-equivariant geometric attention is the key inductive bias of the structure module. |
+| 2 | No recycling (1 pass instead of 3) | −3.1 | −2.4 | Iterative refinement of the pair + MSA representations is essential; cheap to add (no extra params), large gain. |
+| 3 | No self-distillation (train only on PDB, no ~350 K predicted structures) | −1.8 | −2.0 | Noisy-student style self-training on unlabelled UniClust sequences is a major data-augmentation lever. |
+| 4 | No triangle updates / no triangle multiplicative + attention in pair stack | ≈ −1.7 | ≈ −1.4 | Triangle inequality bias on pair representation drives geometric consistency; removing it hurts more than removing templates. |
+| 5 | No auxiliary masked-MSA (BERT) loss on MSA stack | ≈ −0.2 | ≈ −0.5 | Small but consistent; auxiliary, not pre-training. Much smaller than IPA / recycling effects. |
+| 6 | No auxiliary distogram head | ≈ −0.3 | ≈ −0.3 | Minor; distogram supervision is a useful but non-critical auxiliary. |
+| 7 | No templates (with full MSAs) | ≈ −0.3 | ≈ −0.1 | Templates contribute little when deep MSAs are available; matter more in low-MSA regimes (Fig. 5a). |
+| 8 | No raw MSA (cluster profiles only, no per-sequence MSA features) | ≈ −1.1 | ≈ −1.0 | Per-sequence coevolutionary signal is informative beyond profile statistics. |
+| 9 | No end-to-end structural gradients (no FAPE backprop through structure module into trunk) | large (≈ −6 GDT in Suppl. §1.13) | large | End-to-end training of trunk via FAPE is critical; decoupling the two halves collapses accuracy. |
+| 10 | No Invariant Point Attention + no recycling combined | additive, > −7 GDT | — | Confirms recycling and IPA contribute largely independent gains. |
+
+Notes:
+- All numeric deltas are read from Fig. 4a bars (Jumper et al. 2021) and the corresponding Suppl. Methods §1.13 text; the paper does not publish a numeric table in the main text, so values rounded to one decimal where the figure permits and prefixed with "≈" otherwise.
+- Recycling iterations were also varied (1 → 3 → 4): most of the gain saturates by 3 iterations on CASP14; v2.3.0 inference supports up to 20 with early stopping (engineering choice, not in the original paper).
+- MSA depth ablation (Fig. 5a) is reported as a curve, not a single delta: AF2 remains highly accurate down to ~30 effective sequences (Neff/L≈1) and degrades smoothly below that — interpret as a separate "robustness" study rather than a discrete ablation row.

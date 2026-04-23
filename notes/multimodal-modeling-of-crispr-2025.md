@@ -37,6 +37,9 @@ training_compute: null
 references_chased: false
 added_at: '2026-04-22T19:36:49+00:00'
 updated_at: '2026-04-22T20:23:03+00:00'
+is_fm: false
+fm_classification_reason: Application combining FMs and chromatin data for CRISPR
+  activity.
 ---
 
 ## TL;DR

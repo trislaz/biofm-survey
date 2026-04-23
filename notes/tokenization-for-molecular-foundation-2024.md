@@ -24,12 +24,15 @@ tags:
 - n-gram-proxy
 - open-vocabulary
 - cheminformatics
-parameters: 25M  # per encoder (excl. embeddings); 18 RoBERTa variants trained
-training_tokens: ~245M molecules (30k steps × batch 8192) for each encoder; 1.6B SMILES for n-gram models
+parameters: 25M
+training_tokens: ~245M molecules (30k steps × batch 8192) for each encoder; 1.6B SMILES
+  for n-gram models
 training_compute: 2×A100 per pretrain; 1×A40 per finetune
 references_chased: false
 added_at: '2026-04-22T19:42:21+00:00'
 updated_at: '2026-04-22T20:26:47+00:00'
+is_fm: false
+fm_classification_reason: Tokenization methodology study for molecular FMs.
 ---
 
 ## TL;DR

@@ -24,6 +24,8 @@ training_compute: null
 references_chased: false
 added_at: '2026-04-22T19:37:15+00:00'
 updated_at: '2026-04-22T20:24:40+00:00'
+is_fm: false
+fm_classification_reason: Inference framework reusing existing pathology FMs.
 ---
 
 ## TL;DR

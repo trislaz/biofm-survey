@@ -38,6 +38,9 @@ training_compute: not reported
 references_chased: false
 added_at: '2026-04-22T21:55:21+00:00'
 updated_at: '2026-04-22T21:55:26+00:00'
+is_fm: true
+fm_classification_reason: 'HIPT: hierarchical self-supervised pretraining for gigapixel
+  pathology.'
 ---
 
 ## TL;DR
@@ -129,3 +132,33 @@ HIPT (Hierarchical Image Pyramid Transformer) is a three-stage ViT architecture 
 - **Slide-level aggregation not pretrained:** Only two stages of DINO pretraining; the ViT_WSI-4096 is trained from scratch during fine-tuning due to insufficient number of WSI data points for DINO.
 - **Superseded by later pathology FMs:** Prov-GigaPath (2024) explicitly ablates GigaPath vs HIPT and shows LongNet aggregation with DINOv2 tile encoder outperforms HIPT. UNI, Virchow, CONCH have since raised the bar. HIPT remains an important architectural milestone.
 - **Code available:** https://github.com/mahmoodlab/HIPT
+
+## Ablations (Rev 4)
+
+Consolidated from Tables 1, 2, 4, 5 of the paper. AUC reported as 10-fold CV mean ± std; c-Index as cross-validated mean ± std. "PF" = pretrained & frozen; "P" = pretrained, finetuned; bare "ViT-X" = trained from scratch; AP = attention pooling; GMP = global mean pooling.
+
+| # | Ablation axis | Variant | Trainable params | Metric / task | Score | Δ vs. full HIPT |
+|---|---|---|---|---|---|---|
+| A1 | Hierarchical pretraining + freezing (full HIPT) | ViT-16 PF, ViT-256 PF, ViT-4096 (WSI) | 505,204 | AUC NSCLC 100% | 0.952 ± 0.021 | — |
+| A2 | Same, low-data regime | ViT-16 PF, ViT-256 PF | 505,204 | AUC NSCLC 25% | 0.923 ± 0.020 | — |
+| A3 | Unfreeze region ViT (no Stage-2 pretrain) | ViT-16 PF, ViT-256 (scratch), ViT-4096 | 3,388,996 | AUC NSCLC 100% | 0.786 ± 0.096 | −0.166 |
+| A4 | Unfreeze region ViT (Stage-2 pretrained init) | ViT-16 PF, ViT-256 P, ViT-4096 | 3,388,996 | AUC NSCLC 100% | 0.820 ± 0.047 | −0.132 |
+| A5 | Replace ViT aggregation with attention pooling | ViT-16 PF, AP-256, AP-4096 | 494,597 | AUC NSCLC 100% | 0.928 ± 0.023 | −0.024 |
+| A6 | Same as A5, low-data | ViT-16 PF, AP-256, AP-4096 | 494,597 | AUC NSCLC 25% | 0.835 ± 0.050 | −0.088 |
+| A7 | KNN on mean ViT-256-4096 embeddings (no fine-tune) | ViT-16 PF, ViT-256 PF, GMP | 0 | AUC BRCA 100% / RCC 100% | 0.775 / 0.974 | beats CLAM-SB on BRCA & RCC |
+| A8 | KNN on mean ViT-16-256 embeddings | ViT-16 PF, GMP | 0 | AUC NSCLC 100% | 0.742 ± 0.045 | −0.210 (vs full) |
+| A9 | KNN on ResNet-50 (ImageNet) mean | ResNet-50_B3,IN, GMP | 0 | AUC NSCLC 100% | 0.794 ± 0.035 | −0.158 |
+| A10 | Long-range context — survival | HIPT vs GCN-MIL on IDC c-Index | 505,204 | c-Index IDC | 0.634 ± 0.050 (vs 0.534) | +0.100 |
+| A11 | Long-range context — survival | HIPT vs ABMIL on CCRCC c-Index | 505,204 | c-Index CCRCC | 0.642 ± 0.028 (vs 0.561) | +0.081 |
+| A12 | Pan-cancer vs organ-specific patch SSL | ViT-16 PF, PANC, S1 vs BRCA, S1 | — | BCSS AUC | 0.616 vs 0.593 | +0.023 (PANC) |
+| A13 | Multi-stage feature concat (last 4 vs last 1) | ViT-16 PF, PANC, S4 (1536-d) vs S1 (384-d) | — | CRC-100K-R AUC | 0.927 vs 0.941 | −0.014 (concat hurts) |
+| A14 | ViT-16 patch SSL vs ImageNet ResNet-50 | ViT-16 PF, PANC, S1 vs ResNet-50_B3,IN | — | BreastPathQ (lower=better) | 0.023 vs 0.058 | −0.035 (better) |
+
+### Take-aways
+
+1. **Freezing the pretrained region ViT is the single largest design lever.** Unfreezing ViT-4096-256 collapses NSCLC AUC from 0.952 → 0.820 (Stage-2 pretrained init) or 0.786 (from scratch) despite only 3.4M trainable params — WSI cohorts of <1k slides cannot support training even a small Transformer aggregator end-to-end (A1 vs A3, A4). **Top take-away.**
+2. **Hierarchical SSL > attention pooling > unfrozen ViT.** Attention pooling (A5/A6) is a surprisingly strong, parameter-matched baseline (0.928 NSCLC) but loses ~9 pts in the low-data (25%) regime, where the pretrained Transformer's inductive bias matters most.
+3. **Self-supervised embeddings alone are competitive without any fine-tuning.** Mean-pooled ViT-4096-256 KNN (A7) beats supervised CLAM-SB on BRCA and RCC subtyping — pretraining quality, not the head, drives most of the gain.
+4. **Long-range context shows up in survival, not subtyping.** HIPT's largest absolute gains are in IDC (+0.10 c-Index over GCN-MIL) and CCRCC (+0.08), confirming that ViT_WSI self-attention captures prognostically relevant tumour-stroma/immune spatial patterns that MIL aggregators miss (A10, A11).
+5. **Pan-cancer SSL > organ-specific SSL** for cell-level localisation and downstream BCSS (A12); concatenating multi-stage [CLS] features (A13) gives no gain and slightly hurts CRC-100K — last-layer [CLS] is sufficient.
+6. **Patch-level ViT-16 SSL on TCGA pan-cancer beats ImageNet ResNet-50** on BCSS and BreastPathQ (A14), establishing the value of in-domain SSL even at the cell-patch tier.

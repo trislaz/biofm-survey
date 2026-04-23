@@ -29,12 +29,14 @@ tags:
 - vqa
 - image-generation
 - biomedical-assistant
-parameters: 7_000_000_000
-training_tokens: 1_700_000_000
+parameters: 7000000000
+training_tokens: 1700000000
 training_compute: null
 references_chased: false
 added_at: '2026-04-22T19:42:13+00:00'
 updated_at: '2026-04-22T20:22:44+00:00'
+is_fm: true
+fm_classification_reason: 'MedMax: instruction-tuned mixed-modal biomedical FM/assistant.'
 ---
 
 ## TL;DR
@@ -104,3 +106,15 @@ MedMax is a 1.47M-instance multimodal biomedical instruction-tuning dataset span
 - Multi-image reasoning explicitly left for future work due to Chameleon's limited context length (1024 tokens per image is expensive).
 - Evaluation uses GPT-4o-mini as judge for open-ended VQA — introduces LLM-judge bias.
 - $500 GPT-4o cost for MedMax-Instruct is notably cheap; scalability claim is credible.
+
+## Ablations (Rev 4)
+
+| # | Ablation | Setup | Result | Take-away |
+|---|----------|-------|--------|-----------|
+| 1 | Data scaling | Fine-tune Anole-7B on 25%, 50%, 75%, 100% of MedMax; eval avg over 12 VQA tasks (Fig. 9) | Performance increases monotonically with data size | MedMax is high-quality; further scaling should keep paying off |
+| 2 | Remove VQA subset | Fine-tune on MedMax minus VQA instances; eval VQA tasks (Fig. 10a) | −23% accuracy vs full MedMax on VQA | High-quality VQA data is essential for VQA performance |
+| 3 | Remove visual-chat subset | Fine-tune on MedMax minus visual-chat instances; eval visual-chat task with LLM judge (Fig. 10b) | −17% LLM score vs full MedMax on visual chat | Visual-chat data is critical for chat performance; mixture diversity drives generalization |
+| 4 | Domain-adapted VQGAN encoder | Fine-tune Chameleon's VQGAN on 300K MedMax images (8 epochs; L1 recon 7.8 vs 8.1), re-tokenize 800K subset, then instruction-tune; compare to original VQGAN tokens (Fig. 11) | Fine-tuned VQGAN is 3% worse on avg VQA accuracy despite better reconstruction | Distribution shift in discrete visual tokens hurts the frozen LM backbone — keep the base tokenizer |
+
+**Count:** 4 ablations.
+**Top take-away:** Task-mixture composition matters far more than tokenizer specialization — removing either VQA or chat data causes large (17–23%) drops, while a "better" domain-adapted VQGAN actually *hurts* downstream performance by 3% because it shifts the visual-token distribution away from what the base mixed-modal model expects.

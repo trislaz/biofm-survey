@@ -40,11 +40,14 @@ tags:
 - 3d-structure
 - msa
 parameters: null
-training_tokens: "~23.7M sequences (RNA-FM pre-training)"
-training_compute: "8×A100-80GB for 1 month (RNA-FM) + 8×A100-80GB for ~1 week (RhoFold+)"
+training_tokens: ~23.7M sequences (RNA-FM pre-training)
+training_compute: 8×A100-80GB for 1 month (RNA-FM) + 8×A100-80GB for ~1 week (RhoFold+)
 references_chased: false
 added_at: '2026-04-22T19:36:49+00:00'
 updated_at: '2026-04-22T20:16:24+00:00'
+is_fm: true
+fm_classification_reason: RhoFold+ built on RNA-FM (BERT-style RNA LM pretrained on
+  23.7M sequences); released and reused.
 ---
 
 ## TL;DR
@@ -114,3 +117,17 @@ RhoFold+ is an end-to-end deep learning method for RNA 3D structure prediction f
 - Dynamic conformational ensembles (especially at junctions) not modeled
 - Training data derived from specific environmental conditions (crystallization); may not generalize to in vivo solution conditions
 - Published in Nature Methods 21, 2287–2298 (2024), doi:10.1038/s41592-024-02487-0
+
+## Ablations (Rev 4)
+
+Ablation set: 138 PDB targets (Apr 2022–Dec 2023), <80% sequence similarity to training set, lengths 16–300 nt. Metric: RMSD (Å) regressed against 1/seq-sim; slope reported (lower = more robust to dissimilar sequences). p-values from Fig. 5c are vs. RhoFold+ on the TM-score-vs-MSA-depth regression.
+
+| # | Variant | RMSD slope vs 1/seq-sim ↓ | Effect / Notes |
+|---|---|---|---|
+| 1 | RhoFold+ (full)                       | 3.4 | Baseline; all four components active |
+| 2 | w/o MSA module                        | 4.5 | **Most critical component** — largest degradation; modified-RhoFold+ w/o MSA also underperforms vs full model |
+| 3 | w/o RNA-FM language model             | 5.0 | Sharpest decline on dissimilar sequences; RNA-FM compensates for missing MSA (p = 0.0005 with RNA-FM vs 0.0112 w/o on TM-vs-MSA-depth) |
+| 4 | w/o recycling                         | 3.6 | Small but consistent drop |
+| 5 | w/o self-distillation                 | 3.4 | Slope unchanged but absolute RMSD distribution worse than full model |
+
+**Top take-away:** The MSA module is the single most important component for RhoFold+, but the RNA-FM language model is what makes the system robust on novel/dissimilar RNAs and partially substitutes for shallow or missing MSAs — making the MSA + RNA-FM pairing the core driver of accuracy.

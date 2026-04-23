@@ -37,6 +37,8 @@ training_compute: null
 references_chased: false
 added_at: '2026-04-22T19:36:59+00:00'
 updated_at: '2026-04-22T20:17:11+00:00'
+is_fm: true
+fm_classification_reason: 'Ankh: optimized pretrained protein LM.'
 ---
 
 ## TL;DR
@@ -186,3 +188,26 @@ Embedding-based predictions consistently outperform attention-based predictions 
 - **Downstream evaluation uses unified settings**: While this enables fair comparison, it likely underestimates all models' potential with task-specific tuning.
 - **No comparison with AlphaFold or MSA-based methods**: Evaluation is purely single-sequence PLM comparison.
 - **Generation evaluation is qualitative-heavy**: Shannon entropy MSE, CATH domain counts, and visual RMSD plots, but no standard generation metrics (perplexity, FID-equivalent, etc.).
+
+## Ablations (Rev 4)
+
+| Variable | Settings | Metric / dataset | Result | Conclusion |
+|---|---|---|---|---|
+| Masking strategy (Exp.0–6) | Baseline (T5 default) vs Exp.1 (1-gram unique full recon) vs Exp.2 (3-gram token full recon) vs Exp.3 (1-gram unique, partial recon of masked only) vs Exp.4 (1-gram span, merge consecutive unmasked into single target) vs Exp.5 (Exp.1 + merged unmasked) vs Exp.6 (3-gram span, merged) | 7-task avg of SSP/CP/SLP/FolP (Table 3) | Avg/Med: Baseline 64.0/68.9; Exp.1 65.0/69.9; Exp.2 58.1/62.8; Exp.3 56.1/61.3; **Exp.4 67.9/71.8**; Exp.5 63.5/68.9; Exp.6 65.4/69.3 | 1-gram span masking with merged-unmasked target reconstruction (Exp.4) wins; 3-gram spans and partial-loss variants hurt. Reconstructing the full input (incl. unmasked) is required. |
+| Masking probability (Exp.4,7,8,9) | 15% / 10% / 20% / 30% | 7-task avg (Table 4) | 15%: 67.9/71.8; 10%: 66.7/71.5; 20%: 67.1/71.7; 30%: 67.0/71.4 | 10% worst; 15% & 30% trade off across tasks. **20% chosen** as compromise for general-purpose long-term training (higher than NLP standard of 15%). |
+| #Encoder vs #Decoder layers, total=72 (Exp.8,10,11,12) | 36/36 (baseline) / 54/18 / 48/24 / 24/48 | 7-task avg (Table 5) | 36/36: 67.1/71.7; 54/18: 67.7/72.2; **48/24: 67.8/72.3**; 24/48: 66.8/71.8 | Encoder-heavy (48/24) best; richer encoder embeddings + retains enough decoder layers for generation. |
+| Depth vs width (Exp.11,13) | 48E/24D, dim=768 vs 24E/12D, dim=1024 | 7-task avg (Table 6) | 48/24/768: 67.8/72.3; 24/12/1024: 67.4/70.9 | Deeper-narrower beats wider-shallower at fixed parameter count. |
+| Activation function (Exp.11,14,15) | Gated-GELU (48E/24D, 768) vs ReLU (62E/11D, 768) vs ReLU (48E/24D, 768) | 7-task avg (Table 7) | Gated-GELU: 67.8/72.3; ReLU 62/11: 65.3/69.0; ReLU 48/24: 66.3/70.8 | Gated-GELU > ReLU even though it forces shallower depth; kept Gated-GELU. |
+| Relative positional embedding (Exp.11,16–21) | offset/dim: 128/32 (base) / 256/32 / 64/32 / 64/64 / 64/16 / **128/64** / 256/128 | 7-task avg (Table 8) | 128/32: 67.8/72.3; 256/32: 67.7/71.8; 64/32: 68.2/71.7; 64/64: 63.7/71.7; 64/16: 67.8/72.1; **128/64: 68.6/72.2**; 256/128: 67.8/71.1 | Many small embeddings beats few large; doubled offset+dim (128/64) gives most consistent gains. |
+| Weight tying (Exp.20,22) | Untied vs tie embedding & decoder weights | 7-task avg (Table 9) | Untied: 68.6/72.2; Tied: 67.6/72.1 | Tying hurts due to asymmetric input/output (masked vs reconstructed); untied kept. |
+| Pre-training dataset (Exp.20,23) | UniRef50 (2 epochs) vs UniRef90 (1 epoch, ~equivalent compute) | 7-task avg (Table 10) | UniRef50: 68.6/72.2; UniRef90: 67.2/71.7 | Higher-quality, smaller UniRef50 beats larger UniRef90 — confirms quality > scale for pre-training data. |
+| Embedding vs attention features for contact prediction | Embedding-based vs attention-based extraction (all PLMs incl. ESM) | ProteinNet & CASP14 L/1, L/5 (Table 13 vs 14) | Embedding-based prediction substantially higher than attention-based across all models (e.g. Ankh ProteinNet L/1: 49.0% emb vs 31.4% attn) | Embedding extraction is the better transfer-learning signal even for contact prediction, contradicting prior ESM claims; chosen as primary protocol. |
+| Generation: masking probability for One-N MLM | 40% vs 50% | Sequence identity vs RMSD of generated MDH variants (Fig. 3) | 50% shows steeper negative Pearson correlation between identity and RMSD | Higher unmasked context (=lower mask rate at gen time) preserves structural similarity better; informs One-N generation protocol. |
+| Generation: temperature (auto-regressive High-N) | 1.0 / 1.5 / 2.0 | MSE of Shannon entropy vs natural MSA (MDH, 500 generated) | 0.10 / 0.09 / 0.08 | All temperatures recover natural distribution; higher T introduces more functional diversity while preserving conservation pattern. |
+
+**Design-choice take-aways:**
+- Knowledge-guided protein-specific tweaks (1-gram span masking with merged-target reconstruction, 20% mask rate, 48E/24D encoder-heavy stack, Gated-GELU, 128/64 relative positional embedding, untied weights, UniRef50) collectively let Ankh beat ESM-2 (15B) with <10% of the parameters.
+- The single biggest performance lever is the **masking strategy** (Exp.4 vs Exp.3: +11.8 pts avg) — far larger than any architectural choice.
+- Encoder-heavy asymmetric encoder/decoder split outperforms equal-sized stacks for representation tasks while keeping decoder capacity for generation.
+- Quality-over-scale holds for both data (UniRef50 > UniRef90/100) and model size (Ankh > ESM-2 15B); bigger is conditionally better.
+- Embedding-based extraction beats attention-based extraction even for contact prediction, simplifying the downstream pipeline.

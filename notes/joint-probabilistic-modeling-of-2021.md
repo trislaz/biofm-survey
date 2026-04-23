@@ -36,6 +36,9 @@ training_compute: null
 references_chased: false
 added_at: null
 updated_at: null
+is_fm: false
+fm_classification_reason: 'totalVI: per-dataset VAE for CITE-seq; not a pretrained
+  reusable FM.'
 ---
 
 ## TL;DR

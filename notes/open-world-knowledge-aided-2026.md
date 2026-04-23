@@ -30,6 +30,8 @@ training_compute: null
 references_chased: false
 added_at: '2026-04-22T19:37:11+00:00'
 updated_at: null
+is_fm: true
+fm_classification_reason: scRNA FM with cross-modal cell-language pretraining.
 ---
 
 ## TL;DR
@@ -39,3 +41,19 @@ _(seed — not yet extracted)_
 ## Abstract (from arxiv)
 
 Recent advancements in single-cell multi-omics, particularly RNA-seq, have provided profound insights into cellular heterogeneity and gene regulation. While pre-trained language model (PLM) paradigm based single-cell foundation models have shown promise, they remain constrained by insufficient integration of in-depth individual profiles and neglecting the influence of noise within multi-modal data. To address both issues, we propose an Open-world Language Knowledge-Aided Robust Single-Cell Foundation Model (OKR-CELL). It is built based on a cross-modal Cell-Language pre-training framework, which comprises two key innovations: (1) leveraging Large Language Models (LLMs) based workflow with retrieval-augmented generation (RAG) enriches cell textual descriptions using open-world knowledge; (2) devising a Cross-modal Robust Alignment (CRA) objective that incorporates sample reliability assessment, curriculum learning, and coupled momentum contrastive learning to strengthen the model's resistance to noisy data. After pretraining on 32M cell-text pairs, OKR-CELL obtains cutting-edge results across 6 evaluation tasks. Beyond standard benchmarks such as cell clustering, cell-type annotation, batch-effect correction, and few-shot annotation, the model also demonstrates superior performance in broader multi-modal applications, including zero-shot cell-type annotation and bidirectional cell-text retrieval.
+
+## Ablations (Rev 4)
+
+Source: Table 1 (Section 4.6, "Ablation Studies"). Cell-type annotation on hPBMC and spleen datasets. Components: OT = Original Text, LLM = LLM-Enriched Text (RAG-augmented descriptions); pre-training objectives: Info-NCE (baseline) vs. CRA components — PSW (sample reliability assessment / curriculum), CMMB (coupled momentum memory bank), CCA (core cross-modal contrastive alignment). ✓ = included.
+
+| # | OT | LLM | Info-NCE | PSW | CMMB | CCA | hPBMC Acc | hPBMC F1 | Spleen Acc | Spleen F1 |
+|---|----|-----|----------|-----|------|-----|-----------|----------|------------|-----------|
+| 1 | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | 0.952 | 0.921 | 0.711 | 0.676 |
+| 2 | ✓ | ✗ | ✓ | ✗ | ✗ | ✗ | 0.958 | 0.934 | 0.747 | 0.726 |
+| 3 | ✓ | ✓ | ✓ | ✗ | ✗ | ✗ | 0.964 | 0.951 | 0.762 | 0.735 |
+| 4 | ✓ | ✓ | ✗ | ✗ | ✗ | ✓ | 0.968 | 0.957 | 0.770 | 0.751 |
+| 5 | ✓ | ✓ | ✗ | ✓ | ✗ | ✓ | 0.971 | 0.959 | 0.773 | 0.750 |
+| 6 | ✓ | ✓ | ✗ | ✗ | ✓ | ✓ | 0.974 | 0.960 | **0.780** | 0.763 |
+| 7 (full OKR-CELL) | ✓ | ✓ | ✗ | ✓ | ✓ | ✓ | **0.976** | 0.959 | 0.776 | **0.765** |
+
+**Top take-away:** Both contributions are additive and necessary — swapping Info-NCE for the CRA objective (CCA + PSW + CMMB) gives the largest single jump (e.g., spleen Acc 0.762 → 0.776, F1 0.735 → 0.765; CCA alone yields +1.0% Acc / +2.18% F1 on spleen over Info-NCE), while LLM-enriched cell text on top of original text consistently lifts performance further (+0.6 pt hPBMC Acc, +1.5 pt spleen Acc), confirming that open-world LLM/RAG descriptions and noise-robust cross-modal alignment are complementary.

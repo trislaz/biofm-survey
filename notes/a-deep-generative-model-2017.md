@@ -32,6 +32,9 @@ training_compute: null
 references_chased: false
 added_at: '2026-04-22T21:55:20+00:00'
 updated_at: '2026-04-22T21:55:20+00:00'
+is_fm: false
+fm_classification_reason: 'Original scVI: per-dataset VAE, not a pretrained reusable
+  foundation model.'
 ---
 
 ## TL;DR

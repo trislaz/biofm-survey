@@ -21,13 +21,20 @@ modalities:
 - other
 status: extracted
 evidence_quality: full-text
-tags: ["autoregressive", "byte-pair", "soft-prompt", "causal-lm", "biomedical-nlp"]
+tags:
+- autoregressive
+- byte-pair
+- soft-prompt
+- causal-lm
+- biomedical-nlp
 parameters: 347000000
 training_tokens: 104900000000
 training_compute: null
 references_chased: false
 added_at: '2026-04-22T20:11:28+00:00'
 updated_at: '2026-04-22T20:14:05+00:00'
+is_fm: true
+fm_classification_reason: 'BioGPT: pretrained biomedical generative LM.'
 ---
 
 ## TL;DR
@@ -109,3 +116,17 @@ BioGPT is a domain-specific GPT-2–based autoregressive language model (347M pa
 - Pretraining data is PubMed abstracts only—no full-text articles from PMC, which could significantly increase coverage.
 - The ~35 epochs over 15M abstracts is unusually high; potential overfitting risk is not discussed.
 - Context window (1024 tokens) limits ability to process full documents, but this is not discussed.
+
+## Ablations (Rev 4)
+
+| Variable | Settings | Metric / dataset | Result | Conclusion |
+|---|---|---|---|---|
+| Target sequence format | structured "head tail relation" / svo / is-of / rel-is (prompt fixed = continuous embeddings, length=9) | F1 on KD-DTI | 37.32 / 36.57 / 37.77 / **38.38** | Natural-language target formats beat structured formats with special tokens; rel-is ("the relation between H and T is R") is best. |
+| Target format (cross-dataset) | structured vs rel-is | F1 on BC5CDR / DDI | structured 42.85 / 38.60 → rel-is **44.98 / 40.76** | Confirms rel-is generalises across datasets (+~2 F1). |
+| Prompt: hard vs soft | hard prompts ("we have that" / "in conclusion," / "we can conclude that") vs continuous embedding soft prompts (length 1/5/9/13/17), target fixed = rel-is | F1 on KD-DTI | hard: 36.95 / 37.76 / 38.16; soft: 38.06 / 38.09 / 38.38 / **38.60** / 38.28 | Soft prompts > hard prompts; among hard prompts, more informative wording ("we can conclude that") is better. |
+| Soft-prompt length | continuous embeddings, length ∈ {1,5,9,13,17} | F1 on KD-DTI | 38.06 / 38.09 / 38.38 / 38.60 / 38.28 | Performance roughly insensitive to soft-prompt length; length=9 chosen via val set, length=13 marginally best on test. |
+
+**Design-choice take-aways:**
+- For decoder-only LMs on structured-output tasks, formulate the target as a fluent natural-language sentence (rel-is pattern) rather than special-token structured sequences—keeps input/output distribution consistent for a unified module.
+- Prefer soft (continuous-embedding) prompts over hand-crafted hard prompts; exact length matters little, so a small length (~9–13) is a safe default.
+- More informative/instructive hard-prompt wording helps when soft prompts are unavailable.

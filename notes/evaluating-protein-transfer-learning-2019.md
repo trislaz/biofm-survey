@@ -27,12 +27,14 @@ tags:
 - protein-representation
 - self-supervised
 - architecture-comparison
-parameters: '~38M (each of Transformer, LSTM, ResNet matched to ~38M)'
-training_tokens: '~32M protein domain sequences (Pfam)'
-training_compute: '4× NVIDIA V100 GPUs for 1 week per model'
+parameters: ~38M (each of Transformer, LSTM, ResNet matched to ~38M)
+training_tokens: ~32M protein domain sequences (Pfam)
+training_compute: 4× NVIDIA V100 GPUs for 1 week per model
 references_chased: false
 added_at: '2026-04-22T21:55:16+00:00'
 updated_at: '2026-04-22T21:55:19+00:00'
+is_fm: false
+fm_classification_reason: 'TAPE: benchmark, not a model.'
 ---
 
 ## TL;DR

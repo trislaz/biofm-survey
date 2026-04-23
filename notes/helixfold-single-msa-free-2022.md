@@ -34,12 +34,15 @@ tags:
 - single-sequence
 - end-to-end
 - co-evolution
-parameters: 1.18e+9  # PLM-1B (1.09B) + EvoFormer (87M) + StructureModule (1.7M); PLM-100M variant also tested
-training_tokens: null  # ~260M sequences for PLM pre-training; token count not reported
-training_compute: null  # 128× A100 GPUs; total GPU-hours not reported
+parameters: 1180000000.0
+training_tokens: null
+training_compute: null
 references_chased: false
 added_at: '2026-04-22T21:55:43+00:00'
 updated_at: '2026-04-22T21:55:47+00:00'
+is_fm: true
+fm_classification_reason: HelixFold-Single uses pretrained PLM for single-sequence
+  structure prediction; released.
 ---
 
 ## TL;DR
@@ -154,3 +157,23 @@ Six claims referencing `[helixfold-single-msa-free-2022]` were found in `insight
 | 6 | 474 | "1.18 B, 500× faster, PLM perplexity correlates with TM-score" | **supported** | Parameter count and speed as above. §3.3 + Fig. 3e: "Perplexity of the PLM and the TM-scores of HelixFold-Single are also negatively correlated." |
 
 **Summary**: 5/6 supported, 1/6 partial. The only issue is Claim 1's grouping of HelixFold-Single with the statement "especially on orphan proteins," which the paper contradicts for this model.
+
+## Ablations (Rev 4)
+
+The paper reports a single quantitative ablation (PLM size) plus one qualitative architectural change (column-wise attention removal). Numbers below are read from Figure 4 bar charts; the paper does not tabulate exact values.
+
+| # | Ablation | Variant | Setup / Dataset | Metric | Result | Source | Take-away |
+|---|---|---|---|---|---|---|---|
+| 1 | PLM scale | PLM-100M (12 layers, d=768) | CASP14 targets, MLM pre-training | Perplexity (↓ better) | ≈ higher (worse) than PLM-1B on every target shown | §3.4, Fig. 4a (lines 438–443) | Larger PLM has stronger language-modelling capacity. |
+| 2 | PLM scale | PLM-1B (20 layers, d=2048) | CASP14, MLM pre-training | Perplexity (↓) | ≈ lower (better) than 100M on the same targets | §3.4, Fig. 4a | 10× parameters → consistently lower perplexity. |
+| 3 | PLM scale | PLM-100M | CAMEO, MLM pre-training | Perplexity (↓) | Worse than PLM-1B | §3.4, Fig. 4a | Trend holds across both eval sets. |
+| 4 | PLM scale | PLM-1B | CAMEO, MLM pre-training | Perplexity (↓) | Better than PLM-100M | §3.4, Fig. 4a | Same trend as CASP14. |
+| 5 | PLM scale → downstream | PLM-100M attention → logistic regression for contact prediction | CASP14 | Top-L/5 long-range precision P@L/5 (↑) | Substantially lower than PLM-1B | §3.4, Fig. 4b (lines 448–451) | Smaller PLM encodes weaker co-evolution signal. |
+| 6 | PLM scale → downstream | PLM-1B attention → logistic regression for contact prediction | CASP14 | P@L/5 (↑) | "Significantly superior" to PLM-100M | §3.4, Fig. 4b | 1B PLM's attention maps already encode usable contacts before any folding training. |
+| 7 | PLM scale → downstream | PLM-100M, contact prediction | CAMEO | P@L/5 (↑) | Lower than PLM-1B | §3.4, Fig. 4b | Confirms scaling claim on second dataset. |
+| 8 | PLM scale → downstream | PLM-1B, contact prediction | CAMEO | P@L/5 (↑) | Higher than PLM-100M | §3.4, Fig. 4b | Authors extrapolate that further scaling will keep helping. |
+| 9 | Evoformer architecture | Remove column-wise attention from Evoformer (single-sequence input has no MSA columns) | Used in all HelixFold-Single training | — | No quantitative comparison reported; presented as a justified simplification | Appendix "Geometric Modeling" (lines 669–671), Fig. 8 | Column-wise attention is unnecessary when input is a single sequence; impact on accuracy is **not** measured. |
+
+**Count**: 9 ablation rows (8 PLM-scale measurements across {Perplexity, P@L/5} × {CASP14, CAMEO} × {100M, 1B}, plus 1 un-quantified architectural change).
+
+**Top take-away**: The only end-to-end ablation in the paper is **PLM size (100M vs 1B)**, and it consistently favours the larger model on both intrinsic (perplexity) and structural (top-L/5 long-range contact precision) metrics across CASP14 and CAMEO — supporting the paper's central thesis that a larger PLM provides stronger co-evolution priors and motivating further scaling. Notably, the paper does **not** quantitatively ablate distillation data, the Adaptor, or the column-wise-attention removal, leaving those design choices unverified.

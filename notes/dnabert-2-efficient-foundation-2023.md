@@ -19,13 +19,23 @@ modalities:
 - dna
 status: extracted
 evidence_quality: full-text
-tags: ["mlm", "byte-pair-encoding", "alibi", "flash-attention", "lora", "geglu", "multispecies", "genome-benchmark"]
+tags:
+- mlm
+- byte-pair-encoding
+- alibi
+- flash-attention
+- lora
+- geglu
+- multispecies
+- genome-benchmark
 parameters: 117000000
 training_tokens: 262000000000
 training_compute: null
 references_chased: false
 added_at: '2026-04-22T19:50:40+00:00'
 updated_at: '2026-04-22T19:54:12+00:00'
+is_fm: true
+fm_classification_reason: 'DNABERT-2: pretrained multi-species genomic FM.'
 ---
 
 ## TL;DR
@@ -124,6 +134,21 @@ DNABERT-2 is a 117M-parameter multi-species genome foundation model that replace
 5. **Efficiency gains are multiplicative**: BPE tokenization (3–4× fewer FLOPs than overlapping k-mer) + smaller model (21× fewer params than NT-2500M) + ALiBi (no input length limit) = comparable SOTA performance at ~92× less GPU cost.
 6. **Short sequences remain challenging** for non-overlapping tokenization methods (BPE or non-overlapping k-mer) due to aggressive compression.
 7. **Further pretraining on domain data** provides cheap but meaningful gains.
+
+## Ablations (Rev 4)
+
+| Variable | Settings | Metric / dataset | Result | Conclusion |
+|---|---|---|---|---|
+| Tokenization method (A.6, Table 10) | BPE (vocab 4096) vs overlapping 6-mer (vocab 4101); same data, architecture, hyperparams; batch 4096, max-len 128, 120k steps | GUE benchmark, 28 datasets (MCC/F1, avg) | BPE wins on 21/28 datasets; avg score 65.33 (BPE) vs 60.92 (6-mer); BPE also 3–4× fewer FLOPs (per Table 6) | BPE strictly dominates overlapping k-mer in both performance and compute, validating the central design choice |
+| Vocabulary size (§3.1, Fig. 3a–c) | BPE vocab from 2^8 to 2^15 trained on multi-species genomes | Avg token length, sequence-compression ratio, GUE performance (macro/micro avg) | Larger vocab → longer tokens & shorter sequences (lower FLOPs); performance peaks at intermediate vocab (~2^12 = 4096) and degrades at very large sizes | Vocab size = 4096 is the chosen sweet spot trading compute vs accuracy |
+| Pre-training (A.5, Table 9) | DNABERT-2 with vs without multi-species pre-training; also vs HyenaDNA & CNN baselines | GUE benchmark (28 tasks across EMP, PD, TF-H, TF-M, Virus, Splice) | DNABERT-2 ≫ DNABERT-2 w/o PT on every task (e.g., H3 78.27 vs 57.36; TF-H-0 84.38 vs 59.35; Virus 71.02 vs 69.76); also beats HyenaDNA and CNN on nearly all tasks | Multi-species pre-training is the dominant source of DNABERT-2's gains; architecture alone is insufficient |
+| Further pre-training on GUE training sets (♦, Table 6) | DNABERT-2 vs DNABERT-2♦ (continued PT on GUE train splits) | GUE per-task scores | ♦ variant gives consistent small-to-moderate gains across tasks | Cheap domain-adaptive pre-training reliably improves downstream performance |
+
+**Design-choice take-aways:**
+- BPE tokenization is the single most impactful design decision: better accuracy *and* 3–4× cheaper than overlapping k-mer.
+- Vocabulary size has a clear compute/accuracy trade-off; 4096 is empirically optimal for genomes.
+- Multi-species pre-training contributes the majority of downstream performance — without PT the same architecture collapses to baseline-CNN level.
+- Light continued pre-training on task-domain data (♦) is a low-cost way to squeeze out additional gains.
 
 ## References Worth Chasing
 

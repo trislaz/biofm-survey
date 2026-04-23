@@ -43,6 +43,9 @@ training_compute: 3-days-64xTPUv3
 references_chased: false
 added_at: null
 updated_at: null
+is_fm: true
+fm_classification_reason: 'Enformer: pretrained sequence-to-expression model widely
+  used as backbone.'
 ---
 
 ## TL;DR
@@ -167,3 +170,28 @@ Source: `papers/md/effective-gene-expression-prediction-2021.md` (PMC full text)
 
 **Summary**: 3 supported, 5 partial, 0 unsupported, 0 out-of-scope.
 Recurring issue: the "200 kb" figure is the input length, not the effective receptive field (100 kb). The "inter-individual" ceiling label and "plateaus" wording are not in the source.
+
+## Ablations (Rev 4)
+
+Source: `papers/md/effective-gene-expression-prediction-2021.md` (Results ¶2; Methods ¶ "Ablation and hyperparameter sweeps", line 202; Extended Data Figs. 5a, 5b, 6a, 6b).
+
+**Ablation setup** (Methods, line 202): comparative ablations use a half-size Enformer (768 channels, value size 96 in MHA), 131 kb input, batch size 32 on 32 TPU v3 cores, 500k steps, no human fine-tuning; learning rate grid-searched per variant; metric = mean Spearman across CAGE TSS gene-expression experiments on the validation set.
+
+| # | Ablation | Variant tested | Reported effect | Quantitative? | Reference |
+|---|---|---|---|---|---|
+| A1 | Attention vs dilated convolutions | Replace transformer blocks with dilated convolutions (Basenji2-style), LR re-tuned | Attention "outperformed dilated convolutions across all model sizes, numbers of layers, and numbers of training data points" | No numbers in main text | Results ¶2; Ext. Data Fig. 5a |
+| A2 | Receptive-field size | Replace global attention with local attention, restricting receptive field to Basenji2's | "Large performance drop"; receptive field called "crucial" | Qualitative ("large drop") | Results ¶2; Ext. Data Fig. 5b |
+| A3 | Model scale (parameter count) | Sweep model sizes, # layers, # training data points | "Increasing the number of parameters improved model performance" (monotone scaling) | Trend only in main text | Results ¶2; Ext. Data Fig. 5a |
+| A4 | Custom relative positional basis (proximal/distal) | Swap custom relative basis functions for standard NLP relative encodings | "Noticeable performance improvement" | Qualitative | Results ¶2; Ext. Data Fig. 6a |
+| A5 | Directional positional encoding (upstream/downstream of TSS) | Swap for absolute positional encodings | "Noticeable performance improvement" | Qualitative | Results ¶2; Ext. Data Fig. 6b |
+
+**Take-aways**
+
+- **Top take-away**: The single biggest lever is the **enlarged receptive field**, not attention per se — restricting Enformer's attention to Basenji2's receptive field (via local instead of global attention) caused a "large performance drop", and the paper explicitly calls the larger receptive field "crucial". Architecture (attention) and positional-encoding tweaks each give only "noticeable" gains by comparison.
+- Attention beats dilated convolutions **at every model size, depth, and data-budget point** — i.e. the gain is not a scale artifact (A1).
+- Performance scales **monotonically with parameters**, mirroring NLP scaling trends (A3); no plateau is reported within the explored range.
+- Both custom positional-encoding choices (distance-aware basis A4; direction-aware upstream/downstream A5) help, but the paper grades them as "noticeable", not "critical" — consistent with the Rev 3 verification flagging "critical positional encoding" as overstated.
+- All ablations are run on a **half-size, non-fine-tuned** model with shorter (131 kb) input, so absolute numbers do not transfer to the full Enformer; only the relative ordering does.
+- No ablation isolates: attention pooling vs max/avg pooling, the convolutional stem depth, the Poisson-NLL loss vs alternatives, or human-only fine-tuning's contribution.
+
+**Count**: 5 ablations extracted.

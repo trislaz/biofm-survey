@@ -40,6 +40,8 @@ training_compute: null
 references_chased: false
 added_at: '2026-04-22T19:37:15+00:00'
 updated_at: '2026-04-22T20:22:31+00:00'
+is_fm: true
+fm_classification_reason: Knowledge-enhanced VL pretraining for pathology FM.
 ---
 
 ## TL;DR
@@ -132,3 +134,24 @@ KEEP is a vision-language pathology foundation model that injects structured dis
 - All WSI evaluation is zero-shot or few-shot; no end-to-end WSI-level training is performed
 - The unsupervised prompt screening requires unlabelled tile images from target distribution, which is a mild assumption but not strictly zero-shot
 - Code available at MAGIC-AI4Med/KEEP (MIT License); weights on HuggingFace at Astaxanthin/KEEP
+
+## Ablations (Rev 4)
+
+| # | Ablation | Variants compared | Setting / Tasks | Reported effect |
+|---|---|---|---|---|
+| 1 | Knowledge enhancement | KEEP (knowledge-enhanced) vs naïve contrastive baseline (same backbone, no KG) | All 18 WSI datasets: zero-shot segmentation, detection, subtyping (Fig. 5E, S5C-D, Table S5) | KEEP wins on 16/18 datasets; +~10% AUROC on PANDA and +12.9% on AGGC22 segmentation; better on 6/7 detection benchmarks; better on all subtyping benchmarks |
+| 2 | Knowledge enhancement under shared aggregation | Contrastive-Top100 vs KEEP-Top100 (top-100 pooling à la MI-Zero/CONCH) | 8 WSI subtyping/detection datasets (Fig. 5F, Table S5) | KEEP-Top100 ≥ Contrastive-Top100 on 6/8; +11 points BACC on rare-tumor EBRAINS dataset |
+| 3 | Tumor-ratio aggregation | KEEP-Top100 vs KEEP-Ratio (subtype-ratio pooling for slide label) | WSI-level inference on all subtyping datasets (Fig. 5F, S5E) | Ratio strategy wins on all datasets; +0.10 BACC on CPTAC-NSCLC (0.860) and +0.15 on TCGA-BRCA (0.774) |
+| 4 | Semantic groups | Image-text-pair contrastive baseline (no semantic grouping) vs KEEP | Text→image and image→text retrieval (Table S5) | Semantic grouping improves retrieval (details in Table S5) |
+| 5 | Caption augmentation | KEEP training pipeline w/ vs w/o caption augmentation during VL alignment | Downstream WSI tasks (Table S5) | Caption augmentation contributes positively |
+| 6 | Knowledge-encoding loss (pos/neg sampling) | (a) hardest pos & hardest neg, (b) least-hard pos & least-hard neg, (c) hardest pos & least-hard neg, (d) **KEEP**: least-hard pos & hardest neg | Knowledge encoding stage (Table S5) | KEEP's least-hard-positive + hardest-negative configuration is best |
+| 7a | KG composition – non-cancer diseases | Full ontology vs cancer-only nodes (non-cancer diseases removed) | WSI cancer detection & subtyping (Fig. S5F) | Cancer-only drops 1.1% (detection) and 2.5% (subtyping) — broader disease categories aid generalization |
+| 7b | KG composition – disease relationships | With vs without inter-disease relationships in KG | WSI detection & subtyping (Fig. S5G) | -3.4% on subtyping when relationships removed; no degradation on detection (relationships matter for fine-grained subtyping by excluding same-branch negatives) |
+| 8a | Text encoder – PubMedBERT w/o KG pre-training | KEEP (PubMedBERT + knowledge pre-training) vs PubMedBERT alone | All downstream tasks (Fig. S5H-I) | Significantly lower than KEEP — confirms benefit of structured medical ontology integration |
+| 8b | Text encoder – Clinical-Longformer w/o KG | Clinical-Longformer (no knowledge pre-training) | All downstream tasks (Fig. S5H-I) | Comparable to BERT-without-KG, consistently below KEEP |
+| 8c | Text encoder – LLM embeddings | OpenAI `text-embedding-3-large` aligned with vision features | All downstream tasks (Fig. S5H-I) | Lowest performance of all settings — generic LLM embeddings lack ontology grounding and fine-grained biomedical discrimination |
+| 9 | Data scale | Varying pretraining data scale (referenced in Suppl. Note 1) | Downstream tasks (Table S5) | Performance scales with data; details in Supplementary Note 1 |
+
+**Count: 12 ablation variants across 9 axes.**
+
+**Top take-away:** Structured disease-knowledge injection is the single most impactful design choice — the knowledge-enhanced model beats the same-backbone naïve-contrastive baseline on 16/18 WSI datasets, and the knowledge effect is largest precisely where it matters most (rare-tumor EBRAINS subtyping: +11 BACC points). Ablating either the KG's inter-disease relationships (-3.4% subtyping) or replacing the text encoder with general-purpose LLM embeddings collapses this gain, confirming that the structured ontology — not just any biomedical text encoder — drives KEEP's advantage.

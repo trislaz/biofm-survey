@@ -41,12 +41,17 @@ tags:
 - secondary-structure
 - subcellular-localization
 - protein-LM
-parameters: "up to 11B (ProtT5-XXL); ProtT5-XL 3B; ProtBert/ProtXLNet/ProtAlbert ~40M; ProtTXL-BFD 562M; ProtElectra 420M"
-training_tokens: "up to 393B amino-acid tokens (BFD); UniRef100 88B; UniRef50 14B"
-training_compute: "Summit supercomputer 5616 GPUs (936 nodes x 6 V100) for ProtTXL; TPU Pod v3-512/v3-1024 for other models; ProtT5-XXL trained 920k+343k steps on 1024 TPU cores; ProtT5-XL trained 1.2M+991k steps on 512 TPU cores"
+parameters: up to 11B (ProtT5-XXL); ProtT5-XL 3B; ProtBert/ProtXLNet/ProtAlbert ~40M;
+  ProtTXL-BFD 562M; ProtElectra 420M
+training_tokens: up to 393B amino-acid tokens (BFD); UniRef100 88B; UniRef50 14B
+training_compute: Summit supercomputer 5616 GPUs (936 nodes x 6 V100) for ProtTXL;
+  TPU Pod v3-512/v3-1024 for other models; ProtT5-XXL trained 920k+343k steps on 1024
+  TPU cores; ProtT5-XL trained 1.2M+991k steps on 512 TPU cores
 references_chased: false
 added_at: '2026-04-22T21:52:00+00:00'
 updated_at: '2026-04-22T21:58:33+00:00'
+is_fm: true
+fm_classification_reason: 'ProtTrans: family of pretrained protein LMs.'
 ---
 
 ## TL;DR
@@ -192,3 +197,24 @@ Each claim below is quoted from `insights.md` with its line reference, then judg
 
 7. **L436–437** — "ProtTrans scaled to 11 B (T5-XXL) on 393 B tokens using 5,616 GPUs, finding that training duration matters more than model width (T5-XL-U50 3 B > T5-XXL 11 B). ProtTrans was first to match MSA-based secondary structure prediction without MSAs."
    **partial** — The 5,616 GPU figure applies to ProtTXL on Summit, not to T5-XXL (trained on TPU Pod v3-1024). The sentence structure "scaled to 11 B … using 5,616 GPUs" incorrectly implies T5-XXL used 5,616 GPUs. The training-duration-over-model-width conclusion and the first-to-match-MSA-SOA claim are both supported.
+
+## Ablations (Rev 4)
+
+| Variable | Settings | Metric / dataset | Result | Conclusion |
+|---|---|---|---|---|
+| Supervised head architecture (on frozen ProtBERT-BFD embeddings) | LogReg, FNN, CNN, LSTM | Q3 secondary structure on CASP12 / NEW364 | LogReg 74.3–79.3; CNN 76.1–81.1; LSTM 76.1–80.9 (SOM Table 7) | CNN ≈ LSTM > LogReg; CNN chosen (more compute-efficient). Architecture matters less than embeddings. |
+| Pre-training corpus size | UniRef100 vs. BFD (10× larger); + UniRef50 fine-tune after BFD | Q3 on CASP12 / NEW364 (Table 3) | ProtBert: BFD +1.1% Q3; ProtTXL: BFD −0.6%; ProtT5-XL: BFD 77.5/82.0 → +U50 fine-tune 81.4/84.8 | Larger raw corpus alone gives marginal/inconsistent gains; **fine-tuning on cleaner UniRef50 after BFD is the decisive trick**. |
+| LM architecture / objective | ProtTXL, ProtXLNet (auto-regressive); ProtBert, ProtAlbert, ProtElectra, ProtT5 (auto-encoding/seq2seq) | Q3 (CASP12/NEW364) and Q10/Q2 (DeepLoc) (Tables 3, 4) | Auto-encoders dominate: ProtBert 75.0/80.1, ProtT5-XL-U50 81.4/84.8; auto-regressive ProtTXL 71.5/72.8 | Auto-encoding (esp. T5 span corruption) > auto-regressive for protein representation learning. |
+| Model size at fixed family (T5) | ProtT5-XL (~3B) vs. ProtT5-XXL (~11B), both BFD then U50 | Q3 NEW364; Q10/Q2 DeepLoc | XL-U50 81.4/84.8 vs. XXL-U50 79.2/83.3; Q10 81 vs 79; Q2 91 vs 89 | Scaling width beyond 3B hurts at fixed sample budget — **more training samples beats more parameters**. |
+| Pre-training samples seen (steps × global batch) | Across all 6 LMs trained here | Q3 on NEW364 vs. samples-seen (Fig. 7) | Spearman ρ = 0.62 (positive) | Performance correlates with samples seen during pre-training; informal scaling trend. |
+| Pooling strategy (per-protein) | min, max, mean, concat(min,max,mean) on ProtBert-BFD per-residue embeddings | Q10 localization, Q2 membrane on DeepLoc (Table 10) | min/max ≈ −14% Q10 and ≈ −3% Q2 vs mean/concat; mean beats concat by ~10% Q10 | **Mean-pooling is best** for per-protein tasks; min/max discard too much; concat hurts localization. |
+| MSA depth sensitivity (Neff) | NEW364 split by Neff = 1, ≤10, >10; compare ProtT5-XL-U50 (no MSA) vs. NetSurfP-2.0 (MSA) | Q3 per Neff bin (Fig. 6) | ProtT5 advantage largest at Neff=1 (small families); near-parity at Neff>10 | Embedding-only models help most where evolutionary info is weakest. |
+| Inference batch size × sequence length | bs ∈ {1,16,32}, len ∈ {128,256,512}, fp16, single Quadro RTX 8000 | Per-protein latency, all LMs (SOM Table 11) | ProtBert/Electra: 0.007 s/protein @ bs32; ProtT5-XL/Albert: 0.025 s; ProtT5-XL is 4–6× faster than MMseqs2 MSA, ProtBert 16–28× faster | Embedding inference is dramatically cheaper than MSA construction; throughput is bs/length-sensitive. |
+
+**Design-choice take-aways from this paper's ablations:**
+- **Samples > parameters**: at the 3–11B scale, additional pre-training samples (BFD → UniRef50 fine-tune) beat doubling/tripling width.
+- **Auto-encoding objectives (BERT/T5) clearly outperform auto-regressive (TXL/XLNet)** for residue- and protein-level transfer.
+- **Two-stage pre-training (large noisy BFD → clean UniRef50)** is the single largest performance lever observed.
+- **Mean-pooling** is the right default for per-protein heads; min/max/concat are strictly worse.
+- A **CNN head on frozen embeddings** is a sufficient and compute-efficient downstream architecture.
+- Embedding-based models give the **biggest wins on small protein families (Neff≈1)** where MSAs fail.

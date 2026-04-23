@@ -29,6 +29,8 @@ training_compute: null
 references_chased: false
 added_at: '2026-04-22T19:42:01+00:00'
 updated_at: '2026-04-22T20:24:55+00:00'
+is_fm: false
+fm_classification_reason: Evaluation/method for cell instance segmentation with FMs.
 ---
 
 ## TL;DR

@@ -28,12 +28,15 @@ tags:
 - property-prediction
 - multimodal-fusion
 - deep-metric-learning
-parameters: '~138M total (structure 1.8M + text 61.8M + KG 12.6M + multimodal encoder 61.8M)'
+parameters: ~138M total (structure 1.8M + text 61.8M + KG 12.6M + multimodal encoder
+  61.8M)
 training_tokens: null
-training_compute: '300 epochs, batch 128, 4×A100 GPUs'
+training_compute: 300 epochs, batch 128, 4×A100 GPUs
 references_chased: false
 added_at: '2026-04-22T19:42:13+00:00'
 updated_at: '2026-04-22T20:22:55+00:00'
+is_fm: true
+fm_classification_reason: 'MolFM: pretrained multimodal molecular FM.'
 ---
 
 ## TL;DR
@@ -114,3 +117,23 @@ MolFM is a multimodal molecular FM that jointly learns from 2D molecular graphs,
 - TransE is a simple KG embedding; would more expressive methods (RotatE, CompGCN) improve KG integration?
 - Downstream text/KG input requires SMILES matching to ChEBI-20 and KG — many molecules in MoleculeNet have no text (e.g., BACE: only 3/1513 linked to text). Impact of this sparsity on property prediction gains is unclear.
 - Code at https://github.com/BioFM/OpenBioMed.
+
+## Ablations (Rev 4)
+
+Zero-shot paragraph-level cross-modal retrieval on PCdes (avg of R@1, R@5, R@10). S-T = structure→text, T-S = text→structure. Source: Table 1, §5.1.
+
+| # | Variant                       | S-T   | T-S   | Δ S-T vs full | Δ T-S vs full | Component probed                                  |
+|---|-------------------------------|-------|-------|---------------|---------------|---------------------------------------------------|
+| 1 | MolFM (full)                  | 26.27 | 28.78 | —             | —             | Reference                                         |
+| 2 | w/o re-rank                   | 25.22 | 28.13 | −1.05         | −0.65         | ITM-based re-ranking at inference                 |
+| 3 | w/o attention to atoms        | 23.45 | 25.89 | −2.82         | −2.89         | Cross-modal attention from text to atom tokens    |
+| 4 | w/o attention to neighbors    | 25.23 | 28.49 | −1.04         | −0.29         | Attention to KG neighbour entities                |
+| 5 | w/o knowledge                 | 24.66 | 27.33 | −1.61         | −1.45         | Entire KG input branch removed                    |
+| 6 | w/o KGE                       | 25.81 | 28.24 | −0.46         | −0.54         | TransE knowledge-graph embedding pre-training     |
+| 7 | w/o CMM                       | 23.48 | 25.96 | −2.79         | −2.82         | Cross-modal matching pre-training objective       |
+| 8 | w/o knowledge + CMM           | 22.07 | 24.48 | −4.20         | −4.30         | Joint removal of KG branch and CMM objective      |
+
+Additional ablation (Appendix E, Fig. A.3): varying number of KG neighbours N. Performance improves with N up to 4; beyond N=4 gains plateau, attributed to KG sparsity (few entities have >4 neighbours) and redundancy in additional neighbour information.
+
+**Top take-away:** the two largest single-component drops both come from pre-training/architecture choices that bind text to molecular structure — removing cross-modal attention to atoms (−2.8 avg) or the cross-modal matching (CMM) objective (−2.8 avg) hurts far more than removing the knowledge-graph branch (−1.5 avg) or KGE (−0.5 avg). Fine-grained substructure↔word alignment via CMM is the core driver of MolFM's gains; the KG is a useful but secondary contributor (~1.5% avg), and combined removal of KG + CMM compounds losses to ~4.3 points, the worst configuration.
+
