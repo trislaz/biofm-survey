@@ -1,44 +1,6 @@
 {
-  "count": 169,
+  "count": 141,
   "papers": [
-    {
-      "id": "a-deep-generative-model-2017",
-      "title": "A deep generative model for gene expression profiles from single-cell RNA sequencing",
-      "authors": [
-        "Romain Lopez",
-        "Jeffrey Regier",
-        "Michael Cole",
-        "Michael Jordan",
-        "Nir Yosef"
-      ],
-      "year": 2017,
-      "venue": null,
-      "arxiv": "1709.02082",
-      "doi": null,
-      "url": "https://arxiv.org/abs/1709.02082v4",
-      "pdf_path": "papers/a-deep-generative-model-2017.pdf",
-      "md_path": "papers/md/a-deep-generative-model-2017.md",
-      "modalities": [
-        "scrna"
-      ],
-      "status": "extracted",
-      "evidence_quality": "full-text",
-      "tags": [
-        "vae",
-        "scRNA-seq",
-        "zero-inflated-negative-binomial",
-        "variational-inference",
-        "imputation",
-        "differential-expression",
-        "dimensionality-reduction"
-      ],
-      "parameters": "not reported",
-      "training_tokens": null,
-      "training_compute": null,
-      "references_chased": false,
-      "added_at": "2026-04-22T21:55:20+00:00",
-      "updated_at": "2026-04-22T21:55:20+00:00"
-    },
     {
       "id": "a-foundation-model-of-2025",
       "title": "A foundation model of transcription across human cell types",
@@ -924,35 +886,6 @@
       "updated_at": "2026-04-22T20:17:36+00:00"
     },
     {
-      "id": "boundary-aware-instance-segmentation-2026",
-      "title": "Boundary-Aware Instance Segmentation in Microscopy Imaging",
-      "authors": [
-        "Thomas Mendelson",
-        "Joshua Francois",
-        "Galit Lahav",
-        "Tammy Riklin-Raviv"
-      ],
-      "year": 2026,
-      "venue": null,
-      "arxiv": "2603.21206",
-      "doi": null,
-      "url": "https://arxiv.org/abs/2603.21206v1",
-      "pdf_path": "papers/boundary-aware-instance-segmentation-2026.pdf",
-      "md_path": "papers/md/boundary-aware-instance-segmentation-2026.md",
-      "modalities": [
-        "imaging-microscopy"
-      ],
-      "status": "converted",
-      "evidence_quality": "unknown",
-      "tags": [],
-      "parameters": null,
-      "training_tokens": null,
-      "training_compute": null,
-      "references_chased": false,
-      "added_at": "2026-04-22T19:42:01+00:00",
-      "updated_at": "2026-04-22T20:17:38+00:00"
-    },
-    {
       "id": "caduceus-bi-directional-equivariant-2024",
       "title": "Caduceus: Bi-Directional Equivariant Long-Range DNA Sequence Modeling",
       "authors": [
@@ -1091,42 +1024,6 @@
       "updated_at": null
     },
     {
-      "id": "cellpose-a-morphological-analysis-2024",
-      "title": "Cellpose+, a morphological analysis tool for feature extraction of stained cell images",
-      "authors": [
-        "Israel A. Huaman",
-        "Fares D. E. Ghorabe",
-        "Sofya S. Chumakova",
-        "Alexandra A. Pisarenko",
-        "Alexey E. Dudaev",
-        "Tatiana G. Volova",
-        "Galina A. Ryltseva",
-        "Sviatlana A. Ulasevich",
-        "Ekaterina I. Shishatskaya",
-        "Ekaterina V. Skorb",
-        "Pavel S. Zun"
-      ],
-      "year": 2024,
-      "venue": null,
-      "arxiv": "2410.18738",
-      "doi": null,
-      "url": "https://arxiv.org/abs/2410.18738v1",
-      "pdf_path": "papers/cellpose-a-morphological-analysis-2024.pdf",
-      "md_path": "papers/md/cellpose-a-morphological-analysis-2024.md",
-      "modalities": [
-        "imaging-cell"
-      ],
-      "status": "converted",
-      "evidence_quality": "unknown",
-      "tags": [],
-      "parameters": null,
-      "training_tokens": null,
-      "training_compute": null,
-      "references_chased": false,
-      "added_at": "2026-04-22T19:37:19+00:00",
-      "updated_at": "2026-04-22T20:17:45+00:00"
-    },
-    {
       "id": "cellverse-do-large-language-2025",
       "title": "CellVerse: Do Large Language Models Really Understand Cell Biology?",
       "authors": [
@@ -1171,34 +1068,6 @@
       "references_chased": false,
       "added_at": "2026-04-22T19:37:14+00:00",
       "updated_at": "2026-04-22T20:17:52+00:00"
-    },
-    {
-      "id": "cents-generating-synthetic-electricity-2025",
-      "title": "CENTS: Generating synthetic electricity consumption time series for rare and unseen scenarios",
-      "authors": [
-        "Michael Fuest",
-        "Alfredo Cuesta",
-        "Kalyan Veeramachaneni"
-      ],
-      "year": 2025,
-      "venue": null,
-      "arxiv": "2501.14426",
-      "doi": null,
-      "url": "https://arxiv.org/abs/2501.14426v3",
-      "pdf_path": "papers/cents-generating-synthetic-electricity-2025.pdf",
-      "md_path": "papers/md/cents-generating-synthetic-electricity-2025.md",
-      "modalities": [
-        "protein-structure"
-      ],
-      "status": "converted",
-      "evidence_quality": "unknown",
-      "tags": [],
-      "parameters": null,
-      "training_tokens": null,
-      "training_compute": null,
-      "references_chased": false,
-      "added_at": "2026-04-22T19:37:00+00:00",
-      "updated_at": "2026-04-22T20:17:54+00:00"
     },
     {
       "id": "character-level-tokenizations-as-2024",
@@ -1355,44 +1224,6 @@
       "references_chased": false,
       "added_at": "2026-04-22T19:36:46+00:00",
       "updated_at": "2026-04-22T20:19:06+00:00"
-    },
-    {
-      "id": "data-efficient-and-weakly-2020",
-      "title": "Data Efficient and Weakly Supervised Computational Pathology on Whole Slide Images",
-      "authors": [
-        "Ming Y. Lu",
-        "Drew F. K. Williamson",
-        "Tiffany Y. Chen",
-        "Richard J. Chen",
-        "Matteo Barbieri",
-        "Faisal Mahmood"
-      ],
-      "year": 2020,
-      "venue": null,
-      "arxiv": "2004.09666",
-      "doi": null,
-      "url": "https://arxiv.org/abs/2004.09666v2",
-      "pdf_path": "papers/data-efficient-and-weakly-2020.pdf",
-      "md_path": "papers/md/data-efficient-and-weakly-2020.md",
-      "modalities": [
-        "imaging-pathology"
-      ],
-      "status": "extracted",
-      "evidence_quality": "full-text",
-      "tags": [
-        "mil",
-        "weakly-supervised",
-        "computational-pathology",
-        "attention-pooling",
-        "wsi-classification",
-        "not-a-foundation-model"
-      ],
-      "parameters": "~800K (CLAM head only; excludes frozen ResNet50 encoder ~23M)",
-      "training_tokens": null,
-      "training_compute": "2\u00d7 NVIDIA 2080 Ti per experiment; hours-scale per task",
-      "references_chased": false,
-      "added_at": "2026-04-22T21:55:48+00:00",
-      "updated_at": "2026-04-22T21:55:53+00:00"
     },
     {
       "id": "differential-attention-augmented-biomedclip-2026",
@@ -2079,64 +1910,6 @@
       "updated_at": null
     },
     {
-      "id": "experiential-learning-styles-and-2021",
-      "title": "Experiential Learning Styles and Neurocognitive Phenomics",
-      "authors": [
-        "W\u0142odzis\u0142aw Duch"
-      ],
-      "year": 2021,
-      "venue": null,
-      "arxiv": "2101.04532",
-      "doi": null,
-      "url": "https://arxiv.org/abs/2101.04532v1",
-      "pdf_path": "papers/experiential-learning-styles-and-2021.pdf",
-      "md_path": "papers/md/experiential-learning-styles-and-2021.md",
-      "modalities": [
-        "imaging-cell"
-      ],
-      "status": "converted",
-      "evidence_quality": "unknown",
-      "tags": [],
-      "parameters": null,
-      "training_tokens": null,
-      "training_compute": null,
-      "references_chased": false,
-      "added_at": "2026-04-22T19:37:19+00:00",
-      "updated_at": "2026-04-22T20:19:55+00:00"
-    },
-    {
-      "id": "explainable-artificial-intelligence-in-2025",
-      "title": "Explainable Artificial Intelligence in Biomedical Image Analysis: A Comprehensive Survey",
-      "authors": [
-        "Getamesay Haile Dagnaw",
-        "Yanming Zhu",
-        "Muhammad Hassan Maqsood",
-        "Wencheng Yang",
-        "Xingshuai Dong",
-        "Xuefei Yin",
-        "Alan Wee-Chung Liew"
-      ],
-      "year": 2025,
-      "venue": null,
-      "arxiv": "2507.07148",
-      "doi": null,
-      "url": "https://arxiv.org/abs/2507.07148v1",
-      "pdf_path": "papers/explainable-artificial-intelligence-in-2025.pdf",
-      "md_path": "papers/md/explainable-artificial-intelligence-in-2025.md",
-      "modalities": [
-        "multimodal"
-      ],
-      "status": "converted",
-      "evidence_quality": "unknown",
-      "tags": [],
-      "parameters": null,
-      "training_tokens": null,
-      "training_compute": null,
-      "references_chased": false,
-      "added_at": "2026-04-22T19:42:13+00:00",
-      "updated_at": "2026-04-22T20:20:00+00:00"
-    },
-    {
       "id": "fedfms-exploring-federated-foundation-2024",
       "title": "FedFMS: Exploring Federated Foundation Models for Medical Image Segmentation",
       "authors": [
@@ -2235,75 +2008,6 @@
       "references_chased": false,
       "added_at": null,
       "updated_at": null
-    },
-    {
-      "id": "geometric-deep-learning-for-2023",
-      "title": "Geometric Deep Learning for Structure-Based Drug Design: A Survey",
-      "authors": [
-        "Zaixi Zhang",
-        "Jiaxian Yan",
-        "Yining Huang",
-        "Qi Liu",
-        "Enhong Chen",
-        "Mengdi Wang",
-        "Marinka Zitnik"
-      ],
-      "year": 2023,
-      "venue": null,
-      "arxiv": "2306.11768",
-      "doi": null,
-      "url": "https://arxiv.org/abs/2306.11768v6",
-      "pdf_path": "papers/geometric-deep-learning-for-2023.pdf",
-      "md_path": "papers/md/geometric-deep-learning-for-2023.md",
-      "modalities": [
-        "protein-structure"
-      ],
-      "status": "converted",
-      "evidence_quality": "unknown",
-      "tags": [],
-      "parameters": null,
-      "training_tokens": null,
-      "training_compute": null,
-      "references_chased": false,
-      "added_at": "2026-04-22T19:37:00+00:00",
-      "updated_at": "2026-04-22T20:20:13+00:00"
-    },
-    {
-      "id": "graphgpt-generative-pre-trained-2023",
-      "title": "GraphGPT: Generative Pre-trained Graph Eulerian Transformer",
-      "authors": [
-        "Qifang Zhao",
-        "Weidong Ren",
-        "Tianyu Li",
-        "Hong Liu",
-        "Xingsheng He",
-        "Xiaoxiao Xu"
-      ],
-      "year": 2023,
-      "venue": null,
-      "arxiv": "2401.00529",
-      "doi": null,
-      "url": "https://arxiv.org/abs/2401.00529v3",
-      "pdf_path": "papers/graphgpt-generative-pre-trained-2023.pdf",
-      "md_path": "papers/md/graphgpt-generative-pre-trained-2023.md",
-      "modalities": [
-        "other"
-      ],
-      "status": "extraction-failed",
-      "evidence_quality": "high",
-      "tags": [
-        "graph-foundation-model",
-        "graph-transformer",
-        "eulerian-path",
-        "general-purpose",
-        "not-bio-fm"
-      ],
-      "parameters": "up to 2B (XXL); main Base variant ~113M",
-      "training_tokens": "1\u201320B graph tokens depending on dataset (e.g. 1\u00d710\u2079 for PCQM4Mv2-Base, 2\u00d710\u00b9\u2070 for ogbl-ppa)",
-      "training_compute": "~63 V100-GPU-hours PT + ~3 V100-GPU-hours/epoch FT for Base on PCQM4Mv2; 8\u00d7 L20 or V100 clusters",
-      "references_chased": false,
-      "added_at": "2026-04-22T19:37:10+00:00",
-      "updated_at": "2026-04-22T20:20:21+00:00"
     },
     {
       "id": "grnformer-a-biologically-guided-2025",
@@ -2743,35 +2447,6 @@
       "updated_at": "2026-04-22T21:55:33+00:00"
     },
     {
-      "id": "interpretable-word-sense-representations-2023",
-      "title": "Interpretable Word Sense Representations via Definition Generation: The Case of Semantic Change Analysis",
-      "authors": [
-        "Mario Giulianelli",
-        "Iris Luden",
-        "Raquel Fernandez",
-        "Andrey Kutuzov"
-      ],
-      "year": 2023,
-      "venue": null,
-      "arxiv": "2305.11993",
-      "doi": null,
-      "url": "https://arxiv.org/abs/2305.11993v2",
-      "pdf_path": "papers/interpretable-word-sense-representations-2023.pdf",
-      "md_path": "papers/md/interpretable-word-sense-representations-2023.md",
-      "modalities": [
-        "scrna"
-      ],
-      "status": "converted",
-      "evidence_quality": "unknown",
-      "tags": [],
-      "parameters": null,
-      "training_tokens": null,
-      "training_compute": null,
-      "references_chased": false,
-      "added_at": "2026-04-22T20:28:06+00:00",
-      "updated_at": "2026-04-22T20:31:17+00:00"
-    },
-    {
       "id": "interpreting-biomedical-vlms-on-2025",
       "title": "Interpreting Biomedical VLMs on High-Imbalance Out-of-Distributions: An Insight into BiomedCLIP on Radiology",
       "authors": [
@@ -2882,48 +2557,6 @@
       "references_chased": false,
       "added_at": "2026-04-22T19:36:44+00:00",
       "updated_at": "2026-04-22T20:22:09+00:00"
-    },
-    {
-      "id": "joint-probabilistic-modeling-of-2021",
-      "title": "Joint probabilistic modeling of single-cell multi-omic data with totalVI",
-      "authors": [
-        "Adam Gayoso",
-        "Zo\u00eb Steier",
-        "Romain Lopez",
-        "Jeffrey Regier",
-        "Kristopher L. Nazor",
-        "Aaron Streets",
-        "Nir Yosef"
-      ],
-      "year": 2021,
-      "venue": "Nature Methods",
-      "arxiv": null,
-      "doi": "10.1038/s41592-020-01050-x",
-      "url": "https://www.nature.com/articles/s41592-020-01050-x",
-      "pdf_path": null,
-      "md_path": "/home/t-tlazard/projects/maira-report-gen/survey-bio-fm/papers/md/joint-probabilistic-modeling-of-2021.md",
-      "modalities": [
-        "single-cell-multiomics"
-      ],
-      "status": "extracted",
-      "evidence_quality": "abstract+repo",
-      "tags": [
-        "VAE",
-        "CITE-seq",
-        "protein-RNA",
-        "variational-inference",
-        "batch-correction",
-        "negative-binomial",
-        "scvi-tools",
-        "multi-modal",
-        "probabilistic-model"
-      ],
-      "parameters": "~1M",
-      "training_tokens": null,
-      "training_compute": null,
-      "references_chased": false,
-      "added_at": null,
-      "updated_at": null
     },
     {
       "id": "knowledge-enhanced-pretraining-for-2024",
@@ -3373,71 +3006,6 @@
       "updated_at": "2026-04-22T20:22:44+00:00"
     },
     {
-      "id": "mining-functional-modules-by-2017",
-      "title": "Mining Functional Modules by Multiview-NMF of Phenome-Genome Association",
-      "authors": [
-        "YaoGong Zhang",
-        "YingJie Xu",
-        "Xin Fan",
-        "YuXiang Hong",
-        "Jiahui Liu",
-        "ZhiCheng He",
-        "YaLou Huang",
-        "MaoQiang Xie"
-      ],
-      "year": 2017,
-      "venue": null,
-      "arxiv": "1705.03998",
-      "doi": null,
-      "url": "https://arxiv.org/abs/1705.03998v1",
-      "pdf_path": "papers/mining-functional-modules-by-2017.pdf",
-      "md_path": "papers/md/mining-functional-modules-by-2017.md",
-      "modalities": [
-        "imaging-cell"
-      ],
-      "status": "converted",
-      "evidence_quality": "unknown",
-      "tags": [],
-      "parameters": null,
-      "training_tokens": null,
-      "training_compute": null,
-      "references_chased": false,
-      "added_at": "2026-04-22T19:37:19+00:00",
-      "updated_at": "2026-04-22T20:22:47+00:00"
-    },
-    {
-      "id": "mistakes-help-us-grow-2023",
-      "title": "\"Mistakes Help Us Grow\": Facilitating and Evaluating Growth Mindset Supportive Language in Classrooms",
-      "authors": [
-        "Kunal Handa",
-        "Margaret Clapper",
-        "Jessica Boyle",
-        "Rose E Wang",
-        "Diyi Yang",
-        "David S Yeager",
-        "Dorottya Demszky"
-      ],
-      "year": 2023,
-      "venue": null,
-      "arxiv": "2310.10637",
-      "doi": null,
-      "url": "https://arxiv.org/abs/2310.10637v1",
-      "pdf_path": "papers/mistakes-help-us-grow-2023.pdf",
-      "md_path": "papers/md/mistakes-help-us-grow-2023.md",
-      "modalities": [
-        "dna"
-      ],
-      "status": "converted",
-      "evidence_quality": "unknown",
-      "tags": [],
-      "parameters": null,
-      "training_tokens": null,
-      "training_compute": null,
-      "references_chased": false,
-      "added_at": "2026-04-22T20:06:41+00:00",
-      "updated_at": "2026-04-22T20:22:49+00:00"
-    },
-    {
       "id": "molfm-a-multimodal-molecular-2023",
       "title": "MolFM: A Multimodal Molecular Foundation Model",
       "authors": [
@@ -3657,85 +3225,6 @@
       "updated_at": null
     },
     {
-      "id": "on-the-conversion-from-2019",
-      "title": "On the conversion from OSA-UCS to CIEXYZ",
-      "authors": [
-        "Nico Schl\u00f6mer"
-      ],
-      "year": 2019,
-      "venue": null,
-      "arxiv": "1911.08323",
-      "doi": null,
-      "url": "https://arxiv.org/abs/1911.08323v2",
-      "pdf_path": "papers/on-the-conversion-from-2019.pdf",
-      "md_path": "papers/md/on-the-conversion-from-2019.md",
-      "modalities": [
-        "scrna"
-      ],
-      "status": "converted",
-      "evidence_quality": "unknown",
-      "tags": [],
-      "parameters": null,
-      "training_tokens": null,
-      "training_compute": null,
-      "references_chased": false,
-      "added_at": "2026-04-22T19:37:12+00:00",
-      "updated_at": "2026-04-22T20:23:04+00:00"
-    },
-    {
-      "id": "on-the-uc-and-2023",
-      "title": "On the UC and UC* properties and the existence of best proximity points in metric spaces",
-      "authors": [
-        "Vasil Zhelinski",
-        "Boyan Zlatanov"
-      ],
-      "year": 2023,
-      "venue": null,
-      "arxiv": "2303.05850",
-      "doi": null,
-      "url": "https://arxiv.org/abs/2303.05850v2",
-      "pdf_path": "papers/on-the-uc-and-2023.pdf",
-      "md_path": "papers/md/on-the-uc-and-2023.md",
-      "modalities": [
-        "scrna"
-      ],
-      "status": "converted",
-      "evidence_quality": "unknown",
-      "tags": [],
-      "parameters": null,
-      "training_tokens": null,
-      "training_compute": null,
-      "references_chased": false,
-      "added_at": "2026-04-22T19:37:12+00:00",
-      "updated_at": "2026-04-22T20:23:07+00:00"
-    },
-    {
-      "id": "on-uc-multipliers-for-2026",
-      "title": "On UC-multipliers for multiple trigonometric systems",
-      "authors": [
-        "Grigori A. Karagulyan"
-      ],
-      "year": 2026,
-      "venue": null,
-      "arxiv": "2601.10360",
-      "doi": null,
-      "url": "https://arxiv.org/abs/2601.10360v1",
-      "pdf_path": "papers/on-uc-multipliers-for-2026.pdf",
-      "md_path": "papers/md/on-uc-multipliers-for-2026.md",
-      "modalities": [
-        "scrna"
-      ],
-      "status": "converted",
-      "evidence_quality": "unknown",
-      "tags": [],
-      "parameters": null,
-      "training_tokens": null,
-      "training_compute": null,
-      "references_chased": false,
-      "added_at": "2026-04-22T19:37:12+00:00",
-      "updated_at": "2026-04-22T20:23:09+00:00"
-    },
-    {
       "id": "open-world-knowledge-aided-2026",
       "title": "Open World Knowledge Aided Single-Cell Foundation Model with Robust Cross-Modal Cell-Language Pre-training",
       "authors": [
@@ -3768,37 +3257,6 @@
       "references_chased": false,
       "added_at": "2026-04-22T19:37:11+00:00",
       "updated_at": null
-    },
-    {
-      "id": "pheno-mapper-an-interactive-2021",
-      "title": "Pheno-Mapper: An Interactive Toolbox for the Visual Exploration of Phenomics Data",
-      "authors": [
-        "Youjia Zhou",
-        "Methun Kamruzzaman",
-        "Patrick Schnable",
-        "Bala Krishnamoorthy",
-        "Ananth Kalyanaraman",
-        "Bei Wang"
-      ],
-      "year": 2021,
-      "venue": null,
-      "arxiv": "2106.13397",
-      "doi": null,
-      "url": "https://arxiv.org/abs/2106.13397v2",
-      "pdf_path": "papers/pheno-mapper-an-interactive-2021.pdf",
-      "md_path": "papers/md/pheno-mapper-an-interactive-2021.md",
-      "modalities": [
-        "imaging-cell"
-      ],
-      "status": "converted",
-      "evidence_quality": "unknown",
-      "tags": [],
-      "parameters": null,
-      "training_tokens": null,
-      "training_compute": null,
-      "references_chased": false,
-      "added_at": "2026-04-22T19:37:19+00:00",
-      "updated_at": "2026-04-22T20:24:14+00:00"
     },
     {
       "id": "phikon-v2-a-large-2024",
@@ -4011,79 +3469,6 @@
       "updated_at": "2026-04-22T20:24:30+00:00"
     },
     {
-      "id": "progen-progressive-zero-shot-2022",
-      "title": "ProGen: Progressive Zero-shot Dataset Generation via In-context Feedback",
-      "authors": [
-        "Jiacheng Ye",
-        "Jiahui Gao",
-        "Jiangtao Feng",
-        "Zhiyong Wu",
-        "Tao Yu",
-        "Lingpeng Kong"
-      ],
-      "year": 2022,
-      "venue": null,
-      "arxiv": "2210.12329",
-      "doi": null,
-      "url": "https://arxiv.org/abs/2210.12329v1",
-      "pdf_path": "papers/progen-progressive-zero-shot-2022.pdf",
-      "md_path": "papers/md/progen-progressive-zero-shot-2022.md",
-      "modalities": [
-        "other"
-      ],
-      "status": "extracted",
-      "evidence_quality": "low",
-      "tags": [
-        "nlp",
-        "zero-shot",
-        "dataset-generation",
-        "in-context-learning",
-        "not-bio-fm"
-      ],
-      "parameters": null,
-      "training_tokens": null,
-      "training_compute": null,
-      "references_chased": false,
-      "added_at": "2026-04-22T19:36:59+00:00",
-      "updated_at": "2026-04-22T20:24:32+00:00"
-    },
-    {
-      "id": "promptrobust-towards-evaluating-the-2023",
-      "title": "PromptRobust: Towards Evaluating the Robustness of Large Language Models on Adversarial Prompts",
-      "authors": [
-        "Kaijie Zhu",
-        "Jindong Wang",
-        "Jiaheng Zhou",
-        "Zichen Wang",
-        "Hao Chen",
-        "Yidong Wang",
-        "Linyi Yang",
-        "Wei Ye",
-        "Yue Zhang",
-        "Neil Zhenqiang Gong",
-        "Xing Xie"
-      ],
-      "year": 2023,
-      "venue": null,
-      "arxiv": "2306.04528",
-      "doi": null,
-      "url": "https://arxiv.org/abs/2306.04528v5",
-      "pdf_path": "papers/promptrobust-towards-evaluating-the-2023.pdf",
-      "md_path": "papers/md/promptrobust-towards-evaluating-the-2023.md",
-      "modalities": [
-        "scrna"
-      ],
-      "status": "converted",
-      "evidence_quality": "unknown",
-      "tags": [],
-      "parameters": null,
-      "training_tokens": null,
-      "training_compute": null,
-      "references_chased": false,
-      "added_at": "2026-04-22T20:31:22+00:00",
-      "updated_at": "2026-04-22T20:37:19+00:00"
-    },
-    {
       "id": "protclip-function-informed-protein-2024",
       "title": "ProtCLIP: Function-Informed Protein Multi-Modal Learning",
       "authors": [
@@ -4285,33 +3670,6 @@
       "updated_at": "2026-04-22T21:58:33+00:00"
     },
     {
-      "id": "pruning-a-neural-network-2023",
-      "title": "Pruning a neural network using Bayesian inference",
-      "authors": [
-        "Sunil Mathew",
-        "Daniel B. Rowe"
-      ],
-      "year": 2023,
-      "venue": null,
-      "arxiv": "2308.02451",
-      "doi": null,
-      "url": "https://arxiv.org/abs/2308.02451v1",
-      "pdf_path": "papers/pruning-a-neural-network-2023.pdf",
-      "md_path": "papers/md/pruning-a-neural-network-2023.md",
-      "modalities": [
-        "protein-sequence"
-      ],
-      "status": "converted",
-      "evidence_quality": "unknown",
-      "tags": [],
-      "parameters": null,
-      "training_tokens": null,
-      "training_compute": null,
-      "references_chased": false,
-      "added_at": "2026-04-22T20:23:15+00:00",
-      "updated_at": "2026-04-22T20:25:06+00:00"
-    },
-    {
       "id": "quantifying-the-role-of-2025",
       "title": "Quantifying the Role of OpenFold Components in Protein Structure Prediction",
       "authors": [
@@ -4468,34 +3826,6 @@
       "references_chased": false,
       "added_at": "2026-04-22T19:36:51+00:00",
       "updated_at": "2026-04-22T20:25:17+00:00"
-    },
-    {
-      "id": "robust-3d-cell-segmentation-2021",
-      "title": "Robust 3D Cell Segmentation: Extending the View of Cellpose",
-      "authors": [
-        "Dennis Eschweiler",
-        "Richard S. Smith",
-        "Johannes Stegmaier"
-      ],
-      "year": 2021,
-      "venue": null,
-      "arxiv": "2105.00794",
-      "doi": null,
-      "url": "https://arxiv.org/abs/2105.00794v3",
-      "pdf_path": "papers/robust-3d-cell-segmentation-2021.pdf",
-      "md_path": "papers/md/robust-3d-cell-segmentation-2021.md",
-      "modalities": [
-        "imaging-cell"
-      ],
-      "status": "converted",
-      "evidence_quality": "unknown",
-      "tags": [],
-      "parameters": null,
-      "training_tokens": null,
-      "training_compute": null,
-      "references_chased": false,
-      "added_at": "2026-04-22T19:37:19+00:00",
-      "updated_at": "2026-04-22T20:25:20+00:00"
     },
     {
       "id": "robust-deep-learning-based-2022",
@@ -5103,40 +4433,6 @@
       "updated_at": null
     },
     {
-      "id": "status-of-the-uc-2011",
-      "title": "Status of the UC-Berkeley SETI Efforts",
-      "authors": [
-        "Eric J. Korpela",
-        "David P. Anderson",
-        "Robert Bankay",
-        "Jeff Cobb",
-        "Andrew Howard",
-        "Matt Lebofsky",
-        "Andrew P. V. Siemion",
-        "Joshua von Korff",
-        "Dan Werthimer"
-      ],
-      "year": 2011,
-      "venue": null,
-      "arxiv": "1108.3134",
-      "doi": null,
-      "url": "https://arxiv.org/abs/1108.3134v2",
-      "pdf_path": "papers/status-of-the-uc-2011.pdf",
-      "md_path": "papers/md/status-of-the-uc-2011.md",
-      "modalities": [
-        "scrna"
-      ],
-      "status": "converted",
-      "evidence_quality": "unknown",
-      "tags": [],
-      "parameters": null,
-      "training_tokens": null,
-      "training_compute": null,
-      "references_chased": false,
-      "added_at": "2026-04-22T19:37:12+00:00",
-      "updated_at": "2026-04-22T20:26:10+00:00"
-    },
-    {
       "id": "structure-informed-protein-language-2024",
       "title": "Structure-Informed Protein Language Model",
       "authors": [
@@ -5172,66 +4468,6 @@
       "references_chased": false,
       "added_at": "2026-04-22T19:36:52+00:00",
       "updated_at": "2026-04-22T20:26:29+00:00"
-    },
-    {
-      "id": "sub-region-aware-modality-2026",
-      "title": "Sub-Region-Aware Modality Fusion and Adaptive Prompting for Multi-Modal Brain Tumor Segmentation",
-      "authors": [
-        "Shadi Alijani",
-        "Fereshteh Aghaee Meibodi",
-        "Homayoun Najjaran"
-      ],
-      "year": 2026,
-      "venue": null,
-      "arxiv": "2601.15734",
-      "doi": null,
-      "url": "https://arxiv.org/abs/2601.15734v1",
-      "pdf_path": "papers/sub-region-aware-modality-2026.pdf",
-      "md_path": "papers/md/sub-region-aware-modality-2026.md",
-      "modalities": [
-        "imaging-radiology"
-      ],
-      "status": "converted",
-      "evidence_quality": "unknown",
-      "tags": [],
-      "parameters": null,
-      "training_tokens": null,
-      "training_compute": null,
-      "references_chased": false,
-      "added_at": "2026-04-22T19:42:06+00:00",
-      "updated_at": "2026-04-22T20:26:32+00:00"
-    },
-    {
-      "id": "sunflower-nested-core-collections-2026",
-      "title": "Sunflower nested core collections for association studies and phenomics",
-      "authors": [
-        "Marie Coque",
-        "S\u00e9bastien Mesnildrey",
-        "Michel Romestant",
-        "Bruno Grezes-Besset",
-        "F\u00e9licity Vear",
-        "Nicolas B Langlade",
-        "Patrick Vincourt"
-      ],
-      "year": 2026,
-      "venue": null,
-      "arxiv": "2603.02290",
-      "doi": null,
-      "url": "https://arxiv.org/abs/2603.02290v1",
-      "pdf_path": "papers/sunflower-nested-core-collections-2026.pdf",
-      "md_path": "papers/md/sunflower-nested-core-collections-2026.md",
-      "modalities": [
-        "imaging-cell"
-      ],
-      "status": "converted",
-      "evidence_quality": "unknown",
-      "tags": [],
-      "parameters": null,
-      "training_tokens": null,
-      "training_compute": null,
-      "references_chased": false,
-      "added_at": "2026-04-22T19:37:19+00:00",
-      "updated_at": "2026-04-22T20:26:33+00:00"
     },
     {
       "id": "systematic-evaluation-of-single-2026",
@@ -5300,35 +4536,6 @@
       "references_chased": false,
       "added_at": "2026-04-22T19:42:21+00:00",
       "updated_at": "2026-04-22T20:26:44+00:00"
-    },
-    {
-      "id": "the-howard-harvard-effect-2024",
-      "title": "The Howard-Harvard effect: Institutional reproduction of intersectional inequalities",
-      "authors": [
-        "Diego Kozlowski",
-        "Thema Monroe-White",
-        "Vincent Larivi\u00e8re",
-        "Cassidy R. Sugimoto"
-      ],
-      "year": 2024,
-      "venue": null,
-      "arxiv": "2402.04391",
-      "doi": null,
-      "url": "https://arxiv.org/abs/2402.04391v1",
-      "pdf_path": "papers/the-howard-harvard-effect-2024.pdf",
-      "md_path": "papers/md/the-howard-harvard-effect-2024.md",
-      "modalities": [
-        "protein-sequence"
-      ],
-      "status": "converted",
-      "evidence_quality": "unknown",
-      "tags": [],
-      "parameters": null,
-      "training_tokens": null,
-      "training_compute": null,
-      "references_chased": false,
-      "added_at": "2026-04-22T20:14:11+00:00",
-      "updated_at": "2026-04-22T20:18:51+00:00"
     },
     {
       "id": "the-nucleotide-transformer-building-2024",
@@ -5402,34 +4609,6 @@
       "references_chased": false,
       "added_at": "2026-04-22T19:42:21+00:00",
       "updated_at": "2026-04-22T20:26:47+00:00"
-    },
-    {
-      "id": "towards-a-standardized-reinforcement-2023",
-      "title": "Towards a Standardized Reinforcement Learning Framework for AAM Contingency Management",
-      "authors": [
-        "Luis E. Alvarez",
-        "Marc W. Brittain",
-        "Kara Breeden"
-      ],
-      "year": 2023,
-      "venue": null,
-      "arxiv": "2311.10805",
-      "doi": null,
-      "url": "https://arxiv.org/abs/2311.10805v1",
-      "pdf_path": "papers/towards-a-standardized-reinforcement-2023.pdf",
-      "md_path": "papers/md/towards-a-standardized-reinforcement-2023.md",
-      "modalities": [
-        "imaging-pathology"
-      ],
-      "status": "converted",
-      "evidence_quality": "unknown",
-      "tags": [],
-      "parameters": null,
-      "training_tokens": null,
-      "training_compute": null,
-      "references_chased": false,
-      "added_at": "2026-04-22T20:48:09+00:00",
-      "updated_at": "2026-04-22T20:50:48+00:00"
     },
     {
       "id": "towards-a-visual-language-2023",
@@ -5506,52 +4685,6 @@
       "references_chased": false,
       "added_at": "2026-04-22T19:37:11+00:00",
       "updated_at": "2026-04-22T20:26:49+00:00"
-    },
-    {
-      "id": "towards-exascale-computation-for-2023",
-      "title": "Towards Exascale Computation for Turbomachinery Flows",
-      "authors": [
-        "Yuhang Fu",
-        "Weiqi Shen",
-        "Jiahuan Cui",
-        "Yao Zheng",
-        "Guangwen Yang",
-        "Zhao Liu",
-        "Jifa Zhang",
-        "Tingwei Ji",
-        "Fangfang Xie",
-        "Xiaojing Lv",
-        "Hanyue Liu",
-        "Xu Liu",
-        "Xiyang Liu",
-        "Xiaoyu Song",
-        "Guocheng Tao",
-        "Yan Yan",
-        "Paul Tucker",
-        "Steven A. E. Miller",
-        "Shirui Luo",
-        "Seid Koric",
-        "Weimin Zheng"
-      ],
-      "year": 2023,
-      "venue": null,
-      "arxiv": "2308.06605",
-      "doi": null,
-      "url": "https://arxiv.org/abs/2308.06605v3",
-      "pdf_path": "papers/towards-exascale-computation-for-2023.pdf",
-      "md_path": "papers/md/towards-exascale-computation-for-2023.md",
-      "modalities": [
-        "epigenome"
-      ],
-      "status": "converted",
-      "evidence_quality": "unknown",
-      "tags": [],
-      "parameters": null,
-      "training_tokens": null,
-      "training_compute": null,
-      "references_chased": false,
-      "added_at": "2026-04-22T20:25:11+00:00",
-      "updated_at": "2026-04-22T20:28:01+00:00"
     },
     {
       "id": "towards-large-scale-training-2024",
@@ -6045,36 +5178,6 @@
       "references_chased": false,
       "added_at": "2026-04-22T19:36:46+00:00",
       "updated_at": "2026-04-22T20:28:12+00:00"
-    },
-    {
-      "id": "xmm-newton-observations-of-2022",
-      "title": "XMM-Newton observations of PSR J0554+3107: pulsing thermal emission from a cooling high-mass neutron star",
-      "authors": [
-        "A. S. Tanashkin",
-        "A. V. Karpova",
-        "A. Y. Potekhin",
-        "Y. A. Shibanov",
-        "D. A. Zyuzin"
-      ],
-      "year": 2022,
-      "venue": null,
-      "arxiv": "2208.06160",
-      "doi": null,
-      "url": "https://arxiv.org/abs/2208.06160v1",
-      "pdf_path": "papers/xmm-newton-observations-of-2022.pdf",
-      "md_path": "papers/md/xmm-newton-observations-of-2022.md",
-      "modalities": [
-        "protein-sequence"
-      ],
-      "status": "converted",
-      "evidence_quality": "unknown",
-      "tags": [],
-      "parameters": null,
-      "training_tokens": null,
-      "training_compute": null,
-      "references_chased": false,
-      "added_at": "2026-04-22T20:18:57+00:00",
-      "updated_at": "2026-04-22T20:23:10+00:00"
     },
     {
       "id": "xraygpt-chest-radiographs-summarization-2023",
