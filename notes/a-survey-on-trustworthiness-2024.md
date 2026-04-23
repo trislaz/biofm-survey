@@ -1,0 +1,36 @@
+---
+id: a-survey-on-trustworthiness-2024
+title: A Survey on Trustworthiness in Foundation Models for Medical Image Analysis
+authors:
+- Congzhen Shi
+- Ryan Rezai
+- Jiaxi Yang
+- Qi Dou
+- Xiaoxiao Li
+year: 2024
+venue: null
+arxiv: '2407.15851'
+doi: null
+url: https://arxiv.org/abs/2407.15851v2
+pdf_path: papers/a-survey-on-trustworthiness-2024.pdf
+md_path: papers/md/a-survey-on-trustworthiness-2024.md
+modalities:
+- imaging-radiology
+status: converted
+evidence_quality: unknown
+tags: []
+parameters: null
+training_tokens: null
+training_compute: null
+references_chased: false
+added_at: '2026-04-22T19:42:06+00:00'
+updated_at: '2026-04-22T20:17:18+00:00'
+---
+
+## TL;DR
+
+_(seed — not yet extracted)_
+
+## Abstract (from arxiv)
+
+The rapid advancement of foundation models in medical imaging represents a significant leap toward enhancing diagnostic accuracy and personalized treatment. However, the deployment of foundation models in healthcare necessitates a rigorous examination of their trustworthiness, encompassing privacy, robustness, reliability, explainability, and fairness. The current body of survey literature on foundation models in medical imaging reveals considerable gaps, particularly in the area of trustworthiness. Additionally, existing surveys on the trustworthiness of foundation models do not adequately address their specific variations and applications within the medical imaging domain. This survey aims to fill that gap by presenting a novel taxonomy of foundation models used in medical imaging and analyzing the key motivations for ensuring their trustworthiness. We review current research on foundation models in major medical imaging applications, focusing on segmentation, medical report generation, medical question and answering (Q\&A), and disease diagnosis. These areas are highlighted because they have seen a relatively mature and substantial number of foundation models compared to other applications. We focus on literature that discusses trustworthiness in medical image analysis manuscripts. We explore the complex challenges of building trustworthy foundation models for each application, summarizing current concerns and strategies for enhancing trustworthiness. Furthermore, we examine the potential of these models to revolutionize patient care. Our analysis underscores the imperative for advancing towards trustworthy AI in medical image analysis, advocating for a balanced approach that fosters innovation while ensuring ethical and equitable healthcare delivery.

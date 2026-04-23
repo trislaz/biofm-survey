@@ -1,0 +1,66 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "survey-bio-fm"
+version = "0.1.0"
+description = "Exhaustive, evolvable survey of bio-foundation models across all modalities."
+readme = "README.md"
+requires-python = ">=3.11,<3.12"
+authors = [
+    { name = "Biomedical Imaging Team", email = "innereyedev@microsoft.com" },
+]
+
+dependencies = [
+    "requests>=2.32",
+    "arxiv>=2.1",
+    "pyyaml>=6.0",
+    "pydantic>=2.7",
+    "jinja2>=3.1.5",
+    "rich>=13.7",
+    "tenacity>=9.0",
+    "feedparser>=6.0",
+    "beautifulsoup4>=4.12",
+    "lxml>=5.0",
+    "pdfplumber>=0.11",
+    "pypdf>=5.0",
+    # docling is heavy (torch + DL models). Installed as optional extra to keep
+    # the base env light; the conversion script auto-falls back to pdfplumber/pypdf.
+    "markdown>=3.10.2",
+]
+
+[project.optional-dependencies]
+docling = [
+    "docling>=2.0",
+]
+quality = [
+    "ruff>=0.6",
+    "pyright>=1.1.380",
+]
+test = [
+    "pytest>=8.0",
+]
+
+[project.scripts]
+sbfm = "survey_bio_fm.scripts.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/survey_bio_fm"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "N", "SIM", "RET"]
+ignore = ["E501"]
+
+[tool.pyright]
+include = ["src", "tests"]
+pythonVersion = "3.11"
+typeCheckingMode = "standard"
+reportMissingImports = "warning"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "BioFMPaperNote",
+  "type": "object",
+  "required": ["id", "title", "modalities", "status"],
+  "properties": {
+    "id": {"type": "string", "description": "Slug identifier, e.g. 'dnabert-2-2023'."},
+    "title": {"type": "string"},
+    "authors": {"type": "array", "items": {"type": "string"}},
+    "year": {"type": ["integer", "null"]},
+    "venue": {"type": ["string", "null"]},
+    "arxiv": {"type": ["string", "null"]},
+    "doi": {"type": ["string", "null"]},
+    "url": {"type": ["string", "null"]},
+    "pdf_path": {"type": ["string", "null"]},
+    "md_path": {"type": ["string", "null"]},
+    "modalities": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "dna", "rna", "protein-sequence", "protein-structure", "proteomics",
+          "epigenome", "interactome", "scrna", "single-cell-multiomics",
+          "imaging-cell", "imaging-pathology", "imaging-microscopy",
+          "imaging-radiology", "small-molecule", "multimodal", "other"
+        ]
+      },
+      "minItems": 1
+    },
+    "status": {
+      "enum": ["seed", "fetched", "converted", "extracted", "abstract-only", "paywalled-no-mirror", "extraction-failed"]
+    },
+    "evidence_quality": {
+      "enum": ["full-text", "abstract+repo", "abstract-only", "unknown"]
+    },
+    "tags": {"type": "array", "items": {"type": "string"}},
+    "parameters": {"type": ["string", "null"]},
+    "training_tokens": {"type": ["string", "null"]},
+    "training_compute": {"type": ["string", "null"]},
+    "references_chased": {"type": "boolean"},
+    "added_at": {"type": ["string", "null"]},
+    "updated_at": {"type": ["string", "null"]}
+  }
+}
