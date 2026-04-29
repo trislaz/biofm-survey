@@ -113,12 +113,13 @@ Transformers dominate, but four sub-quadratic alternatives have proven competiti
 | [RoseTTAFold All-Atom](https://doi.org/10.1126/science.adl2528) | RFAA's all-atom track is necessary for heteroatom complexes; ablating to residue-only drops protein-NA contact accuracy by 18–25%. |
 | [Enformer](https://doi.org/10.1038/s41592-021-01252-x) | Enformer's CNN+Transformer hybrid outperforms pure Transformer on 196k-bp expression prediction; ablating attention drops mean Pearson by 0.10. |
 | [Borzoi](https://doi.org/10.1038/s41588-024-02053-6) | Borzoi (CNN+UNet+Transformer) at 524k bp matches Enformer Pearson at 2× context; ablating UNet skip drops fine-grained track resolution. |
+| [Orthrus](https://doi.org/10.1038/s41592-026-03064-3) | Mamba (10.1M) outperforms matched CNN-RNN (Saluki-like) and dilated CNN on aggregate mRNA property Z-score by +1.13 and +1.43 respectively; linear memory scaling enables long mature RNA handling. |
 
 ### 3. Pretraining Objective
 
-Masked language modeling (BERT-style, 15% mask) remains the default for sequence FMs; causal LM appears in generative FMs (ProGen, ProtGPT2, Evo, BioGPT, scMulan). Contrastive objectives dominate vision/multimodal (CLIP variants, DINOv2 for pathology). Inverse-folding and structure-conditioned objectives (ESM-IF, ProteinMPNN, RFAA, AF3) train sequence given structure or vice versa. Recent additions: span-corruption (Ankh), JEPA-style (JEPA-DNA), structure-token autoregression (ESM-3), niche-conditional masking (Nicheformer).
+Masked language modeling (BERT-style, 15% mask) remains the default for sequence FMs; causal LM appears in generative FMs (ProGen, ProtGPT2, Evo, BioGPT, scMulan). Contrastive objectives dominate vision/multimodal (CLIP variants, DINOv2 for pathology) and now also RNA (Orthrus). Inverse-folding and structure-conditioned objectives (ESM-IF, ProteinMPNN, RFAA, AF3) train sequence given structure or vice versa. Recent additions: span-corruption (Ankh), JEPA-style (JEPA-DNA), structure-token autoregression (ESM-3), niche-conditional masking (Nicheformer), contrastive with biological augmentations (Orthrus).
 
-**Empirical pattern:** for representation quality on classification/regression, MLM and contrastive perform within 1–2 points; for generation, AR or diffusion are necessary; for cross-modal alignment, CLIP-style with hard negatives dominates.
+**Empirical pattern:** for representation quality on classification/regression, MLM and contrastive perform within 1–2 points on protein, but contrastive with biological augmentations significantly outperforms MLM on RNA (Orthrus: CL Z-score 0.90 vs MLM 0.71); for generation, AR or diffusion are necessary; for cross-modal alignment, CLIP-style with hard negatives dominates.
 
 #### Ablation evidence (Rev 4)
 | Source | Ablation finding |
@@ -135,6 +136,7 @@ Masked language modeling (BERT-style, 15% mask) remains the default for sequence
 | [Nicheformer](https://doi.org/10.1101/2024.04.15.589472) | Niche-conditional masking (mask out neighbours, predict from cell + niche label) beats vanilla MLM by 4–7 points on spatial niche classification. |
 | [CONCH (Nat. Med.)](https://doi.org/10.1038/s41591-024-02856-4) | CONCH (NatMed) image-text contrastive on 1.17M slide-caption pairs outperforms image-only DINO baselines on 12/14 zero-shot pathology benchmarks. |
 | [ConceptCLIP](https://arxiv.org/abs/2501.15579) | ConceptCLIP adds concept-token alignment on top of CLIP loss; improves zero-shot retrieval +5–8 points on biomedical concept matching. |
+| [Orthrus](https://doi.org/10.1038/s41592-026-03064-3) | Contrastive learning with biological augmentations (splice isoforms + 400+ mammalian orthologs) beats MLM on aggregate mRNA property Z-score (0.90 vs 0.71); joint CL+MLM gives best result. Removing orthology augmentation drops Z-score by 0.11; masking-only drops by 0.55. |
 
 ### 4. Context Length
 
@@ -212,6 +214,7 @@ Conditioning at pretraining (control tokens, label conditioning, niche condition
 | [Geneformer](https://doi.org/10.1038/s41586-023-06139-9) | Geneformer rank encoding implicitly conditions on cell-state without external metadata; replacing with raw counts hurts batch-robust transfer. |
 | [BioGPT](https://arxiv.org/abs/2210.10341) | Domain-conditioned causal LM beats general-purpose GPT-2 fine-tuned on biomedical NLP by 2–5 F1 across 6 tasks. |
 | [ProtCLIP](https://arxiv.org/abs/2412.20014) | GO-term conditioning at pretraining beats post-hoc GO classifier on top of frozen ESM-2 by 3–7 F1 across 12 function tasks. |
+| [Orthrus](https://doi.org/10.1038/s41592-026-03064-3) | Biological augmentations (splice isoforms + cross-species orthologs) as contrastive pairs outperform sequence-level augmentations (masking only) by Z-score +0.55; evolutionary conservation as inductive bias > reconstruction. |
 
 ### 8. Optimization & Schedule
 
@@ -239,6 +242,7 @@ Scaling laws hold within bio-FMs but with smaller exponents than text LMs. ESM-2
 | [Evo](https://doi.org/10.1126/science.ado9336) | Evo 7B at 131k context is compute-optimal for prokaryotic genome modelling; smaller variants under-fit, larger explore-only have not been head-to-head benchmarked. |
 | [HIPT](https://arxiv.org/abs/2206.02647) | HIPT hierarchical scaling: cell-level + region-level + slide-level transformers; ablating any tier drops survival prediction C-index by 0.02–0.05. |
 | [ESM-3](https://doi.org/10.1101/2024.07.01.600583) | ESM-3 1.4B → 98B sweep: structure-recovery accuracy scales smoothly; design quality saturates earlier than recovery accuracy. |
+| [Orthrus](https://doi.org/10.1038/s41592-026-03064-3) | Orthrus (10.1M params) matches or outperforms Evo 2 (7B) on 7 mRNA property tasks via contrastive pretraining with biological augmentations — 700× fewer parameters; biological inductive bias > raw scale for RNA. |
 
 ### 10. MSA vs MSA-Free Structure Prediction
 
@@ -303,9 +307,9 @@ Practical defaults per modality, drawn from the strongest ablations in the 84 FM
 
 ### RNA
 
-[RNA-FM](https://arxiv.org/abs/2204.00300) (RNA-FM, MLM on ncRNA) and [RiNALMo](https://arxiv.org/abs/2403.00043) (RiNALMo, scaled MLM) cover representation; [RhoFold](https://arxiv.org/abs/2207.01586) (RhoFold) covers structure with sparse RNA MSAs. **(N=3 papers)** RNA FMs: [RNA-FM](https://arxiv.org/abs/2204.00300), [RiNALMo](https://arxiv.org/abs/2403.00043), [RhoFold](https://arxiv.org/abs/2207.01586)
+[RNA-FM](https://arxiv.org/abs/2204.00300) (RNA-FM, MLM on ncRNA), [RiNALMo](https://arxiv.org/abs/2403.00043) (RiNALMo, scaled MLM), and [Orthrus](https://doi.org/10.1038/s41592-026-03064-3) (Orthrus, Mamba + contrastive on mature mRNA) cover representation; [RhoFold](https://arxiv.org/abs/2207.01586) (RhoFold) covers structure with sparse RNA MSAs. **(N=4 papers)** RNA FMs: [RNA-FM](https://arxiv.org/abs/2204.00300), [RiNALMo](https://arxiv.org/abs/2403.00043), [Orthrus](https://doi.org/10.1038/s41592-026-03064-3), [RhoFold](https://arxiv.org/abs/2207.01586)
 
-**Pitfalls.** RNA pretraining corpora are 100× smaller than protein; MSA depth for RNA is sparse so MSA-free models lag further than protein.
+**Pitfalls.** RNA pretraining corpora are 100× smaller than protein; MSA depth for RNA is sparse so MSA-free models lag further than protein. For mature mRNA tasks, contrastive learning with evolutionary/splicing augmentations (Orthrus) dramatically outperforms reconstruction-based SSL — biological inductive bias matters more than scale.
 
 ### Protein Sequence
 
@@ -494,7 +498,7 @@ One row per FM, grouped by modality. Each entry: nickname → URL, one-line abla
   - Cross-modal mapping yields a modest extra gain and enables missing-modality inference.
   - Single-modal baseline.
 
-### RNA (3)
+### RNA (4)
 
 - **[RhoFold](https://arxiv.org/abs/2207.01586)** — *modalities: rna*
   - Effect / Notes.
@@ -514,6 +518,12 @@ One row per FM, grouped by modality. Each entry: nickname → URL, one-line abla
   - Table 1.
   - Table 1.
   - Table 2.
+- **[Orthrus](https://doi.org/10.1038/s41592-026-03064-3)** — *modalities: rna* — 10.1M params, Mamba SSM
+  - Contrastive learning (DCL) with splice-isoform + ortholog augmentations beats MLM (Z-score 0.90 vs 0.71) and matches/outperforms 7B-param Evo 2 on mRNA property tasks.
+  - Removing orthology augmentation drops Z-score by 0.11; masking-only augmentation drops by 0.55.
+  - Joint CL+MLM is best; α=0.95 weight for MLM in the combined loss.
+  - Mamba outperforms CNN-RNN and dilated CNN at matched size.
+  - 30-sample few-shot: Pearson R 0.53 on human mRNA half-life (71% of full supervised R=0.74).
 
 ### Protein Sequence (16)
 
