@@ -117,9 +117,9 @@ Transformers dominate, but four sub-quadratic alternatives have proven competiti
 
 ### 3. Pretraining Objective
 
-Masked language modeling (BERT-style, 15% mask) remains the default for sequence FMs; causal LM appears in generative FMs (ProGen, ProtGPT2, Evo, BioGPT, scMulan). Contrastive objectives dominate vision/multimodal (CLIP variants, DINOv2 for pathology) and now also RNA (Orthrus). Inverse-folding and structure-conditioned objectives (ESM-IF, ProteinMPNN, RFAA, AF3) train sequence given structure or vice versa. Recent additions: span-corruption (Ankh), JEPA-style (JEPA-DNA), structure-token autoregression (ESM-3), niche-conditional masking (Nicheformer), contrastive with biological augmentations (Orthrus).
+Masked language modeling (BERT-style, 15% mask) remains the default for sequence FMs; causal LM appears in generative FMs (ProGen, ProtGPT2, Evo, BioGPT, scMulan). Contrastive objectives dominate vision/multimodal (CLIP variants, DINOv2 for pathology) and now also RNA (Orthrus). Inverse-folding and structure-conditioned objectives (ESM-IF, ProteinMPNN, RFAA, AF3) train sequence given structure or vice versa. Recent additions: span-corruption (Ankh), JEPA-style (JEPA-DNA), structure-token autoregression (ESM-3), niche-conditional masking (Nicheformer), contrastive with biological augmentations (Orthrus), **modality-dropout generative reconstruction** — condition on any observed subset of modalities and reconstruct the rest (MIMIC).
 
-**Empirical pattern:** for representation quality on classification/regression, MLM and contrastive perform within 1–2 points on protein, but contrastive with biological augmentations significantly outperforms MLM on RNA (Orthrus: CL Z-score 0.90 vs MLM 0.71); for generation, AR or diffusion are necessary; for cross-modal alignment, CLIP-style with hard negatives dominates.
+**Empirical pattern:** for representation quality on classification/regression, MLM and contrastive perform within 1–2 points on protein, but contrastive with biological augmentations significantly outperforms MLM on RNA (Orthrus: CL Z-score 0.90 vs MLM 0.71); for generation, AR or diffusion are necessary; for cross-modal alignment, CLIP-style with hard negatives dominates; for unified representation+generation across many modalities, modality-dropout reconstruction (MIMIC) enables any-to-any inference without task-specific fine-tuning.
 
 #### Ablation evidence (Rev 4)
 | Source | Ablation finding |
@@ -137,6 +137,7 @@ Masked language modeling (BERT-style, 15% mask) remains the default for sequence
 | [CONCH (Nat. Med.)](https://doi.org/10.1038/s41591-024-02856-4) ([note](notes/a-visual-language-foundation-2024.md)) | CONCH (NatMed) image-text contrastive on 1.17M slide-caption pairs outperforms image-only DINO baselines on 12/14 zero-shot pathology benchmarks. |
 | [ConceptCLIP](https://arxiv.org/abs/2501.15579) ([note](notes/an-explainable-biomedical-foundation-2025.md)) | ConceptCLIP adds concept-token alignment on top of CLIP loss; improves zero-shot retrieval +5–8 points on biomedical concept matching. |
 | [Orthrus](https://doi.org/10.1038/s41592-026-03064-3) ([note](notes/orthrus-toward-evolutionary-and-2026.md)) | Contrastive learning with biological augmentations (splice isoforms + 400+ mammalian orthologs) beats MLM on aggregate mRNA property Z-score (0.90 vs 0.71); joint CL+MLM gives best result. Removing orthology augmentation drops Z-score by 0.11; masking-only drops by 0.55. |
+| [MIMIC](https://arxiv.org/abs/2604.24506) ([note](notes/mimic-a-generative-multimodal-2026.md)) | Modality-dropout generative reconstruction (condition on any subset of 6 modalities, reconstruct held-out ones): multimodal conditioning consistently outperforms sequence-only reconstruction; isoform-aware generative inference beats discriminative splice prediction. Demonstrates that a single generative objective over partially-observed multimodal inputs can unify representation learning, prediction, and design. |
 
 ### 4. Context Length
 
@@ -175,12 +176,13 @@ Training sets span: protein UniRef50/90 (~50M–250M sequences), MGnify/BFD (>1B
 | [H-optimus-0](https://arxiv.org/abs/2404.15217) ([note](notes/towards-large-scale-training-2024.md)) | H-optimus-0: 500k slides confirms diminishing returns past 200k slides on standard CPath benchmarks (<1% delta). |
 | [Geneformer](https://doi.org/10.1038/s41586-023-06139-9) ([note](notes/transfer-learning-enables-predictions-2023.md)) | Geneformer: scaling 1M → 30M cells gives 3–6 point boost on dosage sensitivity; tissue diversity (296 → 561 tissues) gives a further 2–4 points. |
 | [UCE](https://doi.org/10.1101/2023.11.28.568918) ([note](notes/universal-cell-embeddings-a-2023.md)) | UCE on 36M cells across 1000+ studies; cross-species pretraining (mouse + human) enables zero-shot annotation in unseen species (full-text 403; relies on author claims). |
+| [MIMIC](https://arxiv.org/abs/2604.24506) ([note](notes/mimic-a-generative-multimodal-2026.md)) | LORE dataset: curated alignment of 6 modalities (nucleic acid sequence, protein sequence, 3D structure, evolutionary profiles, regulatory signals, NL context) across 6,000+ organisms (13M RNA transcripts, 15.5M proteins, >4B NL tokens). Cross-organism, cross-modality alignment enables multimodal conditioning that consistently improves over single-modality baselines; demonstrates that curated multimodal alignment across diverse organisms is feasible and effective at scale. |
 
 ### 6. Multi-Modal Fusion
 
-Bio-FMs fuse modalities four ways: (i) **early fusion** of token streams (ESM-3, ESM-AA, RFAA, AF3, MIRROR-3D); (ii) **CLIP-style alignment** of unimodal encoders (CONCH, BiomedCLIP, ProtCLIP, MolFM, KEEP); (iii) **adapter-style** instruction tuning of an LLM with a vision encoder (LLaVA-Med, XrayGPT, Doctor Sun, MedMax); (iv) **knowledge fusion** with text embeddings of structured concepts (GenePT, ConceptCLIP, KEEP).
+Bio-FMs fuse modalities five ways: (i) **early fusion** of token streams (ESM-3, ESM-AA, RFAA, AF3, MIRROR-3D); (ii) **CLIP-style alignment** of unimodal encoders (CONCH, BiomedCLIP, ProtCLIP, MolFM, KEEP); (iii) **adapter-style** instruction tuning of an LLM with a vision encoder (LLaVA-Med, XrayGPT, Doctor Sun, MedMax); (iv) **knowledge fusion** with text embeddings of structured concepts (GenePT, ConceptCLIP, KEEP); (v) **split-track generative encoder-decoder with modality dropout** for any-to-any inference (MIMIC).
 
-**Empirical pattern:** early fusion wins when modalities are tightly coupled (sequence↔structure); CLIP wins for retrieval; adapter-LLM wins for free-form QA; knowledge fusion wins when labelled multimodal data is scarce.
+**Empirical pattern:** early fusion wins when modalities are tightly coupled (sequence↔structure); CLIP wins for retrieval; adapter-LLM wins for free-form QA; knowledge fusion wins when labelled multimodal data is scarce; split-track generative models (MIMIC) enable any-to-any inference and constrained design across the full biomolecular spectrum.
 
 #### Ablation evidence (Rev 4)
 | Source | Ablation finding |
@@ -198,6 +200,7 @@ Bio-FMs fuse modalities four ways: (i) **early fusion** of token streams (ESM-3,
 | [MIRROR-3D](https://arxiv.org/abs/2504.09060) ([note](notes/multimodal-3d-genome-pre-2025.md)) | MIRROR-3D fuses Hi-C contact maps with sequence; sequence-only ablation loses 3D contact prediction entirely. |
 | [ConceptCLIP](https://arxiv.org/abs/2501.15579) ([note](notes/an-explainable-biomedical-foundation-2025.md)) | ConceptCLIP concept-token alignment on top of CLIP yields +5–8 zero-shot retrieval and produces explainable concept attributions. |
 | [LLaVA-Med](https://arxiv.org/abs/2306.00890) ([note](notes/llava-med-training-a-2023.md)) | LLaVA-Med adapter on top of frozen LLaMA + CLIP; instruction tuning on 600k biomedical image-text pairs unlocks free-form QA missing from CLIP-only baselines. |
+| [MIMIC](https://arxiv.org/abs/2604.24506) ([note](notes/mimic-a-generative-multimodal-2026.md)) | Split-track encoder-decoder with modality dropout (MIMIC): multimodal conditioning (sequence + structure + evolutionary + regulatory) consistently outperforms sequence-only reconstruction; isoform-aware generative inference improves RNA splicing SOTA beyond discriminative baselines. |
 
 ### 7. Conditioning & Inductive Biases
 
@@ -215,6 +218,7 @@ Conditioning at pretraining (control tokens, label conditioning, niche condition
 | [BioGPT](https://arxiv.org/abs/2210.10341) ([note](notes/biogpt-generative-pre-trained-2022.md)) | Domain-conditioned causal LM beats general-purpose GPT-2 fine-tuned on biomedical NLP by 2–5 F1 across 6 tasks. |
 | [ProtCLIP](https://arxiv.org/abs/2412.20014) ([note](notes/protclip-function-informed-protein-2024.md)) | GO-term conditioning at pretraining beats post-hoc GO classifier on top of frozen ESM-2 by 3–7 F1 across 12 function tasks. |
 | [Orthrus](https://doi.org/10.1038/s41592-026-03064-3) ([note](notes/orthrus-toward-evolutionary-and-2026.md)) | Biological augmentations (splice isoforms + cross-species orthologs) as contrastive pairs outperform sequence-level augmentations (masking only) by Z-score +0.55; evolutionary conservation as inductive bias > reconstruction. |
+| [MIMIC](https://arxiv.org/abs/2604.24506) ([note](notes/mimic-a-generative-multimodal-2026.md)) | Experimental/semantic context as a conditioning modality (MIMIC): using natural-language experimental context (e.g., DMS vs SHAPE, MgCl₂ concentration) as a condition enables assay-dependent RNA chemical probing predictions, rather than collapsing to an average over experimental variation — a design not present in prior RNA FMs. Demonstrates that free-form semantic/experimental metadata can function as a first-class conditioning modality. |
 
 ### 8. Optimization & Schedule
 

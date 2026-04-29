@@ -1,9 +1,9 @@
 # Bio-FM Survey — Per-Modality Index
 
-Total papers: **142**
+Total papers: **143**
 
 Status breakdown:
-- `extracted`: 82
+- `extracted`: 83
 - `converted`: 42
 - `abstract-only`: 9
 - `fetched`: 5
@@ -21,13 +21,14 @@ Status breakdown:
 |------|-------|--------|--------|--------|------|
 | 2025 | [CellPainTR: Generalizable Representation Learning for Cross-Dataset Cell Painting Analysis](notes/cellpaintr-generalizable-representation-learning-2025.md) | `extracted` | — | — | transformer, hyena-operator, cell-painting, batch-correction |
 
-## dna (20 papers)
+## dna (21 papers)
 
 | Year | Title | Status | Params | Tokens | Tags |
 |------|-------|--------|--------|--------|------|
 | 2026 | [Alignment or Integration? Rethinking Multimodal Fusion in DNA-language Foundation Models](notes/alignment-or-integration-rethinking-2026.md) | `converted` | — | — |  |
 | 2026 | [How Private Are DNA Embeddings? Inverting Foundation Model Representations of Genomic Sequences](notes/how-private-are-dna-2026.md) | `seed` | — | — |  |
 | 2026 | [JEPA-DNA: Grounding Genomic Foundation Models through Joint-Embedding Predictive Architectures](notes/jepa-dna-grounding-genomic-2026.md) | `extracted` | 117M | 7.6B bp | jepa, self-supervised, representation-learning, continual-pretraining |
+| 2026 | [MIMIC: A Generative Multimodal Foundation Model for Biomolecules](notes/mimic-a-generative-multimodal-2026.md) | `extracted` | ~1B | 13M RNA transcripts + 15.5M proteins + >4B NL tokens; 6000+ organisms (LORE dataset) | multimodal, encoder-decoder, generative, any-to-any |
 | 2026 | [Poisoning the Genome: Targeted Backdoor Attacks on DNA Foundation Models](notes/poisoning-the-genome-targeted-2026.md) | `converted` | — | — |  |
 | 2025 | [A Phylogenetic Approach to Genomic Language Modeling](notes/a-phylogenetic-approach-to-2025.md) | `extracted` | 83000000 | — | genomic-language-model, phylogenetics, variant-effect-prediction, convolutional |
 | 2025 | [CodonMoE: DNA Language Models for mRNA Analyses](notes/codonmoe-dna-language-models-2025.md) | `extracted` | 7.5M (HyenaDNA+CodonMoE-pro); adapter adds 3.4–76.2M on top of backbone | — | mixture-of-experts, adapter, codon-level, cross-modality |
@@ -127,11 +128,12 @@ Status breakdown:
 |------|-------|--------|--------|--------|------|
 | 2023 | [BiomedCLIP: a multimodal biomedical foundation model pretrained from fifteen million scientific image-text pairs](notes/biomedclip-a-multimodal-biomedical-2023.md) | `extracted` | ~86M vision + ~110M text (ViT-B/16 + PubMedBERT) | 15M image-text pairs (PMC-15M), 32 epochs | contrastive-learning, CLIP, biomedical-vision-language, domain-adaptation |
 
-## multimodal (13 papers)
+## multimodal (14 papers)
 
 | Year | Title | Status | Params | Tokens | Tags |
 |------|-------|--------|--------|--------|------|
 | 2026 | [Differential Attention-Augmented BiomedCLIP with Asymmetric Focal Optimization for Imbalanced Multi-Label Video Capsule Endoscopy Classification](notes/differential-attention-augmented-biomedclip-2026.md) | `converted` | — | — |  |
+| 2026 | [MIMIC: A Generative Multimodal Foundation Model for Biomolecules](notes/mimic-a-generative-multimodal-2026.md) | `extracted` | ~1B | 13M RNA transcripts + 15.5M proteins + >4B NL tokens; 6000+ organisms (LORE dataset) | multimodal, encoder-decoder, generative, any-to-any |
 | 2025 | [An Explainable Biomedical Foundation Model via Large-Scale Concept-Enhanced Vision-Language Pre-training](notes/an-explainable-biomedical-foundation-2025.md) | `converted` | — | — |  |
 | 2025 | [Cell2Text: Multimodal LLM for Generating Single-Cell Descriptions from RNA-Seq Data](notes/cell2text-multimodal-llm-for-2025.md) | `extracted` | ~1.3B (Llama-1B variant) / ~4.3B (Gemma-4B variant); encoder Geneformer-V2-316M frozen | — | scRNA-seq, multimodal-generation, cell-annotation, geneformer |
 | 2025 | [Doctor Sun: A Bilingual Multimodal Large Language Model for Biomedical AI](notes/doctor-sun-a-bilingual-2025.md) | `converted` | — | — |  |
@@ -158,10 +160,11 @@ Status breakdown:
 | 2024 | [Virchow2: Scaling Self-Supervised Mixed Magnification Models in Pathology](notes/virchow2-scaling-self-supervised-2024.md) | `converted` | — | — |  |
 | 2022 | [BioGPT: Generative Pre-trained Transformer for Biomedical Text Generation and Mining](notes/biogpt-generative-pre-trained-2022.md) | `extracted` | 347000000 | 104900000000 | autoregressive, byte-pair, soft-prompt, causal-lm |
 
-## protein-sequence (26 papers)
+## protein-sequence (27 papers)
 
 | Year | Title | Status | Params | Tokens | Tags |
 |------|-------|--------|--------|--------|------|
+| 2026 | [MIMIC: A Generative Multimodal Foundation Model for Biomolecules](notes/mimic-a-generative-multimodal-2026.md) | `extracted` | ~1B | 13M RNA transcripts + 15.5M proteins + >4B NL tokens; 6000+ organisms (LORE dataset) | multimodal, encoder-decoder, generative, any-to-any |
 | 2025 | [Boosting In-Silicon Directed Evolution with Fine-Tuned Protein Language Model and Tree Search](notes/boosting-in-silicon-directed-2025.md) | `converted` | — | — |  |
 | 2025 | [Human Genome Book: Words, Sentences and Paragraphs](notes/human-genome-book-words-2025.md) | `extracted` | 117M | — | genomics, language-transfer, cross-lingual, genome-segmentation |
 | 2025 | [InstructPLM-mu: 1-Hour Fine-Tuning of ESM2 Beats ESM3 in Protein Mutation Predictions](notes/instructplm-mu-1-hour-2025.md) | `extracted` | 35M / 150M / 650M (ESM2 backbone scales) | — | protein-mutation-prediction, fine-tuning, multimodal-fusion, parameter-efficient |
@@ -189,11 +192,12 @@ Status breakdown:
 | 2020 | [ProtTrans: Towards Cracking the Language of Life's Code Through Self-Supervised Deep Learning and High Performance Computing](notes/prottrans-towards-cracking-the-2020.md) | `extracted` | up to 11B (ProtT5-XXL); ProtT5-XL 3B; ProtBert/ProtXLNet/ProtAlbert ~40M; ProtTXL-BFD 562M; ProtElectra 420M | up to 393B amino-acid tokens (BFD); UniRef100 88B; UniRef50 14B | arch-comparison, scaling, T5-XL, BERT |
 | 2019 | [Evaluating Protein Transfer Learning with TAPE](notes/evaluating-protein-transfer-learning-2019.md) | `extracted` | ~38M (each of Transformer, LSTM, ResNet matched to ~38M) | ~32M protein domain sequences (Pfam) | benchmark, transfer-learning, protein-representation, self-supervised |
 
-## protein-structure (21 papers)
+## protein-structure (22 papers)
 
 | Year | Title | Status | Params | Tokens | Tags |
 |------|-------|--------|--------|--------|------|
 | 2026 | [Mechanisms of AI Protein Folding in ESMFold](notes/mechanisms-of-ai-protein-2026.md) | `converted` | — | — |  |
+| 2026 | [MIMIC: A Generative Multimodal Foundation Model for Biomolecules](notes/mimic-a-generative-multimodal-2026.md) | `extracted` | ~1B | 13M RNA transcripts + 15.5M proteins + >4B NL tokens; 6000+ organisms (LORE dataset) | multimodal, encoder-decoder, generative, any-to-any |
 | 2025 | [InstructPLM-mu: 1-Hour Fine-Tuning of ESM2 Beats ESM3 in Protein Mutation Predictions](notes/instructplm-mu-1-hour-2025.md) | `extracted` | 35M / 150M / 650M (ESM2 backbone scales) | — | protein-mutation-prediction, fine-tuning, multimodal-fusion, parameter-efficient |
 | 2025 | [Inverse problems with experiment-guided AlphaFold](notes/inverse-problems-with-experiment-2025.md) | `converted` | — | — |  |
 | 2025 | [Precision Design of Cyclic Peptides using AlphaFold](notes/precision-design-of-cyclic-2025.md) | `converted` | — | — |  |
@@ -221,10 +225,11 @@ Status breakdown:
 |------|-------|--------|--------|--------|------|
 | 2026 | [SpecBridge: Bridging Mass Spectrometry and Molecular Representations via Cross-Modal Alignment](notes/specbridge-bridging-mass-spectrometry-2026.md) | `seed` | — | — |  |
 
-## rna (11 papers)
+## rna (12 papers)
 
 | Year | Title | Status | Params | Tokens | Tags |
 |------|-------|--------|--------|--------|------|
+| 2026 | [MIMIC: A Generative Multimodal Foundation Model for Biomolecules](notes/mimic-a-generative-multimodal-2026.md) | `extracted` | ~1B | 13M RNA transcripts + 15.5M proteins + >4B NL tokens; 6000+ organisms (LORE dataset) | multimodal, encoder-decoder, generative, any-to-any |
 | 2026 | [Orthrus: toward evolutionary and functional RNA foundation models](notes/orthrus-toward-evolutionary-and-2026.md) | `extracted` | 10.1M | — | contrastive-learning, mamba, ssm, mature-rna |
 | 2025 | [CodonMoE: DNA Language Models for mRNA Analyses](notes/codonmoe-dna-language-models-2025.md) | `extracted` | 7.5M (HyenaDNA+CodonMoE-pro); adapter adds 3.4–76.2M on top of backbone | — | mixture-of-experts, adapter, codon-level, cross-modality |
 | 2025 | [Multimodal Modeling of CRISPR-Cas12 Activity Using Foundation Models and Chromatin Accessibility Data](notes/multimodal-modeling-of-crispr-2025.md) | `extracted` | — | — | crispr, cas12, gRNA-activity-prediction, transfer-learning |
