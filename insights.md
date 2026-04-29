@@ -178,9 +178,9 @@ Training sets span: protein UniRef50/90 (~50M–250M sequences), MGnify/BFD (>1B
 
 ### 6. Multi-Modal Fusion
 
-Bio-FMs fuse modalities four ways: (i) **early fusion** of token streams (ESM-3, ESM-AA, RFAA, AF3, MIRROR-3D); (ii) **CLIP-style alignment** of unimodal encoders (CONCH, BiomedCLIP, ProtCLIP, MolFM, KEEP); (iii) **adapter-style** instruction tuning of an LLM with a vision encoder (LLaVA-Med, XrayGPT, Doctor Sun, MedMax); (iv) **knowledge fusion** with text embeddings of structured concepts (GenePT, ConceptCLIP, KEEP).
+Bio-FMs fuse modalities five ways: (i) **early fusion** of token streams (ESM-3, ESM-AA, RFAA, AF3, MIRROR-3D); (ii) **CLIP-style alignment** of unimodal encoders (CONCH, BiomedCLIP, ProtCLIP, MolFM, KEEP); (iii) **adapter-style** instruction tuning of an LLM with a vision encoder (LLaVA-Med, XrayGPT, Doctor Sun, MedMax); (iv) **knowledge fusion** with text embeddings of structured concepts (GenePT, ConceptCLIP, KEEP); (v) **split-track generative encoder-decoder with modality dropout** for any-to-any inference (MIMIC).
 
-**Empirical pattern:** early fusion wins when modalities are tightly coupled (sequence↔structure); CLIP wins for retrieval; adapter-LLM wins for free-form QA; knowledge fusion wins when labelled multimodal data is scarce.
+**Empirical pattern:** early fusion wins when modalities are tightly coupled (sequence↔structure); CLIP wins for retrieval; adapter-LLM wins for free-form QA; knowledge fusion wins when labelled multimodal data is scarce; split-track generative models (MIMIC) enable any-to-any inference and constrained design across the full biomolecular spectrum.
 
 #### Ablation evidence (Rev 4)
 | Source | Ablation finding |
@@ -198,6 +198,7 @@ Bio-FMs fuse modalities four ways: (i) **early fusion** of token streams (ESM-3,
 | [MIRROR-3D](https://arxiv.org/abs/2504.09060) ([note](notes/multimodal-3d-genome-pre-2025.md)) | MIRROR-3D fuses Hi-C contact maps with sequence; sequence-only ablation loses 3D contact prediction entirely. |
 | [ConceptCLIP](https://arxiv.org/abs/2501.15579) ([note](notes/an-explainable-biomedical-foundation-2025.md)) | ConceptCLIP concept-token alignment on top of CLIP yields +5–8 zero-shot retrieval and produces explainable concept attributions. |
 | [LLaVA-Med](https://arxiv.org/abs/2306.00890) ([note](notes/llava-med-training-a-2023.md)) | LLaVA-Med adapter on top of frozen LLaMA + CLIP; instruction tuning on 600k biomedical image-text pairs unlocks free-form QA missing from CLIP-only baselines. |
+| [MIMIC](https://arxiv.org/abs/2604.24506) ([note](notes/mimic-a-generative-multimodal-2026.md)) | Split-track encoder-decoder with modality dropout (MIMIC): multimodal conditioning (sequence + structure + evolutionary + regulatory) consistently outperforms sequence-only reconstruction; isoform-aware generative inference improves RNA splicing SOTA beyond discriminative baselines. |
 
 ### 7. Conditioning & Inductive Biases
 
