@@ -43,3 +43,7 @@ add +ARGS:
 # Regenerate index.json, modalities.md, insights.md from notes/.
 consolidate:
     uv run -- python -m survey_bio_fm.scripts.consolidate
+
+# Regenerate static HTML site from notes/.
+build-html:
+    uv run -- python -m survey_bio_fm.scripts.build_html

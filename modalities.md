@@ -1,9 +1,9 @@
 # Bio-FM Survey — Per-Modality Index
 
-Total papers: **141**
+Total papers: **142**
 
 Status breakdown:
-- `extracted`: 81
+- `extracted`: 82
 - `converted`: 42
 - `abstract-only`: 9
 - `fetched`: 5
@@ -221,10 +221,11 @@ Status breakdown:
 |------|-------|--------|--------|--------|------|
 | 2026 | [SpecBridge: Bridging Mass Spectrometry and Molecular Representations via Cross-Modal Alignment](notes/specbridge-bridging-mass-spectrometry-2026.md) | `seed` | — | — |  |
 
-## rna (10 papers)
+## rna (11 papers)
 
 | Year | Title | Status | Params | Tokens | Tags |
 |------|-------|--------|--------|--------|------|
+| 2026 | [Orthrus: toward evolutionary and functional RNA foundation models](notes/orthrus-toward-evolutionary-and-2026.md) | `extracted` | 10.1M | — | contrastive-learning, mamba, ssm, mature-rna |
 | 2025 | [CodonMoE: DNA Language Models for mRNA Analyses](notes/codonmoe-dna-language-models-2025.md) | `extracted` | 7.5M (HyenaDNA+CodonMoE-pro); adapter adds 3.4–76.2M on top of backbone | — | mixture-of-experts, adapter, codon-level, cross-modality |
 | 2025 | [Multimodal Modeling of CRISPR-Cas12 Activity Using Foundation Models and Chromatin Accessibility Data](notes/multimodal-modeling-of-crispr-2025.md) | `extracted` | — | — | crispr, cas12, gRNA-activity-prediction, transfer-learning |
 | 2025 | [SAE-RNA: A Sparse Autoencoder Model for Interpreting RNA Language Model Representations](notes/sae-rna-a-sparse-2025.md) | `converted` | — | — |  |
