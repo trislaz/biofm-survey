@@ -19,15 +19,17 @@ cell-painting, mass-spec proteomics, multimodal medical, small molecules, and mo
 
 ---
 
-## 💬 Contributing via GitHub Issues
+## 💬 Contributing
 
-**You can interact with this survey using GitHub issues!** A Copilot agent
+**You can contribute to this survey using GitHub issues!** A Copilot agent
 monitors issues and can:
 
-- **🔍 Answer questions** — Ask about a specific paper, design choice, or
+- **📄 Add a new FM** — Know of a bio-foundation model we're missing? Open an
+  issue with its arXiv ID, DOI, or title and the agent will add it, extract
+  ablation evidence, and update the insights.
+  Example: *"Add paper: arXiv:2501.12345 — Orthrus RNA foundation model"*
+- **🔍 Ask a question** — Ask about a specific paper, design choice, or
   insight. Example: *"What does Orthrus say about contrastive vs MLM for RNA?"*
-- **📄 Request a paper addition** — Ask to add a new bio-FM paper to the survey.
-  Example: *"Please add arXiv:2501.12345 to the survey"*
 - **🔄 Challenge an insight** — Point out new evidence that updates an existing
   finding. Example: *"Is the MLM-vs-AR insight still valid given paper X?"*
 
