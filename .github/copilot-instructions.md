@@ -108,7 +108,10 @@ Common issue patterns:
    relevant note/insight, and write a detailed answer in `qa/`
 
 ### "Add paper X to the survey"
-Follow the `.github/skills/add-paper/SKILL.md` skill.
+Follow the `.github/skills/add-paper/SKILL.md` skill. **Important**: after
+extracting the note, you MUST also update `insights.md` with the paper's
+ablation evidence — see Step 6 in the skill. The survey's value is in the
+consolidated insights, not just the individual notes.
 
 ### "Is insight Y still correct given new paper Z?"
 1. Read the relevant insight in `insights.md`

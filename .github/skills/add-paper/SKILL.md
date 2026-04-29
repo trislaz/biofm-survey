@@ -130,23 +130,49 @@ is_fm:                # true if this paper introduces/trains a bio-FM, false oth
 fm_classification_reason:  # One-line reason for the classification
 ```
 
-### 6. Consolidate
+### 6. Update `insights.md` with New Evidence
+
+**This step is mandatory for `is_fm: true` papers.** If the paper provides new
+ablation evidence or design insights, integrate them into `insights.md`:
+
+1. Read the paper's **Key Ablations** and **Ablations (Rev 4)** sections.
+2. For each significant finding, identify the relevant **design-choice axis** in
+   `insights.md` (there are 12: Tokenization, Architecture, Pretraining Objective,
+   Context Length, Data, Multi-Modal Fusion, Conditioning & Inductive Biases,
+   Optimization, Scaling, MSA vs MSA-Free, Distillation, Evaluation Caveats).
+3. Add a row to the axis's **"Ablation evidence (Rev 4)"** table:
+   ```
+   | [Paper Name](DOI/URL) | One-sentence ablation finding with numbers. |
+   ```
+4. If the finding changes the axis's narrative or empirical pattern, update the
+   prose paragraph above the table.
+5. Update the **modality-specific recipe** section if the paper is the new default
+   or adds a new pitfall.
+6. Add the paper to the **FM Catalogue** appendix under the correct modality,
+   with a bullet listing its key ablation findings.
+7. Update `(N=X papers)` counts wherever the paper is now cited.
+
+> **Rule**: every newly added FM with ablation evidence MUST appear in
+> `insights.md`. The survey's value is in the consolidated insights, not just
+> the individual notes.
+
+### 7. Consolidate
 
 Rebuild the index and modality listings:
 ```bash
 just consolidate
 ```
 
-### 7. Optionally Rebuild HTML Site
+### 8. Optionally Rebuild HTML Site
 
 ```bash
 just build-html
 ```
 
-### 8. Commit
+### 9. Commit
 
 ```bash
-git add notes/<slug>.md index.json modalities.md
+git add notes/<slug>.md insights.md index.json modalities.md
 git commit -m "feat: add <Paper Name> to survey"
 ```
 
@@ -185,6 +211,8 @@ Before considering a paper fully added, verify:
 - [ ] `is_fm` is set correctly with a reason
 - [ ] `modalities` uses valid values from the list above
 - [ ] `status` is set to `extracted`
+- [ ] **`insights.md` updated** with ablation evidence (if `is_fm: true`)
+- [ ] **FM Catalogue** entry added in `insights.md` (if `is_fm: true`)
 - [ ] `just consolidate` has been run
 
 ---
