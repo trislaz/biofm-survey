@@ -3259,7 +3259,7 @@
       "updated_at": null
     },
     {
-      "id": "orthrus-toward-evolutionary-and-2024",
+      "id": "orthrus-towards-evolutionary-and-2024",
       "title": "Orthrus: Towards Evolutionary and Functional RNA Foundation Models",
       "authors": [
         "Philip Fradkin",
@@ -3271,24 +3271,34 @@
         "Bo Wang"
       ],
       "year": 2024,
-      "venue": null,
+      "venue": "bioRxiv (Nature Methods, 2026)",
       "arxiv": null,
       "doi": "10.1101/2024.10.10.617658",
-      "url": "https://www.biorxiv.org/content/10.1101/2024.10.10.617658v1",
+      "url": "https://www.biorxiv.org/content/10.1101/2024.10.10.617658v3",
       "pdf_path": null,
       "md_path": null,
       "modalities": [
         "rna"
       ],
-      "status": "seed",
-      "evidence_quality": "unknown",
-      "tags": [],
-      "parameters": null,
+      "status": "extracted",
+      "evidence_quality": "abstract+repo",
+      "tags": [
+        "rna-language-model",
+        "mature-mrna",
+        "mamba",
+        "state-space-model",
+        "contrastive-learning",
+        "evolutionary-augmentation",
+        "splice-isoform",
+        "zoonomia",
+        "linear-probing"
+      ],
+      "parameters": "1.3M (base, 4-track) / 10M (large, 6-track)",
       "training_tokens": null,
       "training_compute": null,
       "references_chased": false,
-      "added_at": "2026-04-29T12:08:51+00:00",
-      "updated_at": null
+      "added_at": "2026-04-22T19:36:51+00:00",
+      "updated_at": "2026-04-29T12:21:00+00:00"
     },
     {
       "id": "phikon-v2-a-large-2024",
