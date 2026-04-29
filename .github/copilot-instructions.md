@@ -75,10 +75,22 @@ Always cite your sources. Use the format `[Paper Name](URL)` with the DOI or
 arXiv link from the note's frontmatter. The `cite.py` script can resolve slugs
 to URLs: `uv run -- python -m survey_bio_fm.scripts.cite <slug>`.
 
-### Step 4: Update if needed
+### Step 4: Record the Q&A
 
-If the answer requires updating `insights.md` or a note, make the edit and run
-`just consolidate` afterward.
+When answering a question raised in a GitHub issue or PR:
+
+1. **Update the relevant document** (`insights.md` or the paper's `notes/*.md`)
+   with a brief 1–2 sentence answer, linking to the issue/PR that raised the
+   question. Format: `> **Q** ([#42](link)): <question>? **A**: <answer>.`
+
+2. **Create a detailed answer** in the `qa/` folder:
+   - File: `qa/<issue-or-pr-number>-<short-slug>.md`
+   - Include: the full question, detailed answer with citations, any evidence
+     from the paper source, and links to relevant notes.
+   - This serves as a permanent knowledge base of curated Q&A.
+
+3. If the answer requires updating `insights.md` or a note beyond the inline
+   Q&A annotation, make those edits too and run `just consolidate` afterward.
 
 ---
 
@@ -92,6 +104,8 @@ Common issue patterns:
 3. If not detailed enough, **fetch the paper online** using the `arxiv`, `doi`,
    or `url` from the note's frontmatter (see Step 2 above for how)
 4. Reply with a concise answer citing specific numbers
+5. **Record the Q&A** (see Step 4 above): add a brief inline answer to the
+   relevant note/insight, and write a detailed answer in `qa/`
 
 ### "Add paper X to the survey"
 Follow the `.github/skills/add-paper/SKILL.md` skill.
@@ -100,7 +114,8 @@ Follow the `.github/skills/add-paper/SKILL.md` skill.
 1. Read the relevant insight in `insights.md`
 2. Read the new paper
 3. If the insight needs updating, edit `insights.md` with the new evidence
-4. Run `just consolidate`
+4. **Record the Q&A** in `qa/` and add an inline annotation in `insights.md`
+5. Run `just consolidate`
 
 ---
 
