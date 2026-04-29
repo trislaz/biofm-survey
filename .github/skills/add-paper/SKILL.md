@@ -143,10 +143,13 @@ additional support for an existing insight**, integrate it into `insights.md`:
    (12 axes: Tokenization, Architecture, Pretraining Objective, Context Length,
    Data, Multi-Modal Fusion, Conditioning, Optimization, Scaling, MSA vs MSA-Free,
    Distillation, Evaluation Caveats).
-4. Add a row to the axis's **"Ablation evidence (Rev 4)"** table:
+4. Add a row to the axis's **"Ablation evidence (Rev 4)"** table. Each paper
+   reference must include **both** the paper URL and a link to its local note:
    ```
-   | [Paper Name](DOI/URL) | One-sentence ablation finding with numbers. |
+   | [Paper Name](DOI/URL) ([note](notes/<slug>.md)) | One-sentence ablation finding with numbers. |
    ```
+   This applies everywhere a paper is cited in `insights.md` — ablation tables,
+   narrative prose, modality recipes, and the FM Catalogue.
 5. If the finding changes the axis's narrative or empirical pattern, update the
    prose paragraph above the table.
 6. Update the **modality-specific recipe** section if applicable.

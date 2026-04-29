@@ -71,9 +71,12 @@ If the user asks about a specific paper or wants deeper detail:
 
 ### Step 3: Synthesise with citations
 
-Always cite your sources. Use the format `[Paper Name](URL)` with the DOI or
-arXiv link from the note's frontmatter. The `cite.py` script can resolve slugs
-to URLs: `uv run -- python -m survey_bio_fm.scripts.cite <slug>`.
+Always cite your sources. Use **both** the paper URL and a link to the local
+note: `[Paper Name](DOI/URL) ([note](notes/<slug>.md))`. This lets readers
+jump to the original paper or to the survey's structured summary.
+
+The `cite.py` script can resolve slugs to URLs:
+`uv run -- python -m survey_bio_fm.scripts.cite <slug>`.
 
 ### Step 4: Record the Q&A
 
