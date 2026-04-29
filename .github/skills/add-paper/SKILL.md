@@ -58,13 +58,19 @@ grep 'evidence_quality' notes/<slug>.md
 ```
 
 If only `abstract-only` or `metadata-only`, try fetching manually:
-- Check if there's a PMC ID for the paper
+- Check if there's a PMC ID for the paper (search `https://pmc.ncbi.nlm.nih.gov`)
 - Try fetching the bioRxiv XML directly
+- For arXiv papers: fetch `https://arxiv.org/html/<arxiv_id>` for HTML full text
 - As a last resort, web-fetch the paper's abstract page
+
+> **Note**: `papers/` and `papers/md/` are **gitignored** and only available
+> locally. When running as a cloud agent, fetch paper content from the web
+> using the arXiv ID, DOI, or URL from the note's frontmatter.
 
 ### 4. Extract Structured Information
 
-Read the paper's full text from `papers/md/<slug>.md` and edit `notes/<slug>.md`
+Read the paper's full text (from `papers/md/<slug>.md` if running locally, or
+fetched from the web if running as a cloud agent) and edit `notes/<slug>.md`
 to replace the body with these **exact sections** (H2 headings):
 
 ```markdown

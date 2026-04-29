@@ -56,8 +56,18 @@ Read `insights.md` to find the relevant design-choice axis (e.g., "Architecture"
 
 If the user asks about a specific paper or wants deeper detail:
 1. Find the paper in `notes/*.md` (search by title, slug, or modality)
-2. Read the note for the structured summary
-3. If even more detail is needed, read the source markdown in `papers/md/*.md`
+2. Read the note for the structured summary (TL;DR, Model, Data, Ablations, etc.)
+3. If even more detail is needed, **fetch the paper's full text online**:
+   - Check the note's frontmatter for `arxiv`, `doi`, or `url` fields
+   - For arXiv papers: `web_fetch https://arxiv.org/abs/<arxiv_id>` for abstract,
+     or fetch the HTML version at `https://arxiv.org/html/<arxiv_id>`
+   - For DOI papers: use `web_fetch` on the publisher page, or fetch the PMC
+     full text if available (check `https://pmc.ncbi.nlm.nih.gov`)
+   - For bioRxiv: `web_fetch https://www.biorxiv.org/content/<doi>`
+
+> **Note**: `papers/` and `papers/md/` are **gitignored** (too large for git).
+> They are only available locally. When running as a cloud agent, you must
+> fetch paper content from the web using the URLs in the note's frontmatter.
 
 ### Step 3: Synthesise with citations
 
@@ -79,7 +89,8 @@ Common issue patterns:
 ### "What does paper X say about Y?"
 1. Find the paper in `notes/`
 2. Read its Key Ablations section
-3. If not detailed enough, read `papers/md/` source
+3. If not detailed enough, **fetch the paper online** using the `arxiv`, `doi`,
+   or `url` from the note's frontmatter (see Step 2 above for how)
 4. Reply with a concise answer citing specific numbers
 
 ### "Add paper X to the survey"
