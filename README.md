@@ -13,11 +13,28 @@ organised by design-choice axis (tokenisation, architecture, objective, context
 length, data, multimodal fusion, conditioning, optimisation, scaling, evaluation
 caveats) plus modality-specific "would-build-today" recipes.
 
-Current state: **113 candidate papers, 49 fully extracted** (across DNA, RNA,
-protein-sequence, protein-structure, scRNA, single-cell-multiomics, imaging
-pathology / cell-painting, mass-spec proteomics, multimodal medical, small
-molecules). Re-run `just consolidate` after adding new papers to refresh
-`index.json`, `modalities.md`, and (optionally) `insights.md`.
+Current state: **142 papers (85 bio-FMs + 57 FM-related support papers)** across
+DNA, RNA, protein, scRNA, single-cell-multiomics, imaging-pathology,
+cell-painting, mass-spec proteomics, multimodal medical, small molecules, and more.
+
+---
+
+## 💬 Contributing via GitHub Issues
+
+**You can interact with this survey using GitHub issues!** A Copilot agent
+monitors issues and can:
+
+- **🔍 Answer questions** — Ask about a specific paper, design choice, or
+  insight. Example: *"What does Orthrus say about contrastive vs MLM for RNA?"*
+- **📄 Request a paper addition** — Ask to add a new bio-FM paper to the survey.
+  Example: *"Please add arXiv:2501.12345 to the survey"*
+- **🔄 Challenge an insight** — Point out new evidence that updates an existing
+  finding. Example: *"Is the MLM-vs-AR insight still valid given paper X?"*
+
+Answers are recorded in the [`qa/`](./qa/) folder for future reference, and
+brief inline annotations are added to the relevant documents.
+
+---
 
 Output artifacts (committed):
 
