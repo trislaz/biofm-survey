@@ -1,9 +1,9 @@
 # Bio-FM Survey — Per-Modality Index
 
-Total papers: **141**
+Total papers: **142**
 
 Status breakdown:
-- `extracted`: 81
+- `extracted`: 82
 - `converted`: 42
 - `abstract-only`: 9
 - `fetched`: 5
@@ -221,7 +221,7 @@ Status breakdown:
 |------|-------|--------|--------|--------|------|
 | 2026 | [SpecBridge: Bridging Mass Spectrometry and Molecular Representations via Cross-Modal Alignment](notes/specbridge-bridging-mass-spectrometry-2026.md) | `seed` | — | — |  |
 
-## rna (10 papers)
+## rna (11 papers)
 
 | Year | Title | Status | Params | Tokens | Tags |
 |------|-------|--------|--------|--------|------|
@@ -230,6 +230,7 @@ Status breakdown:
 | 2025 | [SAE-RNA: A Sparse Autoencoder Model for Interpreting RNA Language Model Representations](notes/sae-rna-a-sparse-2025.md) | `converted` | — | — |  |
 | 2024 | [BEACON: Benchmark for Comprehensive RNA Tasks and Language Models](notes/beacon-benchmark-for-comprehensive-2024.md) | `extracted` | — | — | benchmark, rna-language-model, tokenization, positional-encoding |
 | 2024 | [Character-level Tokenizations as Powerful Inductive Biases for RNA Foundational Models](notes/character-level-tokenizations-as-2024.md) | `extracted` | 8M / 33M / 50M / 100M / 150M / 650M (suite) | ~31M ncRNA seqs from RNAcentral (~5.1B tokens); extended +31M coding seqs from RefSeq (~62M seqs total). Scaling expts: 2.4B–24.8B tokens. | tokenization, character-level, GBST, learnable-tokenization |
+| 2024 | [Orthrus: Towards Evolutionary and Functional RNA Foundation Models](notes/orthrus-towards-evolutionary-and-2024.md) | `extracted` | 1.3M (base, 4-track) / 10M (large, 6-track) | — | rna-language-model, mature-mrna, mamba, state-space-model |
 | 2024 | [RiNALMo: General-Purpose RNA Language Models Can Generalize Well on Structure Prediction Tasks](notes/rinalmo-general-purpose-rna-2024.md) | `extracted` | 650M | — | rna-language-model, masked-language-modeling, secondary-structure, generalization |
 | 2024 | [Sequence modeling and design from molecular to genome scale with Evo](notes/sequence-modeling-and-design-2024.md) | `extracted` | 7B | 340B | StripedHyena, long-context, genome-scale, byte-level-tokenization |
 | 2023 | [Predicting RNA-seq coverage from DNA sequence as a unifying model of gene regulation](notes/predicting-rna-seq-coverage-2023.md) | `extracted` | ~250M (full model; not explicitly stated — comparable to Enformer; ablation mini models ~30M) | ~10K coverage tracks (7,611 human + 2,608 mouse) × tiled 524 kb genome windows | RNA-seq, long-context, multi-task, genomics |

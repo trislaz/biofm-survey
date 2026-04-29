@@ -6,7 +6,7 @@ This guidebook distils design decisions and empirical findings from **84 biology
 
 Each FM note in `notes/` carries a `## Ablations (Rev 4)` section that quotes the design-choice ablations actually reported by the authors. This guidebook is *grounded in those tables*: every design-choice axis below ends with an **Ablation evidence (Rev 4)** subsection that quotes the specific finding from the relevant note. Citations use `[short-name](URL)` linking to the source's DOI, arXiv, or canonical URL.
 
-Coverage by modality (FM count): protein-sequence 21, imaging-pathology 13, protein-structure 13, DNA 12, scRNA 12, multimodal-medical 9, small-molecule 6, RNA 5, epigenome 4, single-cell-multiomics 3, plus singletons in radiology, microscopy, cell-painting, text, vision, and interactome. Methods reflect the ablations reported by authors and have not been independently reproduced; see *Methodology & Limitations*.
+Coverage by modality (FM count): protein-sequence 21, imaging-pathology 13, protein-structure 13, DNA 12, scRNA 12, multimodal-medical 9, small-molecule 6, RNA 6, epigenome 4, single-cell-multiomics 3, plus singletons in radiology, microscopy, cell-painting, text, vision, and interactome. Methods reflect the ablations reported by authors and have not been independently reproduced; see *Methodology & Limitations*.
 
 ## Executive Summary — Top-12 Practitioner Take-aways (Rev 4)
 
@@ -16,7 +16,7 @@ Each take-away is annotated with the number of **FM papers** that directly suppo
 
 2. **For protein language models, scale unlocks emergent contact prediction; objective and tokenization matter less than parameter count past ~150M.** **(N=12 papers)** evidence: [ESM-2 / ESMFold](https://doi.org/10.1126/science.ade2574), [ProtTrans](https://arxiv.org/abs/2007.06225), [ESM-1b](https://doi.org/10.1073/pnas.2016239118), [Rao attention-as-contacts](https://doi.org/10.1101/2020.12.15.422761), [Ankh](https://arxiv.org/abs/2301.06568), [ProGen](https://arxiv.org/abs/2004.03497), [ESM-1v](https://doi.org/10.1101/2021.07.09.450648), [ProteinBERT](https://doi.org/10.1093/bioinformatics/btac020), [ProtGPT2](https://doi.org/10.1038/s41467-022-32007-7), [ESM-design](https://doi.org/10.1101/2022.12.21.521521), [ESM-AA](https://arxiv.org/abs/2403.12995), [ESM-3](https://doi.org/10.1101/2024.07.01.600583)
 
-3. **Long context is genomics' bottleneck; sub-quadratic backbones (Hyena, Mamba, S4) match Transformers at 32–1M tokens with 5–20× lower FLOPs.** **(N=9 papers)** evidence: [HyenaDNA](https://arxiv.org/abs/2306.15794), [Caduceus](https://arxiv.org/abs/2403.03234), [scMamba](https://arxiv.org/abs/2506.20697), [Nucleotide Transformer](https://doi.org/10.1038/s41592-024-02523-z), [Evo](https://doi.org/10.1126/science.ado9336), [Evo 2](https://doi.org/10.1101/2025.02.18.638918), [Enformer](https://doi.org/10.1038/s41592-021-01252-x), [Borzoi](https://doi.org/10.1038/s41588-024-02053-6), [dnaGrinder](https://arxiv.org/abs/2409.15697)
+3. **Long context is genomics' bottleneck; sub-quadratic backbones (Hyena, Mamba, S4) match Transformers at 32–1M tokens with 5–20× lower FLOPs.** **(N=10 papers)** evidence: [HyenaDNA](https://arxiv.org/abs/2306.15794), [Caduceus](https://arxiv.org/abs/2403.03234), [scMamba](https://arxiv.org/abs/2506.20697), [Nucleotide Transformer](https://doi.org/10.1038/s41592-024-02523-z), [Evo](https://doi.org/10.1126/science.ado9336), [Evo 2](https://doi.org/10.1101/2025.02.18.638918), [Enformer](https://doi.org/10.1038/s41592-021-01252-x), [Borzoi](https://doi.org/10.1038/s41588-024-02053-6), [dnaGrinder](https://arxiv.org/abs/2409.15697), [Orthrus](https://doi.org/10.1101/2024.10.10.617658)
 
 4. **BPE/k-mer/byte tokenisation choices change parameter count and inference speed by 2–4× but rarely change downstream rank order, with one large exception: DNABERT-2's BPE doubles many GUE benchmarks vs. fixed k-mer.** **(N=6 papers)** evidence: [DNABERT-2](https://arxiv.org/abs/2306.15006), [DNABERT-1](https://doi.org/10.1093/bioinformatics/btab083), [Nucleotide Transformer](https://doi.org/10.1038/s41592-024-02523-z), [VQDNA](https://arxiv.org/abs/2405.10812), [HyenaDNA](https://arxiv.org/abs/2306.15794), [Genome Book](https://arxiv.org/abs/2501.16982)
 
@@ -48,6 +48,7 @@ One-line defaults for the impatient. Each row links to the canonical FM(s) you s
 | Cell-type-conditional epigenome | [GET](https://doi.org/10.1038/s41586-024-08391-z) | Region-wise transformer | Motif-masked SSL | Pretraining lifts cross-cell-type r 0.60→0.94 |
 | Gene expression from DNA | [Enformer](https://doi.org/10.1038/s41592-021-01252-x) / [Borzoi](https://doi.org/10.1038/s41588-024-02053-6) | CNN+Transformer | Supervised on tracks | 196kb→524kb gives small Pearson lift |
 | RNA representation | [RiNALMo](https://arxiv.org/abs/2403.00043) / [RNA-FM](https://arxiv.org/abs/2204.00300) | Transformer MLM | ncRNA + mRNA | Scale to 650M improves 8/9 RNA tasks |
+| Mature mRNA properties (half-life, MRL, GO) | [Orthrus](https://doi.org/10.1101/2024.10.10.617658) | Mamba SSM | Contrastive on splice isoforms + 400-mammal Zoonomia orthologs | ~2× linear-probe Pearson r vs Saluki/RNA-FM in low-label half-life |
 | Protein representation | [ESM-2 / ESMFold](https://doi.org/10.1126/science.ade2574) | Transformer MLM | UR50, 8M→15B | Contact P@L 0.34→0.54 with scale |
 | Protein design (multimodal) | [ESM-3](https://doi.org/10.1101/2024.07.01.600583) | Transformer | Joint seq/struct/func tokens | Ablating any track loses 8–20% recovery |
 | Protein structure (monomer) | [AlphaFold 2](https://doi.org/10.1038/s41586-021-03819-2) | Evoformer + IPA | MSA + distillation | MSA depth dominant; ablating drops 25–40 GDT |
@@ -133,6 +134,7 @@ Masked language modeling (BERT-style, 15% mask) remains the default for sequence
 | [ProteinMPNN](https://doi.org/10.1126/science.add2187) | ProteinMPNN's autoregressive sequence-given-structure objective beats Rosetta on native recovery (52% vs 33%) and produces sequences that fold in silico. |
 | [Geneformer](https://doi.org/10.1038/s41586-023-06139-9) | Geneformer's masked-rank objective (15%) on 30M cells transfers zero-shot to dosage sensitivity prediction (AUROC 0.89); ablating to 5% mask drops by 0.04. |
 | [Nicheformer](https://doi.org/10.1101/2024.04.15.589472) | Niche-conditional masking (mask out neighbours, predict from cell + niche label) beats vanilla MLM by 4–7 points on spatial niche classification. |
+| [Orthrus](https://doi.org/10.1101/2024.10.10.617658) | **Biology-aware contrastive pretraining** (positive pairs = splice isoforms of the same gene + orthologous transcripts across 400+ Eutherian mammals from Zoonomia) on a Mamba SSM beats nucleotide-MLM RNA-FMs at *two orders of magnitude fewer parameters* (~10M vs ~100M+) on five mRNA property tasks; the largest gain is in low-label fine-tuning, where Orthrus lifts RNA-half-life Pearson r ~2× over Saluki / RNA-FM. The objective — not scale or backbone — is doing the work. |
 | [CONCH (Nat. Med.)](https://doi.org/10.1038/s41591-024-02856-4) | CONCH (NatMed) image-text contrastive on 1.17M slide-caption pairs outperforms image-only DINO baselines on 12/14 zero-shot pathology benchmarks. |
 | [ConceptCLIP](https://arxiv.org/abs/2501.15579) | ConceptCLIP adds concept-token alignment on top of CLIP loss; improves zero-shot retrieval +5–8 points on biomedical concept matching. |
 
@@ -303,9 +305,9 @@ Practical defaults per modality, drawn from the strongest ablations in the 84 FM
 
 ### RNA
 
-[RNA-FM](https://arxiv.org/abs/2204.00300) (RNA-FM, MLM on ncRNA) and [RiNALMo](https://arxiv.org/abs/2403.00043) (RiNALMo, scaled MLM) cover representation; [RhoFold](https://arxiv.org/abs/2207.01586) (RhoFold) covers structure with sparse RNA MSAs. **(N=3 papers)** RNA FMs: [RNA-FM](https://arxiv.org/abs/2204.00300), [RiNALMo](https://arxiv.org/abs/2403.00043), [RhoFold](https://arxiv.org/abs/2207.01586)
+[RNA-FM](https://arxiv.org/abs/2204.00300) (RNA-FM, MLM on ncRNA) and [RiNALMo](https://arxiv.org/abs/2403.00043) (RiNALMo, scaled MLM) cover ncRNA representation; [RhoFold](https://arxiv.org/abs/2207.01586) (RhoFold) covers structure with sparse RNA MSAs. **Rev 4 addition.** [Orthrus](https://doi.org/10.1101/2024.10.10.617658) (Orthrus, Mamba SSM + biology-aware contrastive on splice isoforms + 400-mammal Zoonomia orthologs) is the canonical FM for *mature-mRNA* property tasks (half-life, mean ribosome load, GO molecular function, exon-junction, sub-cellular localisation), beating MLM RNA-FMs at ~10 M params and ~2× their Pearson r in low-label regimes. **(N=4 papers)** RNA FMs: [RNA-FM](https://arxiv.org/abs/2204.00300), [RiNALMo](https://arxiv.org/abs/2403.00043), [RhoFold](https://arxiv.org/abs/2207.01586), [Orthrus](https://doi.org/10.1101/2024.10.10.617658)
 
-**Pitfalls.** RNA pretraining corpora are 100× smaller than protein; MSA depth for RNA is sparse so MSA-free models lag further than protein.
+**Pitfalls.** RNA pretraining corpora are 100× smaller than protein; MSA depth for RNA is sparse so MSA-free models lag further than protein. ncRNA-pretrained MLMs (RNA-FM, RiNALMo) and mature-mRNA contrastive models (Orthrus) cover *disjoint* sub-modalities — Orthrus is OOD on raw genomic DNA / pre-mRNA, while ncRNA MLMs underperform on transcript-level mRNA function. Pick the FM that matches your input distribution.
 
 ### Protein Sequence
 
@@ -494,8 +496,14 @@ One row per FM, grouped by modality. Each entry: nickname → URL, one-line abla
   - Cross-modal mapping yields a modest extra gain and enables missing-modality inference.
   - Single-modal baseline.
 
-### RNA (3)
+### RNA (4)
 
+- **[Orthrus](https://doi.org/10.1101/2024.10.10.617658)** — *modalities: rna*
+  - **Objective ablation:** biology-aware contrastive (splice-isoform + Zoonomia-ortholog positive pairs) **vs** MLM-only at matched params → contrastive wins on linear-probe RNA half-life, MRL, GO MF, exon-junction, sub-cellular localisation.
+  - **Input-track ablation:** 4-track one-hot **vs** 6-track (+splice +CDS indicator) → 6-track wins on every reported mRNA task; README explicitly recommends 6-track *large*.
+  - **Backbone ablation:** Mamba SSM **vs** Transformer at matched params → Mamba enables full 12 kb mature mRNAs at the contrastive batch sizes Transformers cannot afford.
+  - **Data-breadth ablation:** 10 model organisms **vs** Zoonomia 400+ Eutherian mammals → Eutherian-wide ortholog pairing is what produces cross-species generalisation.
+  - **Probe-protocol ablation:** linear probe **vs** full FT **vs** low-data FT → biggest Orthrus advantage is *low-data fine-tuning*, ~2× Pearson r vs Saluki / RNA-FM on RNA half-life with few labels; gap shrinks but does not invert at full data.
 - **[RhoFold](https://arxiv.org/abs/2207.01586)** — *modalities: rna*
   - Effect / Notes.
   - Baseline; all four components active.
