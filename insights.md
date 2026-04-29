@@ -400,24 +400,20 @@ One row per FM, grouped by modality. Each entry: nickname → URL, one-line abla
 ### DNA / Genomics (12)
 
 - **[Caduceus](https://arxiv.org/abs/2403.03234) ([note](notes/caduceus-bi-directional-equivariant-2024.md))** — *modalities: dna*
-  - Conclusion.
   - Use Mamba (selective SSM) as the inner block; it scales better with context than implicit-conv Hyena.
   - Parameter sharing buys depth at fixed param count and outperforms the naive 2-module bidirectional design.
   - RC equivariance is a useful architectural prior even at pre-training, not just downstream.
   - RC equivariance — whether built-in (PS) or post-hoc (Ph) — is the dominant factor on short/medium-range classification.
 - **[DNABERT-1](https://doi.org/10.1093/bioinformatics/btab083) ([note](notes/dnabert-pre-trained-bidirectional-2021.md))** — *modalities: dna*
-  - Source.
-  - DNABERT-2 Tab.3.
-  - DNABERT-2 Tab.3.
-  - DNABERT-2 Tab.3.
-  - DNABERT-2 Tab.3.
+  - K-mer length choice barely moves the needle (all k=3–6 within 1.6 GUE points), whereas switching from overlapping k-mers to BPE yields +4.41 GUE with 3.25× fewer FLOPs.
+  - Span masking of contiguous k tokens is mandatory for MLM with overlapping k-mers to prevent information leakage from adjacent unmasked tokens.
+  - Pre-training transfers decisively across all downstream tasks (promoter, TFBS, splice site), substantially outperforming from-scratch training.
 - **[DNABERT-2](https://arxiv.org/abs/2306.15006) ([note](notes/dnabert-2-efficient-foundation-2023.md))** — *modalities: dna*
   - BPE strictly dominates overlapping k-mer in both performance and compute, validating the central design choice.
   - Vocab size = 4096 is the chosen sweet spot trading compute vs accuracy.
   - Multi-species pre-training is the dominant source of DNABERT-2's gains; architecture alone is insufficient.
   - Cheap domain-adaptive pre-training reliably improves downstream performance.
 - **[dnaGrinder](https://arxiv.org/abs/2409.15697) ([note](notes/dnagrinder-a-lightweight-and-2024.md))** — *modalities: dna*
-  - Conclusion.
   - SwiGLU adopted: ~comparable quality at substantially lower parameter cost.
   - Further pretraining yields limited / inconsistent gains for dnaGrinder; not worth the compute as a default.
   - SNP-variant-only data is unsuitable (sparse, arbitrarily spaced); complete reference sequences with SNPs incorporated are required.
@@ -429,13 +425,9 @@ One row per FM, grouped by modality. Each entry: nickname → URL, one-line abla
   - Result is not a prompt-engineering artefact.
   - Genomic-context modelling, not codon-level pretraining, drives the capability.
 - **[Evo 2](https://doi.org/10.1101/2025.02.18.638918) ([note](notes/genome-modeling-and-design-2025.md))** — *modalities: dna*
-  - Source.
-  - GitHub README.
-  - GitHub README.
-  - GitHub README.
-  - GitHub README v0.5.0 release.
+  - StripedHyena 2 architecture unlocks 1M-nucleotide context (8× Evo 1) and enables 30× data-scale-up, making the gain architectural rather than merely parametric.
+  - The 1B/7B/20B/40B parameter variants trade hardware requirements against capability; the 20B checkpoint shows parameter count is not monotonic with deployable performance.
 - **[Genome Book](https://arxiv.org/abs/2501.16982) ([note](notes/human-genome-book-words-2025.md))** — *modalities: dna, protein-sequence*
-  - Take-away.
   - EN→DNA transfer works on short DNA pairs without any DNA supervision.
   - Transfer degrades on longer sequences (~13 pt drop) — length sensitivity.
   - All three lengths >79% → transfer is robust but length-dependent.
@@ -447,11 +439,9 @@ One row per FM, grouped by modality. Each entry: nickname → URL, one-line abla
   - Pretraining matters most on harder, lower-baseline tasks (especially histone marks).
   - Hyena operator outperforms attention at matched parameter count and competes with models 1500× larger.
 - **[JEPA-DNA](https://arxiv.org/abs/2602.17162) ([note](notes/jepa-dna-grounding-genomic-2026.md))** — *modalities: dna*
-  - Take-away.
-  - Short-range motif tasks benefit.
-  - Mid-range structural tasks benefit.
-  - Largest supervised gain; coding variants.
-  - Sole regression; splice-QTL hurt slightly.
+  - JEPA objective on DNABERT-2 provides 3–7% AUROC gains on short-to-mid-range supervised tasks (TF binding, splice site, coding pathogenicity), with largest improvement at mid-range (+4.8%).
+  - Zero-shot JEPA gains are strongest on expression effects and Mendelian trait ranking (+6.9% and +7.3% AUROC), but degrade on long-range tasks (OMIM −8.7%), suggesting global latent grounding hurts fine-grained local syntax.
+  - No formal ablations on loss component weights, predictor architecture, or masking strategy are reported; only end-to-end JEPA-DNA vs. DNABERT-2 baseline contrast.
 - **[Nucleotide Transformer](https://doi.org/10.1038/s41592-024-02523-z) ([note](notes/the-nucleotide-transformer-building-2024.md))** — *modalities: dna*
   - Sequence diversity beats raw human-only data; diversity > size when compute-limited.
   - Scale helps, but pairing with diverse pretraining data matters as much.
@@ -459,32 +449,24 @@ One row per FM, grouped by modality. Each entry: nickname → URL, one-line abla
   - Embedding quality is layer-dependent; mid/late-but-not-final layers best.
   - IA³ is sufficient; ~1000× storage savings with negligible performance cost.
 - **[PhyloGPN](https://arxiv.org/abs/2503.03773) ([note](notes/a-phylogenetic-approach-to-2025.md))** — *modalities: dna, multispecies-alignment*
-  - Δ (Abl − Base).
-  - **0.87**.
-  - **0.87**.
-  - **0.83**.
-  - **0.84**.
+  - Phylogenetic F81 loss enables single-sequence inference without alignment data while matching multi-sequence MSA approaches (GPN-MSA AUROC 0.96) on ClinVar pathogenic variants, vastly outperforming standard genomic LMs.
+  - Holding out half the genome from training barely changes and slightly improves performance on most variant categories, indicating broadly transferable features rather than chromosome-specific memorisation.
 - **[VQDNA](https://arxiv.org/abs/2405.10812) ([note](notes/vqdna-unleashing-the-power-2024.md))** — *modalities: dna*
-  - Source.
-  - Table 7.
-  - Table 7.
-  - Table 7.
-  - Table 7.
+  - Hierarchical Residual Quantization codebook discriminates 2× better than hand-crafted BPE on linear probing (F1 48.87 vs 36.53), showing the learned vocabulary captures genuinely discriminative patterns.
+  - Codebook size is the dominant scaling knob: 128 → 512 codes yields +6.8 linear-probe F1 points, while codebook dimension has minimal effect.
+  - 25% MLM masking is optimal (higher than typical DNA-LMs' 15%), suggesting the VQ tokenizer encodes rich contextual information allowing harder masking objectives.
 
 ### Epigenome / Gene Expression (4)
 
 - **[Borzoi](https://doi.org/10.1038/s41588-024-02053-6) ([note](notes/predicting-rna-seq-coverage-2023.md))** — *modalities: epigenome, rna*
-  - Finding (Rev 4).
   - Adding DNase/ATAC (and further CAGE/ChIP) to RNA-seq consistently improved RNA-seq test accuracy, eQTL classification, and CRISPR enhancer–gene linking AUPRC. Strongest single contributors are DNase + ATAC.
   - Including mouse training data substantially improved eQTL effect-size Spearman R and held-out RNA-seq accuracy at matched data composition.
   - U-Net upsampling from 128 → 32 bp is required for splice-site-resolution coverage; without it exon boundaries are blurred and gene-level shape correlation degrades. Architecture-only ablation.
   - Within a single cell line the same ordering holds: auxiliary assays > D/A/RNA > RNA-only — ruling out that the multispecies/multi-assay gains come purely from cross-tissue diversity.
 - **[Enformer](https://doi.org/10.1038/s41592-021-01252-x) ([note](notes/effective-gene-expression-prediction-2021.md))** — *modalities: epigenome*
-  - Reference.
-  - Results ¶2; Ext. Data Fig. 5a.
-  - Results ¶2; Ext. Data Fig. 5b.
-  - Results ¶2; Ext. Data Fig. 5a.
-  - Results ¶2; Ext. Data Fig. 6a.
+  - The enlarged receptive field is the single biggest lever: restricting attention to 20 kb causes a large performance drop, while expansion to 100 kb is crucial.
+  - Attention layers outperform dilated convolutions across all model sizes, depths, and data budgets, indicating the architectural gain is not a scale artefact.
+  - Performance scales monotonically with parameters without saturation within the explored range, mirroring NLP scaling trends.
 - **[GET](https://doi.org/10.1038/s41586-024-08391-z) ([note](notes/a-foundation-model-of-2025.md))** — *modalities: epigenome*
   - Self-supervised motif-masked pretraining is essential for cross-cell-type generalization.
   - Region-wise transformer attention beats simpler ML on the same features.
@@ -492,32 +474,24 @@ One row per FM, grouped by modality. Each entry: nickname → URL, one-line abla
   - Model is not over-reliant on any small set of motifs; redundancy across motif clusters.
   - Quantitative aCPM signal during fine-tuning improves transfer to new assays.
 - **[MIRROR-3D](https://arxiv.org/abs/2504.09060) ([note](notes/multimodal-3d-genome-pre-2025.md))** — *modalities: epigenome, interactome*
-  - Conclusion.
   - Contrastive loss alone is a strong baseline.
   - Orthogonal loss adds ~0.5% AUROC by separating modal-invariant vs modal-specific features.
   - Cross-modal mapping yields a modest extra gain and enables missing-modality inference.
-  - Single-modal baseline.
 
 ### RNA (4)
 
 - **[RhoFold](https://arxiv.org/abs/2207.01586) ([note](notes/accurate-rna-3d-structure-2022.md))** — *modalities: rna*
-  - Effect / Notes.
-  - Baseline; all four components active.
-  - **Most critical component** — largest degradation; modified-RhoFold+ w/o MSA also underperforms vs full model.
-  - Sharpest decline on dissimilar sequences; RNA-FM compensates for missing MSA (p = 0.0005 with RNA-FM vs 0.0112 w/o on TM-vs-MSA-depth).
-  - Small but consistent drop.
+  - MSA module is the most critical RhoFold+ component with the largest degradation when removed.
+  - RNA-FM language model partially compensates for missing MSA on novel/dissimilar RNAs (p=0.0005 with RNA-FM vs 0.0112 without on TM-vs-MSA-depth).
+  - Recycling through the structure module matters most for long sequences, effectively acting as model-deepening when sequence-level information is scarce.
 - **[RiNALMo](https://arxiv.org/abs/2403.00043) ([note](notes/rinalmo-general-purpose-rna-2024.md))** — *modalities: rna*
-  - SPOT-RNA TS0 F1 (S8).
-  - Base (sinusoidal PE + GELU, RNA-FM-like).
-  - Base + RoPE.
-  - Base + RoPE + SwiGLU (= RiNALMo arch).
-  - MRL Random7600 R² (S6).
+  - RoPE plus SwiGLU together yield +0.19 F1 on inter-family secondary-structure generalisation over baseline sinusoidal PE + GELU, while intra-family gains are marginal.
+  - RiNALMo-33M with modern architecture and good data curation matches or beats 100M RNA-FM despite 3× fewer parameters, showing architecture and data quality matter more than raw scale.
+  - Frozen pre-trained RiNALMo suffices for inter-family secondary-structure generalisation (0.70 F1) but collapses on mRNA tasks; fine-tuning is essential for bridging ncRNA-only pre-training to mRNA domains.
 - **[RNA-FM](https://arxiv.org/abs/2204.00300) ([note](notes/interpretable-rna-foundation-model-2022.md))** — *modalities: rna*
-  - Source.
-  - Fig. 2a.
-  - Table 1.
-  - Table 1.
-  - Table 2.
+  - Single-sequence RNA-FM embeddings replace expensive MSA-derived features on 3D tasks, boosting Top-L precision from 0.33 to 0.66 when combined with 2D-structure transfer learning.
+  - Structural task improvements (+3–5 F1 on 2D, +20–33 points on 3D closeness) are substantially larger than functional task gains (+0.009 AUPRC on RBP binding), indicating pre-training on ncRNA distributes poorly to mRNA tasks.
+  - Transfer learning from 2D-structure adds +13 Top-L precision points for 3D closeness, outweighing RNA-FM embeddings alone and demonstrating multi-task initialisation is critical for small-data regimes.
 - **[Orthrus](https://doi.org/10.1038/s41592-026-03064-3) ([note](notes/orthrus-toward-evolutionary-and-2026.md))** — *modalities: rna* — 10.1M params, Mamba SSM
   - Contrastive learning (DCL) with splice-isoform + ortholog augmentations beats MLM (Z-score 0.90 vs 0.71) and matches/outperforms 7B-param Evo 2 on mRNA property tasks.
   - Removing orthology augmentation drops Z-score by 0.11; masking-only augmentation drops by 0.55.
@@ -534,73 +508,59 @@ One row per FM, grouped by modality. Each entry: nickname → URL, one-line abla
   - Deeper-narrower beats wider-shallower at fixed parameter count.
   - Gated-GELU > ReLU even though it forces shallower depth; kept Gated-GELU.
 - **[ESM-1b](https://doi.org/10.1073/pnas.2016239118) ([note](notes/biological-structure-and-function-2021.md))** — *modalities: protein-sequence*
-  - Take-away.
   - Transformer dominates LSTM at equal-or-fewer params; attention is the right inductive bias for protein MLM.
   - Scaling capacity improves both LM fidelity and structural content; underfitting still observed at 650 M → motivates ESM-2 scaling.
   - Diversity (cluster-balanced sampling) beats raw quantity; clustered sampling reweights loss toward rare families.
   - Data scaling helps, but the model is data-limited *and* capacity-limited at 650 M.
 - **[ESM-1v](https://doi.org/10.1101/2021.07.09.450648) ([note](notes/language-models-enable-zero-2021.md))** — *modalities: protein-sequence*
-  - Take-away.
-  - Too aggressive dedup hurts.
-  - Reference setting.
-  - Monotonic gain up to 90%.
-  - **Best clustering threshold.**.
+  - Pre-training data distribution dominates: the UR50 → UR90 clustering swap yields +0.027 |Spearman ρ|, matching the combined gain from ensembling and spiked MSA fine-tuning.
+  - Masked marginal scoring is the best strategy for variant effect prediction (0.582 |ρ|), requiring only 2 forward passes and outperforming pseudo-likelihood by 0.004–0.030.
+  - Scale benefits plateau much slower than data distribution quality: a >50× parameter scale-up (13M → 649M) yields only +0.25 |ρ|, while clustering choice yields the same gain.
 - **[ESM-2 / ESMFold](https://doi.org/10.1126/science.ade2574) ([note](notes/evolutionary-scale-prediction-of-2023.md))** — *modalities: protein-sequence, protein-structure*
-  - Take-away.
-  - Smallest model — baseline.
-  - +13 pts contacts for 4× params.
-  - Log-linear gains continue.
-  - Matches ESM-1b size; better recipe.
+  - Contact-prediction precision rises log-linearly from 15.9% (8M) to 54.5% (15B) with no saturation, demonstrating structural information emerges from scale without explicit supervision.
+  - ESMFold achieves near-AlphaFold2 accuracy at ~60× speedup without MSA search, making structure prediction feasible at metagenomic scale.
+  - Folding accuracy plateaus at 3B (71.8% vs 72.1% at 15B) while contact precision keeps improving, justifying a 3B backbone over larger models.
+  - ESM-2 (650M) substantially outperforms comparable single-sequence PLMs (ProtBERT-BFD, ProtT5-XL) on structure tasks, indicating training data and recipe quality matter beyond architecture.
 - **[ESM-3](https://doi.org/10.1101/2024.07.01.600583) ([note](notes/simulating-500-million-years-2024.md))** — *modalities: protein-sequence*
-  - Take-away.
   - Multimodal protein generation shows the same scaling-law behavior as LLMs; frontier capabilities require ≥7B.
   - RLHF-style alignment is scale-dependent; small models cannot fully exploit it.
   - Discretizing structure into a fixed alphabet is what unlocks unified multimodal MLM training.
   - Random per-track masking is what enables prompt-anything → generate-anything behavior.
 - **[ESM-AA](https://arxiv.org/abs/2403.12995) ([note](notes/esm-all-atom-multi-2024.md))** — *modalities: protein-sequence, protein-structure, small-molecule*
-  - Take-away.
   - Atoms lose positional identity; degrades fusion.
   - Largest single-component drop on ESAR — residue PE is critical.
   - Modest on ESAR, but catastrophic on Contact Prediction (P@L drops to ~0.03).
   - Bigger hit than removing MLM → atom-scale structure signal matters more than atom MLM.
 - **[ESM-design](https://doi.org/10.1101/2022.12.21.521521) ([note](notes/language-models-generalize-beyond-2022.md))** — *modalities: protein-sequence*
-  - Effect (per abstract+repo).
   - Only MCMC is released and used to produce the 228 wet-lab designs (152/228 = 67% success). Greedy is not in the released config; head-to-head numbers (not in abstract/repo).
   - Enables co-discovery of sequence + structure in unconstrained mode; 71/129 = 55% experimental success.
   - Larger checkpoints exist but the design pipeline ships pinned to 650M; per-size sweep (not in abstract/repo).
   - High initial T encourages exploration; geometric cooling drives convergence to high-likelihood, structure-compatible sequences. Per-T success curves (not in abstract/repo).
 - **[MSA Transformer](https://doi.org/10.1101/2021.02.12.430858) ([note](notes/msa-transformer-2021.md))** — *modalities: protein-sequence, protein-structure*
-  - Δ vs base.
-  - Ppl 3.01.
-  - Still beats 650M ESM-1b (41.1) and 3B single-seq models.
-  - Row→Column (base).
-  - Marginal.
+  - Tied row attention is the critical inductive bias — disabling it costs ~14 pp of top-L long-range contact precision, wiping out the margin over ESM-1b.
+  - Whole-column masking during pretraining is catastrophic (~17.5 pp loss), showing uniform within-MSA masking is essential for learning covariation.
+  - A 100M MSA Transformer outperforms 650M single-sequence models (ESM-1b) on contact prediction due to direct access to evolutionary signals; architecture matters more than scale when inputs are informative.
+  - Even 16 diverse sequences from MaxHamming selection suffice to beat single-sequence and Potts baselines.
 - **[ProGen](https://arxiv.org/abs/2004.03497) ([note](notes/progen-language-modeling-for-2020.md))** — *modalities: protein-sequence*
-  - Take-away.
   - Performance degrades on unseen families but stays well above empirical baseline (18.14).
   - Pre-training is essential — fine-tuning more than halves PPL and 5× hard-acc on novel families.
   - More residue context narrows the next-token distribution; benefit holds across all sampling settings.
   - Conditioning tags carry real predictive signal; rich tag sets are needed for controllable, structurally-faithful generation.
 - **[ProtCLIP](https://arxiv.org/abs/2412.20014) ([note](notes/protclip-function-informed-protein-2024.md))** — *modalities: protein-sequence, multimodal*
-  - Key Finding.
   - Property-driven sampling on ProtAnno-D is best (Sub 75.77, EC AUPR 0.384, Fmax 0.441, MRR 0.299), beating naive single-source and pretrain→finetune; low-quality data is valuable when properly sampled.
   - Both objectives needed; removing PDA hurts more (Sub 73.64 vs full 76.52; EC AUPR 0.136 vs 0.204) — function-grounded PDA is the key signal.
   - Without weighting, BSR and MLM losses interfere (no convergence); λ₁=0.7, λ₂=0.3 is optimal — segment reconstruction must dominate token MLM.
   - Performance fluctuates 0.1–0.6, peaks at θ=0.3, collapses for θ≥0.7 (too many functional residues masked); θ=0.3 chosen.
 - **[ProteinBERT](https://doi.org/10.1093/bioinformatics/btac020) ([note](notes/proteinbert-a-universal-deep.md))** — *modalities: protein-sequence*
-  - Source.
-  - §3.2, Table 2.
-  - §3.2, Fig. 3, Supp. Fig. S1.
-  - §3.2, Supp. Fig. S2.
-  - §3.3, Fig. 4.
+  - GO-annotation pretraining is the key novel design choice — its removal specifically hurts structure-related benchmarks by ~4–15 pp while leaving other tasks unaffected.
+  - Pretraining duration keeps improving downstream performance on hard tasks without saturation, suggesting ProteinBERT is under-trained rather than under-parameterised.
+  - ProteinBERT (16M params) matches or exceeds TAPE Transformer (38M params) on all four TAPE benchmarks, demonstrating parameter efficiency from architecture (dilated convolutions + global attention).
 - **[ProteinMPNN](https://doi.org/10.1126/science.add2187) ([note](notes/robust-deep-learning-based-2022.md))** — *modalities: protein-sequence*
-  - Take-away.
   - Pairwise distances are a much stronger inductive bias than dihedrals/frame orientations.
   - Updating edge features in the MPNN encoder gives a further +1.5%.
   - Random-permutation decoding both improves recovery and unlocks fixed-region / binder design.
   - Local graphs suffice; long-range context unnecessary for seq design.
 - **[ProtGPT2](https://doi.org/10.1038/s41467-022-32007-7) ([note](notes/protgpt2-is-a-deep.md))** — *modalities: protein-sequence*
-  - Reported Effect.
   - Greedy/beam → repetitive, degenerate sequences; sampling required for natural-like propensities.
   - "Worse matches in all cases" vs sampling.
   - Best matches occur for k > 800; small k under-samples natural propensities.
@@ -612,13 +572,10 @@ One row per FM, grouped by modality. Each entry: nickname → URL, one-line abla
   - Scaling width beyond 3B hurts at fixed sample budget — **more training samples beats more parameters**.
   - Performance correlates with samples seen during pre-training; informal scaling trend.
 - **[PST](https://arxiv.org/abs/2401.14819) ([note](notes/endowing-protein-language-models-2024.md))** — *modalities: protein-sequence, protein-structure*
-  - Take-away.
-  - Structure helps even at 650M.
-  - Largest GO gain on AUPR.
-  - Strongest gain on remote homology.
-  - Generalises to unsupervised VEP.
+  - Freezing the ESM-2 backbone and training only lightweight GIN structure extractors matches full model pretraining and beats end-to-end baselines.
+  - Richer edge features (16-dim Gaussian RBF) improve MLM accuracy (47% → 55%) but cause negative transfer downstream, indicating MLM is too weak to exploit richer geometry.
+  - Structural benefit decreases monotonically with backbone scale (largest at 8M, tapers at 650M), confirming large PLMs already implicitly encode structural information.
 - **[Rao attention-as-contacts](https://doi.org/10.1101/2020.12.15.422761) ([note](notes/transformer-protein-language-models-2021.md))** — *modalities: protein-sequence, protein-structure*
-  - Take-away.
   - Precision rises sharply with capacity; ESM-1b is the only PLM beating Gremlin (39.3).
   - Within one family, deeper = better; not yet saturated.
   - A single head ≈ Gremlin; averaging top-5 already exceeds it → contacts live in the attention, LR just selects.
@@ -627,47 +584,37 @@ One row per FM, grouped by modality. Each entry: nickname → URL, one-line abla
 ### Protein Structure (8)
 
 - **[AlphaFold 2](https://doi.org/10.1038/s41586-021-03819-2) ([note](notes/highly-accurate-protein-structure-2021.md))** — *modalities: protein-structure*
-  - Take-away.
   - Largest single architectural ablation; SE(3)-equivariant geometric attention is the key inductive bias of the structure module.
   - Iterative refinement of the pair + MSA representations is essential; cheap to add (no extra params), large gain.
   - Noisy-student style self-training on unlabelled UniClust sequences is a major data-augmentation lever.
   - Triangle inequality bias on pair representation drives geometric consistency; removing it hurts more than removing templates.
 - **[AlphaFold 3](https://doi.org/10.1038/s41586-024-07487-w) ([note](notes/accurate-structure-prediction-of-2024.md))** — *modalities: protein-structure*
-  - Source.
-  - §Network architecture and training; Extended Data Fig. 1.
-  - §Network architecture and training; Extended Data Fig. 2.
-  - §Network architecture and training.
-  - §Network architecture and training; Extended Data Fig. 7a.
+  - Cross-distillation from AlphaFold-Multimer predictions greatly reduces hallucination of compact structure in disordered regions and substantially improves disorder prediction.
+  - Generative diffusion replaces the equivariant structure module with no meaningful accuracy loss while eliminating torsion parametrisation and violation losses.
+  - Large-crop fine-tuning disproportionately improves interface quality over intra-chain quality, consistent with interfaces requiring longer-range context.
+  - Stereochemical correctness is achieved through sample-and-rank over 25 diffusion samples rather than physics-based guidance.
 - **[ESM-IF](https://doi.org/10.1101/2022.04.10.487779) ([note](notes/learning-inverse-folding-from-2022.md))** — *modalities: protein-structure, protein-sequence*
-  - Take-away.
-  - Adding the 12M AlphaFold2-predicted structures yields **+13.3 pp** sequence recovery (38.3 → 51.6%) — the single largest gain in the paper.
-  - **51.6%**.
-  - Small models *cannot* exploit predicted data: GVP-GNN (1M) **degrades** by 3.6 pp when AF2 added. Only GVP-GNN-large (21M, +11.6 pp) and GVP-Transformer (142M, +13.3 pp) benefit.
-  - 38.6% (−3.6).
+  - Adding 12M AlphaFold2-predicted structures yields +13.3 pp sequence recovery (38.3% → 51.6%), but only models ≥21M params benefit; a 1M-param GVP-GNN actually regresses.
+  - The hybrid GVP-encoder + Transformer-decoder edges out pure-GVP GNNs by only +0.8 pp, indicating most value comes from geometric front-end reasoning.
+  - Balancing synthetic and experimental data prevents overfitting despite an ~1:80 experimental-to-predicted ratio.
 - **[GearNet](https://arxiv.org/abs/2203.06125) ([note](notes/protein-representation-learning-by-2022.md))** — *modalities: protein-structure*
   - Treating edges as different types is essential; param-matched plain GCN cannot recover the gap, even with more layers/params.
   - Explicit edge-edge interaction modeling is beneficial across function prediction tasks.
   - All four deterministic combinations work, so each cropping/noise scheme yields informative views; randomly sampling combinations gives the most diverse views and is best on 3 of 4 GO/EC metrics.
 - **[HelixFold-Single](https://arxiv.org/abs/2207.13921) ([note](notes/helixfold-single-msa-free-2022.md))** — *modalities: protein-structure, protein-sequence*
-  - Take-away.
-  - Larger PLM has stronger language-modelling capacity.
-  - 10× parameters → consistently lower perplexity.
-  - Trend holds across both eval sets.
-  - Same trend as CASP14.
+  - Larger PLM size (1B vs 100M) consistently improves both perplexity and structural metrics (long-range contact precision) across CASP14 and CAMEO.
+  - PLM perplexity is negatively correlated with MSA depth and folding accuracy, indicating a well-trained LM effectively captures evolutionary signals without explicit MSA input.
+  - Column-wise attention in EvoFormer is unnecessary for single-sequence input and is safely removed, simplifying the architecture without accuracy loss.
 - **[OmegaFold](https://doi.org/10.1101/2022.07.21.500999) ([note](notes/high-resolution-de-novo-2022.md))** — *modalities: protein-structure, protein-sequence*
-  - Take-away.
-  - Reference (best).
-  - Ensembling adds a small but consistent gain.
-  - PLM-derived node + pairwise features supply most of the missing co-evolutionary signal.
-  - **Largest single drop** — GeoFormer's triangle/edge updates are critical for translating PLM features into geometry.
+  - GeoFormer geometry trunk is the single most critical component (~0.115 TM-score loss when removed), more important than PLM features themselves (~0.054 loss).
+  - Retraining AlphaFold2 on single sequences does not recover accuracy even with MSA-free distillation, demonstrating a purpose-built PLM trunk is essential for single-sequence folding.
+  - Recycling (iterative refinement) helps but is the least critical design lever, producing monotonic but small TM-score gains.
 - **[RoseTTAFold](https://doi.org/10.1126/science.abj8754) ([note](notes/accurate-prediction-of-protein-2021.md))** — *modalities: protein-structure*
-  - Take-away.
   - The 3D-coordinate track is the central architectural contribution; tighter coupling of seq/dist/coords beats 2-track.
   - End-to-end is limited by GPU memory and lack of side-chain info at training; gap expected to close with more compute / side chains.
   - Memory-driven cropping is not just a workaround — it improves accuracy via implicit ensembling.
   - Attention + multi-track architectures reduce reliance on deep MSAs (mirrors AF2 behaviour).
 - **[RoseTTAFold All-Atom](https://doi.org/10.1126/science.adl2528) ([note](notes/generalized-biomolecular-modeling-and-2024.md))** — *modalities: protein-structure*
-  - Take-away.
   - Generalist training does **not** degrade protein-only accuracy.
   - Small (~4 pt) cost on NA complexes from generalist training.
   - Training with ligand context **improves** protein-only prediction (pocket flips, domain shifts).
@@ -676,64 +623,52 @@ One row per FM, grouped by modality. Each entry: nickname → URL, one-line abla
 ### Single-Cell RNA (12)
 
 - **[CellPLM](https://doi.org/10.1101/2023.10.03.560734) ([note](notes/cellplm-pre-training-of-2023.md))** — *modalities: scrna*
-  - Liver cos.
-  - 0.481±0.010.
-  - 0.433±0.008.
-  - 0.428±0.012.
-  - 0.440±0.021.
+  - Mixture-of-Gaussian prior is the single most important design choice — swapping to vanilla Gaussian is worse than dropping the latent distribution entirely, showing an ill-suited prior actively harms heterogeneous pretraining.
+  - Transformer encoder matters chiefly for spatial imputation tasks (corr 0.318 → 0.244 on Lung when removed) and is near-neutral for cell-type classification on dissociated scRNA-seq.
 - **[Geneformer](https://doi.org/10.1038/s41586-023-06139-9) ([note](notes/transfer-learning-enables-predictions-2023.md))** — *modalities: scrna*
-  - Source.
-  - Fig. 2b.
-  - Ext. Data Fig. 1e.
-  - Ext. Data Fig. 1f.
-  - Fig. 3 / Ext. Data Fig. 3.
+  - Relevance of fine-tuning data dominates quantity — 884 disease-context cells outperform 30k generic cells, demonstrating context-appropriate curation yields larger gains than scale.
+  - Pretraining corpus size improves downstream performance monotonically with no saturation on harder tasks; random initialisation collapses on small fine-tuning sets.
+  - Length-grouped dynamic padding achieves 29.4× throughput speedup without quality loss.
+  - In-silico perturbation (zero-shot deletion/activation) recovers known TF synergy and identifies experimentally validated therapeutic targets.
 - **[GenePT](https://doi.org/10.1101/2023.10.16.562533) ([note](notes/genept-a-simple-but-2023.md))** — *modalities: scrna*
-  - Finding.
   - Used to motivate the default (name+summary); name-only is surprisingly strong but full summary is preferred.
   - GenePT-GPT-3.5 is consistently best; BioLinkBert and Gene2vec are slightly less competitive; expression-derived embeddings trail.
   - Names-only is surprisingly strong on some tasks (gene nomenclature carries signal), but adding the summary helps overall.
   - Random ≈ chance; rules out that the gain is just from large embedding dimension.
 - **[Nicheformer](https://doi.org/10.1101/2024.04.15.589472) ([note](notes/nicheformer-a-foundation-model-2024.md))** — *modalities: scrna*
-  - Take-away.
   - Spatial pretraining data is non-substitutable — scale of dissociated cells alone cannot recover spatial variation.
   - Diversity > raw count; orthology-aligned multi-species pretraining is required.
   - Capacity matters at SpatialCorpus-110M scale.
   - Rank-based encoding tolerates the limited-gene reality of MERFISH/Xenium/CosMx.
 - **[scBERT](https://doi.org/10.1038/s42256-022-00534-z) ([note](notes/scbert-as-a-large-2022.md))** — *modalities: scrna*
-  - Take-away.
   - MLM pre-training on PanglaoDB is the single most important design choice; gene-as-token Performer alone is not enough.
   - The model relies on distributed gene–gene interaction patterns, not on a small set of marker genes — robust to marker dropout / batch loss.
   - Contextual encoding adds cell-type-discriminative information on top of the static Gene2vec positional prior.
   - 5 bins is sufficient; finer expression discretisation gives no measurable gain at this scale.
 - **[scELMo](https://arxiv.org/abs/2601.05648) ([note](notes/open-world-knowledge-aided-2026.md))** — *modalities: scrna, single-cell-multiomics*
-  - Spleen F1.
+  - LLM-enriched cell text via RAG adds consistent performance gains on top of original text descriptions.
+  - Cross-modal Robust Alignment (CRA) combining sample reliability, curriculum learning, and coupled momentum contrastive learning is necessary for noise robustness.
+  - Integration of noise-robust cross-modal alignment and open-world LLM/RAG descriptions are complementary and both contribute additively to performance.
 - **[scFoundation](https://doi.org/10.1038/s41592-024-02305-7) ([note](notes/large-scale-foundation-model-2024.md))** — *modalities: scrna*
-  - Reported finding.
   - The learned `[S]` token (used as the default cell embedding) and the max-pool variant outperform mean-pool and raw concat; `[S]` is selected as the canonical cell representation (`ablation-00.ipynb`).
   - Continuous scalar embedding preserves fine expression magnitudes and beats binned tokens, justifying xTrimoGene's MLP value embedder over vocab-based binning (`ablation-01.ipynb`).
   - Continuous regression loss applied to the full gene set yields the best clustering, supporting the published recipe (`ablation-01.ipynb`).
   - Removing RDA collapses the enhancement gain over SAVER/MAGIC/scImpute; RDA is the key driver of the imputation/enhancement SOTA and of the model's ability to operate at arbitrary target depths (`ablation-02.ipynb` + `enhancement/`).
 - **[scGPT](https://doi.org/10.1038/s41592-024-02201-0) ([note](notes/scgpt-toward-building-a-2024.md))** — *modalities: scrna, single-cell-multiomics*
-  - Source.
-  - `scgpt/model/model.py` (note §Model); GitHub README. Paper body gated — could not retrieve a numeric ablation table from Nature HTML (only refs section reachable).
-  - GitHub README release note 2023-11-07; paper ref 58 (FlashAttention).
-  - Note §Model, §Training Recipe, §Key Ablations #1; paper abstract & figure captions; comparison vs scBERT (ref 32).
-  - Note §Model, §Key Ablations #6; GitHub README "Pretrained scGPT checkpoints" section.
+  - Generative attention masking with genes sorted by expression value outperforms BERT-style random masking for cell-type annotation and enables generation tasks.
+  - Organ-specific pretrained checkpoints can outperform whole-human models when fine-tuning data matches tissue context.
+  - Continual pretraining on the whole-human model improves zero-shot cell embedding performance compared to the standard checkpoint.
 - **[SCimilarity](https://doi.org/10.1101/2023.07.18.549537) ([note](notes/scimilarity-rapid-annotation-of-2023.md))** — *modalities: scrna*
-  - Finding.
   - Lower β (more MSE) → better query; higher β (more triplet) → better integration. Selected β=0.001, α=0.05 as best joint operating point.
   - Pure triplet collapses within-type variance; MSE term required to preserve subtle cell-state differences.
   - SCimilarity ρ=0.77 vs scFoundation 0.54, scGPT 0.59; far fewer false-high cells.
   - Higher cell-type ASW, comparable graph connectivity, less spurious cross-study mixing; SCimilarity does not see test data, baselines do.
 - **[scMamba](https://arxiv.org/abs/2506.20697) ([note](notes/scmamba-a-scalable-foundation-2025.md))** — *modalities: scrna, single-cell-multiomics*
-  - Source.
-  - §Results, p. 375–380 / Suppl. Table 1.
-  - §Results, p. 380–388 / Suppl. Tables 2–4.
+  - Processing all raw genes and peaks without highly variable feature selection yields the best integration performance, unique to scMamba since competing methods fail to benefit from high-dimensional sparse inputs.
+  - Patch-based tokenization grouped by genomic region enables processing of tens of thousands of features (e.g. 173k peaks) compared to gene-as-token approaches limited to ~2,000 genes.
 - **[scMulan](https://doi.org/10.1101/2024.01.25.577152) ([note](notes/scmulan-a-multitask-generative-2024.md))** — *modalities: scrna*
-  - Source.
-  - bioRxiv full text inaccessible (403).
+  - No explicit ablation studies found.
 - **[UCE](https://doi.org/10.1101/2023.11.28.568918) ([note](notes/universal-cell-embeddings-a-2023.md))** — *modalities: scrna*
-  - Reported finding (direction).
   - 33-layer gives best biological-signal fidelity and cross-species generalisation; 4-layer is faster/cheaper but loses resolution on complex tissues. Embeddings are not interchangeable between the two.
   - Zero-shot embedding works on unseen species with available proteomes (e.g., green monkey, chicken); degrades on evolutionarily distant species (e.g., Drosophila).
   - ESM2 protein embeddings are the mechanism enabling species-agnostic, vocabulary-free tokenisation; required for cross-species transfer and for embedding novel/unseen genes.
@@ -742,7 +677,6 @@ One row per FM, grouped by modality. Each entry: nickname → URL, one-line abla
 ### Computational Pathology (12)
 
 - **[CONCH (Nat. Med.)](https://doi.org/10.1038/s41591-024-02856-4) ([note](notes/a-visual-language-foundation-2024.md))** — *modalities: imaging-pathology*
-  - Reported effect.
   - Best average zero-shot classification across 7 tasks.
   - Best average cross-modal retrieval; lower zero-shot classification than CoCa default.
   - Lower average zero-shot vs full human-only set — filtering too aggressively hurts.
@@ -760,35 +694,29 @@ One row per FM, grouped by modality. Each entry: nickname → URL, one-line abla
   - DINOv2 is the best tile-level SSL recipe for pathology at this scale; supervised ImageNet transfer is clearly inferior, motivating SSL foundation models.
   - Data scale + diversity (real-world Providence corpus) drives gains beyond what TCGA alone delivers — evidence of (informal) data-scaling.
 - **[H-optimus-0](https://arxiv.org/abs/2404.15217) ([note](notes/towards-large-scale-training-2024.md))** — *modalities: imaging-pathology*
-  - Take-away.
   - Mixing magnifications yields a magnification-agnostic FM that beats any single-magnification model — no architectural change required.
   - Always warm-start pathology FMs from ImageNet weights — faster convergence and higher final accuracy.
   - OOD performance saturates fast on TCGA — more WSIs from same distribution mostly help in-distribution; need more diverse data to push OOD further.
   - Online patching's effectively-infinite patch sampling mainly benefits in-distribution learning; OOD is bottlenecked by slide diversity, not patch count.
 - **[HIPT](https://arxiv.org/abs/2206.02647) ([note](notes/scaling-vision-transformers-to-2022.md))** — *modalities: imaging-pathology*
-  - Δ vs. full HIPT.
-  - 0.952 ± 0.021.
-  - 0.923 ± 0.020.
-  - −0.166.
-  - −0.132.
+  - Freezing the pretrained region ViT is critical; unfreezing collapses NSCLC AUC from 0.952 to 0.786–0.820, confirming that small WSI cohorts cannot support end-to-end training.
+  - Hierarchical self-supervised pretraining produces competitive representations without fine-tuning; mean-pooled ViT embeddings beat supervised CLAM-SB on BRCA and RCC subtyping.
+  - Long-range spatial context matters most for survival prediction where tumour-stroma and immune localisation patterns are prognostically important, not for subtyping tasks.
+  - Pan-cancer self-supervised pretraining outperforms organ-specific pretraining for cell-level localisation and downstream classification.
 - **[KEP (KEEP)](https://arxiv.org/abs/2412.13126) ([note](notes/knowledge-enhanced-pretraining-for-2024.md))** — *modalities: imaging-pathology*
-  - Reported effect.
   - KEEP wins on 16/18 datasets; +~10% AUROC on PANDA and +12.9% on AGGC22 segmentation; better on 6/7 detection benchmarks; better on all subtyping benchmarks.
   - KEEP-Top100 ≥ Contrastive-Top100 on 6/8; +11 points BACC on rare-tumor EBRAINS dataset.
   - Ratio strategy wins on all datasets; +0.10 BACC on CPTAC-NSCLC (0.860) and +0.15 on TCGA-BRCA (0.774).
   - Semantic grouping improves retrieval (details in Table S5).
 - **[Phikon-v2](https://arxiv.org/abs/2409.09173) ([note](notes/phikon-v2-a-large-2024.md))** — *modalities: imaging-pathology*
-  - Take-away.
   - DINOv2 + larger model + larger data jointly outperform iBOT baseline; method/scale confounded.
   - Domain-specific pre-training is by far the largest single contributor; natural-image DINOv2 ranks last.
   - "DINOv2 superiority over iBOT is not straightforward for lighter models" — method advantage depends on scale.
   - A 13× smaller, 350× less-data, task-specialized model beats or matches the largest FMs on MSI; scaling is not a universal solution for biomarker tasks.
 - **[RudolfV](https://arxiv.org/abs/2401.04079) ([note](notes/rudolfv-a-foundation-model-2024.md))** — *modalities: imaging-pathology*
-  - Source.
-  - §2.2, Fig. 3D, lines 220–225.
-  - §2.5, Fig. 4B, lines 326–328.
-  - §2.5, Fig. 4B, lines 325–328.
-  - §2.6, Fig. 6B, lines 369–370.
+  - Pathologist-guided data curation (grouping, clustering, balanced sampling) enables competitive performance with ~10× less data than Virchow while outperforming similar-scale UNI on 10/12 benchmarks.
+  - Cross-tissue generalisation is significantly enhanced by the foundation model; TME cell classifier trained on NSCLC generalises to other tissues with 65.5% balanced accuracy vs 36.2% without.
+  - Including IHC and special stains in SSL training provides 21.6% average improvement in IHC cell classification compared to H&E-only models.
 - **[UNI](https://arxiv.org/abs/2308.15474) ([note](notes/a-general-purpose-self-2023.md))** — *modalities: imaging-pathology*
   - SSL in pathology benefits from data scale up to ≥100M patches / 100K WSIs; no saturation observed at 100K-slide scale.
   - DINOv2 + ViT-L + 100K-slide diverse pretraining beats both ImageNet-supervised CNNs and prior pathology SSL (CTransPath, REMEDIS) despite UNI seeing 4–13× fewer total images.
@@ -796,34 +724,24 @@ One row per FM, grouped by modality. Each entry: nickname → URL, one-line abla
   - Class-prototype (parameter-free) probes work extremely well with high-quality SSL features; representation quality dominates over classifier complexity.
   - DINOv2-style high-res pretraining yields resolution-agnostic features; advantage of UNI grows at native histology magnifications.
 - **[uniGradICON](https://arxiv.org/abs/2403.05780) ([note](notes/unigradicon-a-foundation-model-2024.md))** — *modalities: imaging-pathology*
-  - Take-away.
   - Weaker GradICON regularizer is what enables a single universal registration model; diffusion-regularized variants underperform or fail.
   - One universal model matches specialists in-domain and dominates them out-of-domain.
   - IO is a cheap, always-on improvement; pairs naturally with the FM as a strong initialization.
   - Model generalizes to unseen anatomy, though including the region in pretraining is clearly better; IO mitigates the held-out gap.
 - **[Virchow](https://arxiv.org/abs/2309.07778) ([note](notes/virchow-a-million-slide-2023.md))** — *modalities: imaging-pathology*
-  - Source.
-  - Tab. A4, §2.3.
-  - Tab. A4.
-  - Tab. A4.
-  - Tab. A4.
+  - In-domain pathology data scale is the single largest lever; Virchow (1.5M WSIs) gains +0.067 weighted F1 over natural-image DINOv2 pretraining, with the gap widening for smaller pathology FMs.
+  - Stain-normalisation removal costs only −0.005 F1, confirming that million-scale in-domain SSL provides learned stain robustness almost inherently.
+  - Extended LR warmup (495k iterations, 5× default) was necessary for stable convergence at this million-scale data regime.
 - **[XrayGPT](https://arxiv.org/abs/2306.07971) ([note](notes/xraygpt-chest-radiographs-summarization-2023.md))** — *modalities: imaging-pathology*
-  - Variant.
-  - 0.0879.
-  - 0.0973.
-  - 0.1284.
-  - 0.1997.
+  - Domain-specific LLM adaptation dominates gains; swapping CLIP to MedCLIP adds ~2 ROUGE-1 points, while medical/radiology-specific Vicuna fine-tuning adds ~17 more points for a total +19 over MiniGPT-4 baseline.
 
 ### Radiology (2)
 
 - **[MedDiff-FM](https://arxiv.org/abs/2410.15432) ([note](notes/meddiff-fm-a-diffusion-2024.md))** — *modalities: imaging-radiology*
-  - Source.
-  - Table III.
-  - Table III.
-  - Table III.
-  - Table III.
+  - Multi-level (image+patch) integration is the single most impactful design choice, delivering ~70% of overall FID reduction and the largest Dice improvement across all anatomical regions.
+  - Position coordinate encoding via sinusoidal (NeRF-style) embeddings outperforms raw coordinate channels and provides consistent gains.
+  - Pre-training transfer is decisive on data-scarce targets; mediastinal lymph node Dice improves from 0.01 (from scratch) to 0.22 (fine-tuned), and lung inpainting from 0.42 to 0.77.
 - **[MedMax](https://arxiv.org/abs/2412.12661) ([note](notes/medmax-mixed-modal-instruction-2024.md))** — *modalities: imaging-radiology, imaging-pathology, multimodal*
-  - Take-away.
   - MedMax is high-quality; further scaling should keep paying off.
   - High-quality VQA data is essential for VQA performance.
   - Visual-chat data is critical for chat performance; mixture diversity drives generalization.
@@ -832,16 +750,13 @@ One row per FM, grouped by modality. Each entry: nickname → URL, one-line abla
 ### Cell Imaging (1)
 
 - **[CellPainTR](https://arxiv.org/abs/2509.06986) ([note](notes/cellpaintr-generalizable-representation-learning-2025.md))** — *modalities: imaging-cell, cell-profiling*
-  - Take-away.
-  - Reference floor.
-  - No overall gain vs baseline.
-  - No overall gain vs baseline.
-  - Strong batch correction but weak biological signal.
+  - The multi-stage curriculum is essential; Stage 1 (self-supervised) maximises batch correction but discards biological structure, Stage 2 restores it, and only the full three-stage approach balances both.
+  - Inter-source contrastive learning recovers batch correction capacity (aggregated score 0.68 → 0.76) while maintaining biological signal quality.
+  - The model is robust to extreme feature dropout; zero-padding ~94% missing features on OOD data still yields 0.40 Overall score vs 0.26 for classical baselines.
 
 ### Microscopy (1)
 
 - **[ViTally](https://arxiv.org/abs/2411.02572) ([note](notes/vitally-consistent-scaling-biological-2024.md))** — *modalities: imaging-microscopy*
-  - Take-away.
   - Scaling continues to pay off into the billion-param regime; CM (replicate consistency) gains faster than raw recall.
   - Curating to ~16M morphologically-active crops matches a much larger un-curated set on consistency; data quality > quantity.
   - Smaller patches help on cellular morphology, justifying the G/8 choice despite cost.
@@ -850,56 +765,44 @@ One row per FM, grouped by modality. Each entry: nickname → URL, one-line abla
 ### Small Molecules (5)
 
 - **[ChemBERTa](https://arxiv.org/abs/2010.09885) ([note](notes/chemberta-large-scale-self-2020.md))** — *modalities: small-molecule*
-  - Conclusion.
   - Downstream performance scales consistently with more pretraining data; MLM learns more robust representations at larger scale.
   - Semantically-relevant SMILES tokenization gives a small edge over BPE, but margin is narrow and needs more benchmarks.
   - Despite SELFIES' 100% validity guarantee, it offers no measurable advantage here; further benchmarking needed.
 - **[ChemFM](https://arxiv.org/abs/2410.21422) ([note](notes/chemfm-as-a-scaling-2024.md))** — *modalities: small-molecule*
-  - Source.
-  - §4.13, Table S2.6.
-  - §4.12, Table S2.5.
-  - §Results, Fig. S1.1a,b.
-  - Fig. S1.1c.
+  - UniChem is a more informative pre-training corpus than ZINC20, winning on 9/11 downstream datasets often by large margins.
+  - Model-size scaling follows power-law behaviour up to ~200M parameters on informative data, but shows diminishing returns beyond 1B.
+  - Pre-training provides substantial downstream improvements across ADMET tasks, outperforming random initialisation by 40–80%.
+  - LoRA fine-tuning achieves comparable performance to full-parameter fine-tuning while drastically reducing memory for 3B models.
 - **[LSM-MS2](https://arxiv.org/abs/2510.26715) ([note](notes/lsm-ms2-a-foundation-2025.md))** — *modalities: small-molecule*
-  - Source.
-  - Table 1.
-  - Table 1.
-  - +0.007 over DreaMS.
-  - §4.2 / Fig.1.
+  - Learned embedding-space retrieval outperforms cosine similarity and DreaMS on both spectral identification and true-positive/false-positive separation.
+  - LSM-MS2 achieves 30% more correct isomer identifications than baselines without explicit isomer supervision, demonstrating fragmentation-level representations capture fine-grained chemical discrimination.
+  - Fragmentation information (MS/MS) is necessary for pharmaceutical discrimination — MS1-only precursor mass fails to separate similar drug groups while LSM-MS2 succeeds.
 - **[MACE-OFF / Multi-Fi](https://arxiv.org/abs/2412.13088) ([note](notes/taming-multi-domain-fidelity-2024.md))** — *modalities: small-molecule*
-  - Take-away.
   - Both stages of TEA are needed: ICEA removes inner-core/basis offsets, AEC then corrects atomization-energy/functional offsets — full pipeline is what unlocks dataset fusion.
   - Scaling MACE-Osaka24 from small→large gives ~0.24 kcal/mol gain, reaching MACE-OFF23-large quality (0.403) on organics.
   - Large variant best on reactive organic chemistry; ~20–30% MAE drop.
   - Marginal gain on crystals; small already competitive with MACE-MP-0-large (0.0166).
 - **[MolFM](https://arxiv.org/abs/2307.09484) ([note](notes/molfm-a-multimodal-molecular-2023.md))** — *modalities: small-molecule, multimodal*
-  - Component probed.
-  - Reference.
-  - ITM-based re-ranking at inference.
-  - Cross-modal attention from text to atom tokens.
-  - Attention to KG neighbour entities.
+  - Cross-modal attention to atom-level molecular features is the single largest controllable component, with removal causing −2.8 average R@1 — larger than knowledge graph removal.
+  - Cross-modal matching (CMM) pre-training objective is as critical as atomic attention (−2.8 R@1 loss), confirming fine-grained substructure-text alignment drives gains.
+  - Knowledge graph input contributes modestly (~1.5% improvement); combined with CMM removal, both losses compound to −4.3 points.
 
 ### Multimodal Medical (4)
 
 - **[AIDO](https://doi.org/10.1101/2024.12.02.626322) ([note](notes/aido-accurate-model-of-2024.md))** — *modalities: multimodal*
-  - Source.
-  - AIDO.Protein arXiv / OpenReview.
-  - AIDO.Protein arXiv.
-  - AIDO.Protein arXiv.
-  - AIDO.Cell bioRxiv 10.1101/2024.11.28.625303.
+  - Mixture-of-Experts (8 experts, top-2 routing) in AIDO.Protein-16B matches dense FFN performance at ~28% active parameters, enabling 16B scale at half the per-token FLOPs.
+  - Multi-corpus pre-training (UniRef90 + ColabFoldDB) followed by UR90 refinement outperforms single-corpus pretraining for both fitness and structure-conditioned generation.
+  - Read-Depth-Aware objective in AIDO.Cell improves zero-shot clustering and perturbation prediction over standard masked expression.
+  - Auto-discretisation of continuous gene expression into tokens outperforms naive continuous regression and enables MLM-style training.
 - **[ConceptCLIP](https://arxiv.org/abs/2501.15579) ([note](notes/an-explainable-biomedical-foundation-2025.md))** — *modalities: multimodal*
-  - Δ vs full (avg).
-  - 84.90 (82.42, 87.17).
-  - 90.43 (88.35, 92.28).
-  - 92.60 (90.76, 94.20).
+  - Region-Concept Alignment (RC-Align) loss during pre-training provides the dominant gain (+3.76% AUC) compared to local-region information at inference (+1.78% AUC).
+  - RC-Align is especially important for cross-modality transfer — removing it causes the largest drop on BrainTumorCT (−7.7 AUC).
 - **[Doctor Sun](https://arxiv.org/abs/2508.08270) ([note](notes/doctor-sun-a-bilingual-2025.md))** — *modalities: multimodal*
-  - Take-away.
   - Mixing general data in alignment prevents catastrophic forgetting at negligible domain cost.
   - 1:0.5 is the sweet spot for medical VQA; more general data only helps generic benchmarks.
   - Pure-domain alignment causes catastrophic forgetting of general perception/reasoning.
   - Specialised answers, but recall drop is unsafe for clinical missed-diagnosis risk.
 - **[LLaVA-Med](https://arxiv.org/abs/2306.00890) ([note](notes/llava-med-training-a-2023.md))** — *modalities: multimodal*
-  - Take-away.
   - Biomedical curriculum tuning yields large gains over general-domain LLaVA, especially zero-shot.
   - Stage 1 (caption alignment) alone collapses instruction-following; Stage 2 instruction-tuning is essential.
   - Performance improves monotonically with more self-instruct data.
@@ -908,16 +811,14 @@ One row per FM, grouped by modality. Each entry: nickname → URL, one-line abla
 ### Vision (Biomedical) (1)
 
 - **[BiomedCLIP](https://arxiv.org/abs/2303.00915) ([note](notes/biomedclip-a-multimodal-biomedical-2023.md))** — *modalities: vision, language, multimodal*
-  - Source.
-  - baseline.
-  - +4.50 / +3.85.
-  - +4.47 / +4.85.
-  - baseline.
+  - Domain-specific text encoder (PubMedBERT with 256-token context) is the single largest controllable lever, providing ~9 points R@1 improvement over CLIP's GPT-2/77-token baseline.
+  - Context length expansion from 77 → 256 tokens contributes +4.5 R@1 independent of encoder swap, indicating biomedical captions are significantly longer and truncation is costly.
+  - Validation gains do not transfer downstream: 384 px resolution improves validation by +1.7 R@1 but degrades zero-shot classification by −5.15 points.
+  - Batch size plateaus at 4k for the 15M-pair dataset; scaling to 64k provides no downstream benefit, suggesting dataset size is the bottleneck.
 
 ### Biomedical Text (1)
 
 - **[BioBERT](https://arxiv.org/abs/1901.08746) ([note](notes/biobert-a-pre-trained-2019.md))** — *modalities: text*
-  - Take-away.
   - Continued pre-training on PubMed is the dominant gain; adding PMC gives diminishing returns once PubMed steps are scaled up.
   - Even vanilla BERT beats the prior CHEMPROT SOTA; biomedical pre-training adds a further ~3 F1.
   - QA benefits most from biomedical pre-training (+12.24 MRR over SOTA, +5.13 over BERT) — largest relative gain among the three task families.
@@ -931,11 +832,8 @@ One row per FM, grouped by modality. Each entry: nickname → URL, one-line abla
   - Soft prompts > hard prompts; among hard prompts, more informative wording ("we can conclude that") is better.
   - Performance roughly insensitive to soft-prompt length; length=9 chosen via val set, length=13 marginally best on test.
 - **[Virchow2](https://arxiv.org/abs/2408.00738) ([note](notes/virchow2-scaling-self-supervised-2024.md))** — *modalities: other*
-  - OOD avg.
-  - Standard DINOv2.
-  - 82.1 (−0.5).
-  - 83.4 (+1.0).
-  - 82.9 (+0.4).
+  - Extended Context Translation (ECT) and Knowledge-Density-Entropy (KDE) regularisation are individually weak or harmful on OOD tasks but synergistic when combined, yielding +3.4 in-domain and +1.9 OOD F1 gains over standard DINOv2.
+  - Domain-specific augmentation and entropy regularisation show coupling effects where individual components underperform but the full recipe together substantially improves performance.
 
 ## Appendix: Verification Pass (Rev 3)
 
