@@ -130,31 +130,33 @@ is_fm:                # true if this paper introduces/trains a bio-FM, false oth
 fm_classification_reason:  # One-line reason for the classification
 ```
 
-### 6. Update `insights.md` with New Evidence
+### 6. Update `insights.md` (if the paper adds new evidence)
 
-**This step is mandatory for `is_fm: true` papers.** If the paper provides new
-ablation evidence or design insights, integrate them into `insights.md`:
+If the paper provides **new ablation evidence, a novel design insight, or
+additional support for an existing insight**, integrate it into `insights.md`:
 
 1. Read the paper's **Key Ablations** and **Ablations (Rev 4)** sections.
-2. For each significant finding, identify the relevant **design-choice axis** in
-   `insights.md` (there are 12: Tokenization, Architecture, Pretraining Objective,
-   Context Length, Data, Multi-Modal Fusion, Conditioning & Inductive Biases,
-   Optimization, Scaling, MSA vs MSA-Free, Distillation, Evaluation Caveats).
-3. Add a row to the axis's **"Ablation evidence (Rev 4)"** table:
+2. Decide: does this paper (a) introduce a finding not yet covered, (b) add
+   supporting evidence to an existing axis (increments an `(N=X)` count), or
+   (c) contradict/nuance an existing claim? If none of these, **skip this step**.
+3. For relevant findings, identify the **design-choice axis** in `insights.md`
+   (12 axes: Tokenization, Architecture, Pretraining Objective, Context Length,
+   Data, Multi-Modal Fusion, Conditioning, Optimization, Scaling, MSA vs MSA-Free,
+   Distillation, Evaluation Caveats).
+4. Add a row to the axis's **"Ablation evidence (Rev 4)"** table:
    ```
    | [Paper Name](DOI/URL) | One-sentence ablation finding with numbers. |
    ```
-4. If the finding changes the axis's narrative or empirical pattern, update the
+5. If the finding changes the axis's narrative or empirical pattern, update the
    prose paragraph above the table.
-5. Update the **modality-specific recipe** section if the paper is the new default
-   or adds a new pitfall.
-6. Add the paper to the **FM Catalogue** appendix under the correct modality,
-   with a bullet listing its key ablation findings.
-7. Update `(N=X papers)` counts wherever the paper is now cited.
+6. Update the **modality-specific recipe** section if applicable.
+7. Add the paper to the **FM Catalogue** appendix under the correct modality.
+8. Update `(N=X papers)` counts wherever the paper is now cited.
 
-> **Rule**: every newly added FM with ablation evidence MUST appear in
-> `insights.md`. The survey's value is in the consolidated insights, not just
-> the individual notes.
+> **Rule of thumb**: a paper that merely confirms existing insights at similar
+> scale/modality does not need a new row — just increment the `(N=X)` count.
+> A paper that provides a novel comparison, contradicts an insight, or covers
+> an under-represented modality/technique always warrants a full update.
 
 ### 7. Consolidate
 
@@ -211,7 +213,7 @@ Before considering a paper fully added, verify:
 - [ ] `is_fm` is set correctly with a reason
 - [ ] `modalities` uses valid values from the list above
 - [ ] `status` is set to `extracted`
-- [ ] **`insights.md` updated** with ablation evidence (if `is_fm: true`)
+- [ ] **`insights.md` updated** if paper adds new or supporting evidence
 - [ ] **FM Catalogue** entry added in `insights.md` (if `is_fm: true`)
 - [ ] `just consolidate` has been run
 
