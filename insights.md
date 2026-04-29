@@ -168,7 +168,7 @@ Training sets span: protein UniRef50/90 (~50M–250M sequences), MGnify/BFD (>1B
 | [Nucleotide Transformer](https://doi.org/10.1038/s41592-024-02523-z) ([note](notes/the-nucleotide-transformer-building-2024.md)) | Multispecies (850 species) > human-only on 16/18 BEND tasks; cross-species pretraining acts as evolutionary regularisation. |
 | [GigaPath](https://doi.org/10.1038/s41586-024-07441-w) ([note](notes/a-whole-slide-foundation.md)) | GigaPath: 171k slides from 28 centres; ablating to single-centre 50k slides drops linear-probe accuracy 4–9% across PCAM, BACH, and MHIST. |
 | [UNI](https://arxiv.org/abs/2308.15474) ([note](notes/a-general-purpose-self-2023.md)) | UNI: 100k slides DINOv2 outperforms 1M slides supervised; the data-quality bound dominates. |
-| [Virchow](https://arxiv.org/abs/2309.07778) ([note](notes/virchow-a-million-slide-2023.md)) | Virchow on 1.5M slides + DINOv2 sets pan-cancer SOTA; ablating to 100k slides drops by 2–4 points on 9-class subtyping. |
+| [Virchow](https://arxiv.org/abs/2309.07778) ([note](notes/virchow-a-million-slide-2023.md)) | Virchow on 1.5M slides + DINOv2 sets pan-cancer state-of-the-art (SOTA); ablating to 100k slides drops by 2–4 points on 9-class subtyping. |
 | [Virchow2](https://arxiv.org/abs/2408.00738) ([note](notes/virchow2-scaling-self-supervised-2024.md)) | Mixed-magnification training (5×, 10×, 20×, 40× tiles) yields 2–5 pt gain over single-magnification at 20×; KDE-based stain-aug ablation isolates the magnification mix as the largest single contributor. |
 | [Phikon-v2](https://arxiv.org/abs/2409.09173) ([note](notes/phikon-v2-a-large-2024.md)) | Phikon-v2 doubles slide count vs Phikon and adds clinical metadata; gains are 1–3% on pan-cancer linear probe — sublinear in data. |
 | [RudolfV](https://arxiv.org/abs/2401.04079) ([note](notes/rudolfv-a-foundation-model-2024.md)) | RudolfV: stain-augmentation + multi-stain pretraining adds 2–4 points on cross-stain transfer that single-stain DINOv2 misses. |
@@ -712,7 +712,7 @@ One row per FM, grouped by modality. Each entry: nickname → URL, one-line abla
   - The learned `[S]` token (used as the default cell embedding) and the max-pool variant outperform mean-pool and raw concat; `[S]` is selected as the canonical cell representation (`ablation-00.ipynb`).
   - Continuous scalar embedding preserves fine expression magnitudes and beats binned tokens, justifying xTrimoGene's MLP value embedder over vocab-based binning (`ablation-01.ipynb`).
   - Continuous regression loss applied to the full gene set yields the best clustering, supporting the published recipe (`ablation-01.ipynb`).
-  - Removing RDA collapses the enhancement gain over SAVER/MAGIC/scImpute; RDA is the key driver of the imputation/enhancement SoTA and of the model's ability to operate at arbitrary target depths (`ablation-02.ipynb` + `enhancement/`).
+  - Removing RDA collapses the enhancement gain over SAVER/MAGIC/scImpute; RDA is the key driver of the imputation/enhancement SOTA and of the model's ability to operate at arbitrary target depths (`ablation-02.ipynb` + `enhancement/`).
 - **[scGPT](https://doi.org/10.1038/s41592-024-02201-0) ([note](notes/scgpt-toward-building-a-2024.md))** — *modalities: scrna, single-cell-multiomics*
   - Source.
   - `scgpt/model/model.py` (note §Model); GitHub README. Paper body gated — could not retrieve a numeric ablation table from Nature HTML (only refs section reachable).

@@ -148,6 +148,16 @@ Non-FM-related papers (generic ML, off-topic) should NOT be in the survey at all
 
 ---
 
+## Writing Style
+
+- **No undefined acronyms.** Every acronym must be expanded on first use:
+  *"state-of-the-art (SOTA)"*, *"masked language modeling (MLM)"*. After the
+  first expansion, the short form is fine. This applies to `insights.md`,
+  `notes/*.md`, and `qa/*.md`.
+- Use hyperlinked citations with note links (see Step 3 above).
+
+---
+
 ## Commands
 
 ```bash
