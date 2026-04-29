@@ -72,10 +72,18 @@ just check     # all of the above
 just test      # pytest
 ```
 
-## Adding a new bio-FM paper (future sessions)
+## Adding a new bio-FM paper
 
-The repo is designed so that a future session — human or Copilot — can add a
-newly-published bio-FM with a single command:
+**Preferred method: open a GitHub issue.** Simply create an issue with the
+paper's arXiv ID, DOI, or title — a Copilot agent will pick it up, add the
+paper, extract structured information, update insights if warranted, and
+submit a PR. Example issue title:
+
+> *"Add paper: arXiv:2501.12345 — Orthrus RNA foundation model"*
+
+### Manual method (local development)
+
+If you're working locally, you can also add a paper directly:
 
 ```bash
 cd survey-bio-fm
