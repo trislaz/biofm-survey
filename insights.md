@@ -2,7 +2,7 @@
 
 ## Scope & Method
 
-This guidebook distils design decisions and empirical findings from the current note inventory of **86 biology foundation-model (bio-FM) papers** that meet a strict definition: pretrained on biological data at scale, learning a general-purpose representation transferable to multiple downstream tasks. **Rev 4** added 15 newly-extracted FMs (GET, Evo 2, ESM-3, AlphaFold 3, RoseTTAFold All-Atom, ProteinMPNN, Nicheformer, UCE, CellPLM, GenePT, SCimilarity, scMulan, AIDO, Virchow2, CONCH-NatMed); the 2026 practitioner refresh re-weights the practitioner-facing guidance using the now-current DNA/RNA/multimodal evidence base, including JEPA-DNA, Orthrus, MIMIC, scELMo, and scMamba. The remaining 57 surveyed papers are supporting/baseline non-FMs (e.g., TAPE, scVI, totalVI, Cellpose, CLAM); these may appear as benchmarks but are **never** counted in the per-claim `(N=X papers)` evidence tallies that follow.
+This guidebook distils design decisions and empirical findings from the current note inventory of **86 biology foundation-model (bio-FM) papers** that meet a strict definition: pretrained on biological data at scale, learning a general-purpose representation transferable to multiple downstream tasks. **Rev 4** added 15 newly-extracted FMs (GET, Evo 2, ESM-3, AlphaFold 3, RoseTTAFold All-Atom, ProteinMPNN, Nicheformer, UCE, CellPLM, GenePT, SCimilarity, scMulan, AIDO, Virchow2, CONCH-NatMed); the 2026 practitioner refresh re-weights the practitioner-facing guidance using the now-current DNA/RNA/multimodal evidence base, including JEPA-DNA, Orthrus, MIMIC, scELMo, and scMamba. **Rev 5** re-read every one of the 86 FM notes in five parallel batches with Opus-4.7 extraction agents (TL;DR + Model + Data + Training Recipe + Ablations Rev 4 + Key Ablations + Reported Insights per note); the resulting per-axis evidence index is consolidated under `.cache/rev5_*` and used to refresh the Cheatsheet/Catalogue counts and surface previously-missed numeric ablations. The remaining 57 surveyed papers are supporting/baseline non-FMs (e.g., TAPE, scVI, totalVI, Cellpose, CLAM); these may appear as benchmarks but are **never** counted in the per-claim `(N=X papers)` evidence tallies that follow.
 
 Each FM note in `notes/` carries a `## Ablations (Rev 4)` section that quotes the design-choice ablations actually reported by the authors. This guidebook is *grounded in those tables*: every design-choice axis below ends with an **Ablation evidence (Rev 4)** subsection that quotes the specific finding from the relevant note. Citations use `[short-name](URL)` linking to the source's DOI, arXiv, or canonical URL.
 
@@ -299,7 +299,7 @@ Many headline gains shrink ≥50% under (a) leakage-corrected splits (sequence i
 
 ## Modality-Specific Recipes
 
-Practical defaults per modality, drawn from the strongest ablations in the 84 FM corpus.
+Practical defaults per modality, drawn from the strongest ablations in the 86 FM corpus.
 
 ### DNA / Genomics
 
@@ -389,9 +389,9 @@ Newly broken out in Rev 4. [Nicheformer](https://doi.org/10.1101/2024.04.15.5894
 
 ## Methodology & Limitations
 
-This guidebook is grounded in **84 bio-FM papers**, each of which carries a `## Ablations (Rev 4)` section in its source note. **(N=X papers)** annotations on every claim count only those 84 FM papers; the remaining 85 surveyed papers are baselines, benchmarks, or supporting methods (TAPE, CLAM, scVI, totalVI, Cellpose, CellRanger, etc.) and are not counted as primary evidence.
+This guidebook is grounded in **86 bio-FM papers**, each of which carries a `## Ablations (Rev 4)` section in its source note. **(N=X papers)** annotations on every claim count only those 86 FM papers; the remaining 57 surveyed papers are baselines, benchmarks, or supporting methods (TAPE, CLAM, scVI, totalVI, Cellpose, CellRanger, etc.) and are not counted as primary evidence.
 
-Coverage is uneven: protein sequence (21), pathology (13), protein structure (13), DNA (12), and scRNA (12) are well represented; RNA (5), small-molecule (6), epigenome (4), spatial transcriptomics (1), MS-proteomics (1), and cell-painting (1) are under-represented.
+Coverage is uneven: protein sequence (22), protein structure (14), pathology (13), DNA (13), scRNA (12), multimodal (10) are well represented; RNA (7), small-molecule (6), epigenome (4), single-cell-multiomics (3), radiology (2), spatial transcriptomics / cell-imaging / microscopy / MS-proteomics / interactome / biomedical-text (1 each) are under-represented.
 
 Several Rev-4 ablation tables are limited by source access:
 - [scMulan](https://doi.org/10.1101/2024.01.25.577152) ([note](notes/scmulan-a-multitask-generative-2024.md)): full text 403 (bioRxiv); ablations could not be quoted directly.
@@ -401,7 +401,7 @@ Several Rev-4 ablation tables are limited by source access:
 
 Quantitative claims reflect the ablations reported in each paper and have **not been independently reproduced**. The Rev 3 verification appendix (preserved verbatim below) is the only independent fact-check applied.
 
-## Appendix: FM Catalogue (84 entries)
+## Appendix: FM Catalogue (86 entries)
 
 One row per FM, grouped by modality. Each entry: nickname → URL, one-line ablation take-away extracted from the source note's `## Ablations (Rev 4)` table.
 
@@ -795,7 +795,7 @@ One row per FM, grouped by modality. Each entry: nickname → URL, one-line abla
   - Cross-modal matching (CMM) pre-training objective is as critical as atomic attention (−2.8 R@1 loss), confirming fine-grained substructure-text alignment drives gains.
   - Knowledge graph input contributes modestly (~1.5% improvement); combined with CMM removal, both losses compound to −4.3 points.
 
-### Multimodal Medical (4)
+### Multimodal Medical (5)
 
 - **[AIDO](https://doi.org/10.1101/2024.12.02.626322) ([note](notes/aido-accurate-model-of-2024.md))** — *modalities: multimodal*
   - Mixture-of-Experts (8 experts, top-2 routing) in AIDO.Protein-16B matches dense FFN performance at ~28% active parameters, enabling 16B scale at half the per-token FLOPs.
@@ -815,6 +815,12 @@ One row per FM, grouped by modality. Each entry: nickname → URL, one-line abla
   - Stage 1 (caption alignment) alone collapses instruction-following; Stage 2 instruction-tuning is essential.
   - Performance improves monotonically with more self-instruct data.
   - Using PubMed inline mentions as external knowledge during GPT-4 self-instruct improves data quality.
+- **[MIMIC](https://arxiv.org/abs/2604.24506) ([note](notes/mimic-a-generative-multimodal-2026.md))** — *modalities: dna, multimodal, protein-sequence, protein-structure, rna*
+  - Split-track encoder-decoder with modality dropout: condition on any subset of 6 modalities (nucleic-acid sequence, protein sequence, 3D structure, evolutionary profiles, regulatory signals, NL context) and reconstruct the rest, enabling any-to-any inference at ~1B params on the LORE dataset (13M RNA transcripts + 15.5M proteins + >4B NL tokens, 6,000+ organisms).
+  - Multimodal conditioning consistently outperforms sequence-only reconstruction; isoform-aware generative inference beats discriminative splice prediction (state-of-the-art (SOTA) RNA splicing).
+  - Free-form natural-language experimental context (e.g., DMS vs SHAPE, MgCl₂ concentration) functions as a first-class conditioning modality, enabling assay-dependent RNA chemical-probing predictions rather than collapsing to an average.
+  - Localized per-track positional encoding (not global absolute) handles modality-specific tokenizations within a single shared backbone.
+  - Limitations: no quantitative ablations in note (abstract+repo only); no scaling experiments; code/weights/data not yet released as of April 2026; structure conditioning depends on availability (mitigated by modality dropout).
 
 ### Vision (Biomedical) (1)
 
@@ -891,3 +897,20 @@ Per-paper verification details are appended to each note as a `## Verification (
 - AlphaFold 3 + RoseTTAFold All-Atom now anchor heteroatom complex modelling alongside MSA-conditioned protein-only AF2/RoseTTAFold.
 - Single-cell section adds explicit fair-baseline caveat backed by 8 FM papers; spatial transcriptomics broken out as its own modality.
 - New axis 11 (Distillation from AlphaFold predictions) consolidates a previously scattered finding into a single quoted-ablation table.
+
+## Appendix: Rev 5 Changelog
+
+**What changed in Rev 5.**
+
+1. **All 86 FM notes re-read in parallel by five Opus-4.7 extraction agents.** Each agent processed ~17 notes (TL;DR, Model, Data, Training Recipe, Ablations Rev 4, Key Ablations, Reported Insights) and emitted a structured per-axis evidence index. Outputs are consolidated in `.cache/rev5_*` and used as the source of truth for refreshed counts. Synthesis prose remains hand-authored; agents were used only for evidence extraction.
+
+2. **86 FM corpus confirmed.** The 2026 refresh added [MIMIC](https://arxiv.org/abs/2604.24506) ([note](notes/mimic-a-generative-multimodal-2026.md)), [JEPA-DNA](https://arxiv.org/abs/2602.17162) ([note](notes/jepa-dna-grounding-genomic-2026.md)), [Orthrus](https://doi.org/10.1038/s41592-026-03064-3) ([note](notes/orthrus-toward-evolutionary-and-2026.md)), [scELMo](https://arxiv.org/abs/2601.05648) ([note](notes/open-world-knowledge-aided-2026.md)), and [scMamba](https://arxiv.org/abs/2506.20697) ([note](notes/scmamba-a-scalable-foundation-2025.md)) on top of the Rev 4 base. Counts in the FM Catalogue and Scope & Method are now harmonised at 86 (was 84).
+
+3. **MIMIC promoted to first-class catalogue entry.** Multimodal Medical section now lists 5 FMs (was 4); MIMIC's split-track encoder-decoder + modality-dropout recipe is documented alongside AIDO/ConceptCLIP/Doctor Sun/LLaVA-Med.
+
+4. **No structural changes to the 12 design-choice axes or modality recipes.** Rev 5 evidence largely reinforces Rev 4 ablation tables; surgical updates were preferred over wholesale rewrites where the Rev 4 quote already captured the strongest finding (e.g., DNABERT-2 BPE > 6-mer, ESM-2 scale-emergent contacts, Orthrus contrastive Z-score 0.90 vs MLM 0.71).
+
+5. **Open Problems and Verification (Rev 3) appendix preserved verbatim.** No new verification pass was run in Rev 5; the Rev 3 14-paper fact-check still stands.
+
+**Forward-looking caveats.** Rev 5 evidence extraction confirms two persistent blind spots: (i) DNA/RNA scaling experiments rarely report per-context-length accuracy ablations (Evo 2, Caduceus, Orthrus all give configuration-only numbers at the longest context); (ii) multimodal generative FMs (MIMIC, AIDO, ESM-3) underreport quantitative cross-track recovery numbers, making head-to-head comparison difficult. A future revision should commission paper-specific fact-checker agents on the 5 newest FMs and on the long-context scaling claims.
+
