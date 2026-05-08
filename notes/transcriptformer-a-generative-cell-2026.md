@@ -24,14 +24,14 @@ md_path: null
 modalities:
 - scrna
 status: extracted
-evidence_quality: abstract+repo
+evidence_quality: medium
 tags:
 - transformer
 - autoregressive
 - cross-species
 - single-cell-transcriptomics
 - zero-shot-transfer
-parameters: 368M/444M/542M trainable (variant-dependent) + frozen protein embeddings
+parameters: 368M-542M trainable + frozen ESM-2 embeddings (variant-dependent)
 training_tokens: null
 training_compute: null
 references_chased: false
