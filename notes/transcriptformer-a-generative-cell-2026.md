@@ -24,14 +24,14 @@ md_path: null
 modalities:
 - scrna
 status: extracted
-evidence_quality: medium
+evidence_quality: low
 tags:
 - transformer
 - autoregressive
 - cross-species
 - single-cell-transcriptomics
 - zero-shot-transfer
-parameters: 368 million to 542 million trainable + frozen ESM-2 embeddings (variant-dependent)
+parameters: 368 to 542 million trainable; non-trainable frozen embeddings vary by variant (61 to 633 million)
 training_tokens: null
 training_compute: null
 references_chased: false
