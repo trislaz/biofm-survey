@@ -43,7 +43,7 @@ fm_classification_reason: 'TranscriptFormer: pretrained generative single-cell t
 
 ## TL;DR
 
-TranscriptFormer is a transformer-based generative foundation model family for single-cell RNA sequencing (scRNA-seq) data across species. The public model release describes three variants trained on up to 112 million cells spanning 12 species across ~1.53 billion years of evolution, with strong zero-shot transfer claims for cross-species cell-type annotation and human disease-state identification. The Science paper URL is in this note, and current extraction is based on the official model repository summary and the linked preprint metadata because the Science and bioRxiv domains were not reachable from this execution environment.
+TranscriptFormer is a transformer-based generative foundation model family for single-cell RNA sequencing (scRNA-seq) data across species. The public model release describes three variants trained on up to 112 million cells spanning 12 species across ~1.53 billion years of evolution, with strong zero-shot transfer claims for cross-species cell-type annotation and human disease-state identification. The Science paper URL is in this note, and current extraction is based on the official model repository summary and the linked preprint metadata available in accessible sources.
 
 ## Model
 
@@ -86,7 +86,7 @@ Accessible sources (official README + model release notes) emphasize cross-speci
 
 ## Notes / Open Questions
 
-- The Science DOI page and bioRxiv full text were not directly reachable from this environment (domain-resolution failures), so this note is based on official repository statements and linked metadata rather than a full manuscript PDF parse.
+- The Science DOI page and bioRxiv full text were not directly accessible during extraction, so this note is based on official repository statements and linked metadata rather than a full manuscript PDF parse.
 - Once direct paper access is available, this note should be upgraded with:
   - explicit benchmark tables,
   - architecture hyperparameters,

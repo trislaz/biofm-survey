@@ -11,7 +11,7 @@ Please add this foundation model: <https://www.science.org/doi/10.1126/science.a
 Updated the paper entry from a seed to an extracted note with model/data/training/design-choice analysis:
 [TranscriptFormer: A generative cell atlas across 1.5 billion years of evolution](https://www.science.org/doi/10.1126/science.aec8514) ([note](../notes/transcriptformer-a-generative-cell-2026.md)).
 
-Why this was not done in the first pass: direct download from the Science DOI domain failed in this environment due domain-resolution/network restrictions at execution time. In this follow-up, the note was expanded using reachable official sources (the TranscriptFormer GitHub repository and its linked preprint record), and the extraction limitations are now documented directly in the note.
+Why this was not done in the first pass: direct download from the Science DOI domain failed in this environment due to domain-resolution/network restrictions at execution time. In this follow-up, the note was expanded using reachable official sources (the TranscriptFormer GitHub repository and its linked preprint record), and the extraction limitations are now documented directly in the note.
 
 ## Sources
 
