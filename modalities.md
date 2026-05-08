@@ -1,9 +1,9 @@
 # Bio-FM Survey — Per-Modality Index
 
-Total papers: **143**
+Total papers: **144**
 
 Status breakdown:
-- `extracted`: 83
+- `extracted`: 84
 - `converted`: 42
 - `abstract-only`: 9
 - `fetched`: 5
@@ -242,13 +242,14 @@ Status breakdown:
 | 2022 | [Accurate RNA 3D structure prediction using a language model-based deep learning approach](notes/accurate-rna-3d-structure-2022.md) | `extracted` | — | ~23.7M sequences (RNA-FM pre-training) | rna-structure-prediction, foundation-model, language-model, alphafold-inspired |
 | 2022 | [Interpretable RNA Foundation Model from Unannotated Data for Highly Accurate RNA Structure and Function Predictions](notes/interpretable-rna-foundation-model-2022.md) | `extracted` | ~99M (12-layer BERT, 640 hidden, 20 heads; not explicitly stated, estimated from architecture) | 23.7M ncRNA sequences from RNAcentral | foundation-model, rna, bert, masked-language-modeling |
 
-## scrna (21 papers)
+## scrna (22 papers)
 
 | Year | Title | Status | Params | Tokens | Tags |
 |------|-------|--------|--------|--------|------|
 | 2026 | [Open World Knowledge Aided Single-Cell Foundation Model with Robust Cross-Modal Cell-Language Pre-training](notes/open-world-knowledge-aided-2026.md) | `seed` | — | — |  |
 | 2026 | [Sparse autoencoders reveal organized biological knowledge but minimal regulatory logic in single-cell foundation models: a comparative atlas of Geneformer and scGPT](notes/sparse-autoencoders-reveal-organized-2026.md) | `converted` | — | — |  |
 | 2026 | [Systematic Evaluation of Single-Cell Foundation Model Interpretability Reveals Attention Captures Co-Expression Rather Than Unique Regulatory Signal](notes/systematic-evaluation-of-single-2026.md) | `extracted` | — | — | evaluation-framework, interpretability, attention-analysis, gene-regulatory-network |
+| 2026 | [TranscriptFormer: A generative cell atlas across 1.5 billion years of evolution](notes/transcriptformer-a-generative-cell-2026.md) | `extracted` | 429 to 1077 million total (368 to 542 million trainable + 61 to 633 million frozen) | — | transformer, autoregressive, cross-species, single-cell-transcriptomics |
 | 2025 | [Cell2Text: Multimodal LLM for Generating Single-Cell Descriptions from RNA-Seq Data](notes/cell2text-multimodal-llm-for-2025.md) | `extracted` | ~1.3B (Llama-1B variant) / ~4.3B (Gemma-4B variant); encoder Geneformer-V2-316M frozen | — | scRNA-seq, multimodal-generation, cell-annotation, geneformer |
 | 2025 | [CellVerse: Do Large Language Models Really Understand Cell Biology?](notes/cellverse-do-large-language-2025.md) | `extracted` | — | — | benchmark, single-cell, LLM-evaluation, cell-type-annotation |
 | 2025 | [GRNFormer: A Biologically-Guided Framework for Integrating Gene Regulatory Networks into RNA Foundation Models](notes/grnformer-a-biologically-guided-2025.md) | `extracted` | — | — | gene-regulatory-network, adapter, graph-neural-network, cross-attention |
