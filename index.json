@@ -4833,7 +4833,20 @@
     {
       "id": "transcriptformer-a-generative-cell-2026",
       "title": "TranscriptFormer: A generative cell atlas across 1.5 billion years of evolution",
-      "authors": [],
+      "authors": [
+        "James D. Pearce",
+        "Sara E. Simmonds",
+        "Gita Mahmoudabadi",
+        "Lakshmi Krishnan",
+        "Giovanni Palla",
+        "Ana-Maria Istrate",
+        "Alexander Tarashansky",
+        "Benjamin Nelson",
+        "Omar Valenzuela",
+        "Donghui Li",
+        "Stephen R. Quake",
+        "Theofanis Karaletsos"
+      ],
       "year": 2026,
       "venue": "Science",
       "arxiv": null,
@@ -4844,15 +4857,21 @@
       "modalities": [
         "scrna"
       ],
-      "status": "seed",
-      "evidence_quality": "unknown",
-      "tags": [],
-      "parameters": null,
+      "status": "extracted",
+      "evidence_quality": "abstract+repo",
+      "tags": [
+        "transformer",
+        "autoregressive",
+        "cross-species",
+        "single-cell-transcriptomics",
+        "zero-shot-transfer"
+      ],
+      "parameters": "368M/444M/542M trainable (variant-dependent) + frozen protein embeddings",
       "training_tokens": null,
       "training_compute": null,
       "references_chased": false,
       "added_at": "2026-05-08T10:23:23+00:00",
-      "updated_at": null
+      "updated_at": "2026-05-08T10:58:10+00:00"
     },
     {
       "id": "transfer-learning-enables-predictions-2023",

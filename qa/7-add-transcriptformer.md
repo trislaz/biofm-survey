@@ -8,12 +8,14 @@ Please add this foundation model: <https://www.science.org/doi/10.1126/science.a
 
 ## Answer
 
-Added the paper to the survey as a new foundation model seed note:
+Updated the paper entry from a seed to an extracted note with model/data/training/design-choice analysis:
 [TranscriptFormer: A generative cell atlas across 1.5 billion years of evolution](https://www.science.org/doi/10.1126/science.aec8514) ([note](../notes/transcriptformer-a-generative-cell-2026.md)).
 
-The note is currently marked `status: seed`, indicating that the paper has been added to the index and modality listings, and can be expanded with full extraction details in a follow-up pass.
+Why this was not done in the first pass: direct download from the Science DOI domain failed in this environment due domain-resolution/network restrictions at execution time. In this follow-up, the note was expanded using reachable official sources (the TranscriptFormer GitHub repository and its linked preprint record), and the extraction limitations are now documented directly in the note.
 
 ## Sources
 
 - Issue request: [#7](https://github.com/trislaz/biofm-survey/issues/7)
 - Paper URL: <https://www.science.org/doi/10.1126/science.aec8514>
+- Official model repository: <https://github.com/czi-ai/transcriptformer>
+- Linked preprint in the repository: <https://www.biorxiv.org/content/10.1101/2025.04.25.650731v2>
