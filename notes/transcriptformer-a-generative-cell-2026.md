@@ -31,7 +31,7 @@ tags:
 - cross-species
 - single-cell-transcriptomics
 - zero-shot-transfer
-parameters: 368 to 542 million trainable; non-trainable frozen embeddings vary by variant (61 to 633 million)
+parameters: 429 to 1077 million total (368 to 542 million trainable + 61 to 633 million frozen)
 training_tokens: null
 training_compute: null
 references_chased: false
@@ -43,7 +43,7 @@ fm_classification_reason: 'TranscriptFormer: pretrained generative single-cell t
 
 ## TL;DR
 
-TranscriptFormer is a transformer-based generative foundation model family for single-cell RNA sequencing (scRNA-seq) data across species. The public model release describes three variants trained on up to 112 million cells spanning 12 species across ~1.53 billion years of evolution, with strong zero-shot transfer claims for cross-species cell-type annotation and human disease-state identification. The Science paper URL is in this note, and current extraction is based on the official model repository summary and the linked preprint metadata available in accessible sources.
+TranscriptFormer is a transformer-based generative foundation model family for single-cell RNA sequencing (scRNA-seq) data across species. The public model release describes three variants trained on up to 112 million cells spanning 12 species across ~1.53 billion years of evolution, with strong zero-shot transfer claims for cross-species cell-type annotation and human disease-state identification. The Science paper URL is in this note, and current extraction is based on the official model repository summary and the linked preprint metadata available in accessible sources. Evidence quality is marked low because direct full-manuscript access was unavailable during extraction.
 
 ## Model
 

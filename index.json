@@ -4866,7 +4866,7 @@
         "single-cell-transcriptomics",
         "zero-shot-transfer"
       ],
-      "parameters": "368 to 542 million trainable; non-trainable frozen embeddings vary by variant (61 to 633 million)",
+      "parameters": "429 to 1077 million total (368 to 542 million trainable + 61 to 633 million frozen)",
       "training_tokens": null,
       "training_compute": null,
       "references_chased": false,
