@@ -24,7 +24,7 @@ md_path: null
 modalities:
 - scrna
 status: extracted
-evidence_quality: abstract+metadata
+evidence_quality: abstract+repo
 tags:
 - transformer
 - autoregressive
