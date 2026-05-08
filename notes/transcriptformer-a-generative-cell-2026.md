@@ -24,7 +24,7 @@ md_path: null
 modalities:
 - scrna
 status: extracted
-evidence_quality: abstract+repo
+evidence_quality: abstract+metadata
 tags:
 - transformer
 - autoregressive
@@ -59,7 +59,7 @@ TranscriptFormer is a transformer-based generative foundation model family for s
 
 - **Maximum pretraining scale**: 112 million single-cell transcriptomes.
 - **Species coverage (largest variant)**: 12 species including six vertebrates, four invertebrates, one fungus, and one protist.
-- **Temporal span**: approximately 1.53 billion years of evolution (as reported in the release summary).
+- **Temporal span**: 1.53 billion years of evolution (as reported in the release summary).
 
 ## Training Recipe
 
