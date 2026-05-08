@@ -31,7 +31,7 @@ tags:
 - cross-species
 - single-cell-transcriptomics
 - zero-shot-transfer
-parameters: 368M-542M trainable + frozen ESM-2 embeddings (variant-dependent)
+parameters: 368 million to 542 million trainable + frozen ESM-2 embeddings (variant-dependent)
 training_tokens: null
 training_compute: null
 references_chased: false
@@ -74,7 +74,7 @@ TranscriptFormer is a transformer-based generative foundation model family for s
 
 Accessible sources (official README + model release notes) emphasize cross-species transfer and variant scaling, but do not expose a full ablation table in the retrieved content.
 
-- **Scale/coverage design choice**: comparing human-only vs few-species vs 12-species variants is the primary reported experimental axis.
+- **Scale/coverage design choice**: comparing human-only versus few-species versus 12-species variants is the primary reported experimental axis.
 - **Generalization design choice**: explicit support for out-of-distribution species via pretrained embedding extensions is part of the released inference pipeline.
 - **Evidence gap**: detailed controlled ablation numbers were not available in the reachable sources in this environment.
 

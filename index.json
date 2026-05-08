@@ -4866,7 +4866,7 @@
         "single-cell-transcriptomics",
         "zero-shot-transfer"
       ],
-      "parameters": "368M-542M trainable + frozen ESM-2 embeddings (variant-dependent)",
+      "parameters": "368 million to 542 million trainable + frozen ESM-2 embeddings (variant-dependent)",
       "training_tokens": null,
       "training_compute": null,
       "references_chased": false,
