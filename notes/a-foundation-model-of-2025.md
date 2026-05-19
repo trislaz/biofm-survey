@@ -35,10 +35,6 @@ tags:
 - regulatory-genomics
 - chromatin-accessibility
 - gene-expression-prediction
-- cell-type-conditioning
-- motif-masking
-- enhancer-gene-linking
-- lora
 parameters: null
 training_tokens: null
 training_compute: null
@@ -101,7 +97,7 @@ Source: Nature DOI 10.1038/s41586-024-08391-z.
 | Model architecture | GET vs multilayer perceptron (MLP) / convolutional neural network (CNN) / CatBoost / support vector machine (SVM) / random forest / linear regression (same input, same epochs) | Expression prediction, leave-out astrocytes / leave-out chromosome 11 | GET best in both settings (Ext. Data Fig. 2e,f) | Region-wise transformer attention beats simpler machine learning baselines on the same features |
 | Leave-out chromosome | Each of 22 autosomes held out independently | Pearson r, fetal astrocytes / GBM tumour / K562 OmniATAC | Mean r = 0.78 (0.73–0.84) / 0.75 (0.68–0.81) / 0.81 (0.72–0.84) | Performance is consistent across chromosomes; no single chromosome drives results |
 | Leave-out motifs (input feature ablation) | Hold out 1, 2, 3, 4, 10, 20 random motifs from input and observation | Pearson/Spearman of accessibility counts per million on knockout peaks, K562 chromosome 14 | Robust up to 10 motifs; large degradation at 20 motifs | Model is not over-reliant on any small set of motifs; redundancy across motif clusters |
-| Assay for Transposase-Accessible Chromatin using sequencing (ATAC-seq) quantization for fine-tuning | Binary ATAC-seq (BATAC)→BATAC vs BATAC→quantitative ATAC-seq (QATAC) vs QATAC→QATAC (LoRA, K562 cap analysis of gene expression (CAGE)) | K562 CAGE Pearson, leave-out chromosome 14 | QATAC fine-tuning improves over BATAC; QATAC-pretrained base further helps | Quantitative accessibility signal during fine-tuning improves transfer to new assays |
+| assay for transposase-accessible chromatin using sequencing (ATAC-seq) quantization for fine-tuning | Binary ATAC-seq (BATAC)→BATAC vs BATAC→quantitative ATAC-seq (QATAC) vs QATAC→QATAC (LoRA, K562 cap analysis of gene expression (CAGE)) | K562 CAGE Pearson, leave-out chromosome 14 | QATAC fine-tuning improves over BATAC; QATAC-pretrained base further helps | Quantitative accessibility signal during fine-tuning improves transfer to new assays |
 | Fetal-only vs fetal+adult pretraining atlas | Train on fetal-only (Domcke) vs fetal+adult (Zhang) peak set | Expression prediction and regulatory analysis | "Comparable" performance | Model is robust to the choice of peak/atlas source |
 | Pretraining domain transfer | Fetal-only pretrain → predict adult cell types | R² across diverse adult cell types | 0.53 vs baseline 0.33 (corresponding fetal cell type) | Pretraining transfers across developmental stage, not just within-atlas |
 | One-shot vs zero-shot fine-tuning on new dataset | Fine-tune on 1 GBM patient vs no fine-tuning | Pearson r on 16 held-out GBM patients | >0.9 vs 0.67 | Single-sample fine-tuning yields large gains on new platforms (10× multiome) |

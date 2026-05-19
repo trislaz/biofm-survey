@@ -39,11 +39,7 @@
         "transformer",
         "regulatory-genomics",
         "chromatin-accessibility",
-        "gene-expression-prediction",
-        "cell-type-conditioning",
-        "motif-masking",
-        "enhancer-gene-linking",
-        "lora"
+        "gene-expression-prediction"
       ],
       "parameters": null,
       "training_tokens": null,
