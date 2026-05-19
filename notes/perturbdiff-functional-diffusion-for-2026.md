@@ -42,7 +42,7 @@ PerturbDiff is a diffusion-based single-cell RNA sequencing (scRNA-seq) perturba
 
 ## Model
 
-- **Architecture**: Conditional diffusion model with a Cross-DiT-style backbone for single-cell perturbation response generation.
+- **Architecture**: Conditional diffusion model with a cross-attention diffusion transformer (DiT)-style backbone for single-cell perturbation response generation.
 - **Representation level**: Models probability distributions over cell populations rather than a deterministic map from one cell or one condition to one response.
 - **Conditioning**: Uses covariate encoders for perturbation, cell type, and batch-style metadata, with conditional sampling from trained checkpoints.
 - **Goal**: Predict perturbed scRNA-seq response populations from unpaired control and perturbed measurements.
