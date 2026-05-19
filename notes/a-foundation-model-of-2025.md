@@ -25,7 +25,7 @@ arxiv: null
 doi: 10.1038/s41586-024-08391-z
 url: https://www.nature.com/articles/s41586-024-08391-z
 pdf_path: null
-md_path: /home/t-tlazard/projects/maira-report-gen/survey-bio-fm/papers/md/a-foundation-model-of-2025.md
+md_path: papers/md/a-foundation-model-of-2025.md
 modalities:
 - epigenome
 status: extracted
