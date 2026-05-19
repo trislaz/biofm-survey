@@ -27,7 +27,7 @@ tags:
 - hilbert-space
 - pretraining-finetuning
 parameters: null
-training_tokens: CellxGene pretraining plus PBMC, Tahoe100M, and Replogle finetuning/evaluation datasets
+training_tokens: null
 training_compute: null
 references_chased: false
 added_at: '2026-05-19T10:51:33+00:00'
@@ -67,7 +67,7 @@ PerturbDiff is a diffusion-based single-cell RNA sequencing (scRNA-seq) perturba
 
 ## Reported Insights
 
-- The paper reports state-of-the-art (SOTA) single-cell response prediction and substantially better generalization to unseen perturbations than prior methods.
+- The abstract reports state-of-the-art (SOTA) single-cell response prediction and substantially better generalization to unseen perturbations than prior methods; the public repository lists peripheral blood mononuclear cell (PBMC), Tahoe100M, and Replogle as supported benchmarks, but this note does not record numeric metric values.
 - Distribution-level diffusion is a promising design for perturbation modeling when observed metadata do not fully determine the target response population.
 - The method is most directly relevant to the survey's single-cell foundation-model axis, especially virtual-cell and perturbation-response models.
 

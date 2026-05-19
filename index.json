@@ -3399,7 +3399,7 @@
         "pretraining-finetuning"
       ],
       "parameters": null,
-      "training_tokens": "CellxGene pretraining plus PBMC, Tahoe100M, and Replogle finetuning/evaluation datasets",
+      "training_tokens": null,
       "training_compute": null,
       "references_chased": false,
       "added_at": "2026-05-19T10:51:33+00:00",
