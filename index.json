@@ -1,5 +1,5 @@
 {
-  "count": 144,
+  "count": 145,
   "papers": [
     {
       "id": "a-foundation-model-of-2025",
@@ -3366,6 +3366,44 @@
       "references_chased": false,
       "added_at": null,
       "updated_at": null
+    },
+    {
+      "id": "perturbdiff-functional-diffusion-for-2026",
+      "title": "PerturbDiff: Functional Diffusion for Single-Cell Perturbation Modeling",
+      "authors": [
+        "Xinyu Yuan",
+        "Xixian Liu",
+        "Ya Shi Zhang",
+        "Zuobai Zhang",
+        "Hongyu Guo",
+        "Jian Tang"
+      ],
+      "year": 2026,
+      "venue": null,
+      "arxiv": "2602.19685",
+      "doi": null,
+      "url": "https://arxiv.org/abs/2602.19685",
+      "pdf_path": null,
+      "md_path": null,
+      "modalities": [
+        "scrna"
+      ],
+      "status": "extracted",
+      "evidence_quality": "abstract+repo",
+      "tags": [
+        "single-cell-perturbation",
+        "diffusion",
+        "virtual-cells",
+        "distribution-level-generation",
+        "hilbert-space",
+        "pretraining-finetuning"
+      ],
+      "parameters": null,
+      "training_tokens": "CellxGene pretraining plus PBMC, Tahoe100M, and Replogle finetuning/evaluation datasets",
+      "training_compute": null,
+      "references_chased": false,
+      "added_at": "2026-05-19T10:51:33+00:00",
+      "updated_at": "2026-05-19T10:51:33+00:00"
     },
     {
       "id": "phikon-v2-a-large-2024",
