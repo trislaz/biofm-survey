@@ -51,7 +51,7 @@ fm_classification_reason: Added in rev4 missing-FM brainstorm; canonical bio-FM.
 
 ## TL;DR
 
-GET (General Expression Transformer) is a foundation model for cell-type-conditioned transcriptional regulation. It combines DNA sequence motif features with chromatin accessibility context to predict gene expression and regulatory activity across 213 human fetal and adult cell types, including held-out cell types and new assay platforms. The key design signal for this survey is that motif-masked self-supervised pretraining and cell-type/accessibility conditioning make the model much more transferable than fine-tuning from scratch: in the reported fetal astrocyte holdout, pretraining raises expression-prediction Pearson r from 0.60 to 0.94.
+GET (General Expression Transformer) is a foundation model for cell-type-conditioned transcriptional regulation. It combines DNA sequence motif features with assay for transposase-accessible chromatin using sequencing (ATAC-seq) context to predict gene expression and regulatory activity across 213 human fetal and adult cell types, including held-out cell types and new assay platforms. The key design signal for this survey is that motif-masked self-supervised pretraining and cell-type/accessibility conditioning make the model much more transferable than fine-tuning from scratch: in the reported fetal astrocyte holdout, pretraining raises expression-prediction Pearson r from 0.60 to 0.94.
 
 ## Model
 
@@ -110,7 +110,7 @@ Source: Nature DOI 10.1038/s41586-024-08391-z.
 
 **Design-choice take-aways:**
 - Self-supervised motif-masked pretraining across many cell types is the single biggest design lever — removing it collapses leave-out performance from r=0.94 to 0.60.
-- The peak × motif tokenization plus region-wise attention beats simpler ML baselines on identical inputs, validating the architecture (not just the data).
+- The peak × motif tokenization plus region-wise attention beats simpler machine learning baselines on identical inputs, validating the architecture (not just the data).
 - The model is robust to atlas choice and to dropping individual motifs, but benefits from quantitative (vs binary) ATAC during fine-tuning and from multiplying the attention-based Jacobian with a learned 1D-distance "Powerlaw" prior for distal enhancer–gene calls.
 - Even single-sample LoRA fine-tuning suffices to adapt GET to new platforms/diseased cells (zero-shot 0.67 → one-shot >0.9 on GBM), making the FM practical for new datasets.
 
