@@ -57,7 +57,7 @@ GET (General Expression Transformer) is a foundation model for cell-type-conditi
 
 - **Name**: GET (General Expression Transformer).
 - **Architecture**: Region-wise transformer over peak-by-motif regulatory tokens, with attention/Jacobian analyses used to infer enhancer-gene links and transcription factor interactions.
-- **Input**: DNA sequence-derived motif information plus assay-specific chromatin accessibility for a target cell type or condition.
+- **Input**: DNA sequence-derived motif information plus assay for transposase-accessible chromatin using sequencing (ATAC-seq) accessibility for a target cell type or condition.
 - **Output**: Gene expression and regulatory activity scores; downstream analyses use model sensitivities to nominate cis-regulatory elements, enhancer-gene links, and transcription factor-transcription factor networks.
 - **Adaptation**: Uses low-rank adaptation (LoRA) for efficient fine-tuning on new assays or disease datasets.
 - **Parameters**: Not reported in the survey source note.
@@ -71,7 +71,7 @@ GET (General Expression Transformer) is a foundation model for cell-type-conditi
 ## Training Recipe
 
 - **Pretraining objective**: Motif-masked self-supervised learning over regulatory regions.
-- **Fine-tuning**: Supervised expression/accessibility adaptation, including quantitative ATAC-seq (QATAC) variants and LoRA fine-tuning for new datasets.
+- **Fine-tuning**: Supervised expression/accessibility adaptation, including binary ATAC-seq (BATAC), quantitative ATAC-seq (QATAC), and LoRA fine-tuning for new datasets.
 - **Generalization protocol**: The paper stresses held-out cell types, held-out chromosomes, held-out motifs, and one-shot transfer to new assay/platform contexts rather than random-region-only validation.
 
 ## Key Ablations & Design Choices
@@ -105,8 +105,8 @@ Source: Nature DOI 10.1038/s41586-024-08391-z.
 | Fetal-only vs fetal+adult pretraining atlas | Train on fetal-only (Domcke) vs fetal+adult (Zhang) peak set | Expression prediction and regulatory analysis | "Comparable" performance | Model is robust to the choice of peak/atlas source |
 | Pretraining domain transfer | Fetal-only pretrain → predict adult cell types | R² across diverse adult cell types | 0.53 vs baseline 0.33 (corresponding fetal cell type) | Pretraining transfers across developmental stage, not just within-atlas |
 | One-shot vs zero-shot fine-tuning on new dataset | Fine-tune on 1 GBM patient vs no fine-tuning | Pearson r on 16 held-out GBM patients | >0.9 vs 0.67 | Single-sample fine-tuning yields large gains on new platforms (10× multiome) |
-| LentiMPRA scoring components | GET expression only vs GET expression × K562 ATAC vs Enformer | Pearson r / regression slope on lentiMPRA log2(RNA/DNA), K562 | r = 0.45, slope 0.38 (GET only); r = 0.55, slope 0.63 (GET + ATAC); Enformer r = 0.44, slope 0.14 | Combining GET prediction with measured accessibility outperforms heavily-supervised Enformer at zero-shot regulatory activity |
-| Enhancer-gene scoring components | GET Jacobian alone vs Jacobian + DNase/ATAC × Powerlaw vs Jacobian × Powerlaw vs activity-by-contact (ABC) Powerlaw / Enformer / HyenaDNA / DeepSEA | Area under the precision-recall curve (AUPRC) on fetal erythroblast HbF enhancers and K562 CRISPRi (Fig. 3d, 1,000-bootstrap 95% confidence interval) | GET (Jacobian × Powerlaw) and GET (Jacobian + DNase × Powerlaw) top performers, especially for distal (>100 kb) interactions | Combining attention-derived Jacobian with a learned distance prior gives best long-range enhancer-gene predictions |
+| LentiMPRA scoring components | GET expression only vs GET expression × K562 ATAC-seq vs Enformer | Pearson r / regression slope on lentiMPRA log2(RNA/DNA), K562 | r = 0.45, slope 0.38 (GET only); r = 0.55, slope 0.63 (GET + ATAC-seq); Enformer r = 0.44, slope 0.14 | Combining GET prediction with measured accessibility outperforms heavily-supervised Enformer at zero-shot regulatory activity |
+| Enhancer-gene scoring components | GET Jacobian alone vs Jacobian + chromatin accessibility × Powerlaw vs Jacobian × Powerlaw vs activity-by-contact (ABC) Powerlaw / Enformer / HyenaDNA / DeepSEA | Area under the precision-recall curve (AUPRC) on fetal erythroblast fetal hemoglobin (HbF) enhancers and K562 CRISPR interference (CRISPRi) (Fig. 3d, 1,000-bootstrap 95% confidence interval) | GET (Jacobian × Powerlaw) and GET (Jacobian + chromatin accessibility × Powerlaw) top performers, especially for distal (>100 kb) interactions | Combining attention-derived Jacobian with a learned distance prior gives best long-range enhancer-gene predictions |
 
 **Design-choice take-aways:**
 - Self-supervised motif-masked pretraining across many cell types is the single biggest design lever — removing it collapses leave-out performance from r=0.94 to 0.60.
