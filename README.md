@@ -13,7 +13,7 @@ organised by design-choice axis (tokenisation, architecture, objective, context
 length, data, multimodal fusion, conditioning, optimisation, scaling, evaluation
 caveats) plus modality-specific "would-build-today" recipes.
 
-Current state: **142 papers (85 bio-FMs + 57 FM-related support papers)** across
+Current state: **146 papers (89 bio-FMs + 57 FM-related support papers)** across
 DNA, RNA, protein, scRNA, single-cell-multiomics, imaging-pathology,
 cell-painting, mass-spec proteomics, multimodal medical, small molecules, and more.
 
