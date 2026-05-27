@@ -53,7 +53,7 @@ fm_classification_reason: 'Decima: Borzoi-initialized sequence-to-expression fou
 
 ## TL;DR
 
-Decima extends sequence-to-expression modeling from bulk or assay-track prediction toward **cell type- and condition-specific expression prediction from DNA sequence**. The Nature Methods article was not directly reachable from this environment, so this note uses the linked bioRxiv preprint metadata and official Genentech code/repository. Accessible sources describe a model trained on more than 22 million single-cell or single-nucleus RNA-seq profiles that predicts expression for unseen genes from surrounding DNA sequence, supports cell-type/disease-state regulatory interpretation, scores non-coding variant effects at cellular resolution, and designs regulatory DNA elements with context-specific functions.
+Decima extends sequence-to-expression modeling from bulk or assay-track prediction toward **cell type- and condition-specific expression prediction from DNA sequence**. The Nature Methods article and bioRxiv full text were not reachable here because of network/tool fetch failures, so this note uses linked bioRxiv metadata and official Genentech code/repository sources. Accessible sources describe a model trained on more than 22 million single-cell or single-nucleus RNA-seq profiles that predicts expression for unseen genes from surrounding DNA sequence, supports cell-type/disease-state regulatory interpretation, scores non-coding variant effects at cellular resolution, and designs regulatory DNA elements with context-specific functions.
 
 ## Model
 
