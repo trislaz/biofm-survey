@@ -1,9 +1,9 @@
 # Bio-FM Survey — Per-Modality Index
 
-Total papers: **145**
+Total papers: **146**
 
 Status breakdown:
-- `extracted`: 85
+- `extracted`: 87
 - `converted`: 42
 - `abstract-only`: 9
 - `fetched`: 4
@@ -128,11 +128,12 @@ Status breakdown:
 |------|-------|--------|--------|--------|------|
 | 2023 | [BiomedCLIP: a multimodal biomedical foundation model pretrained from fifteen million scientific image-text pairs](notes/biomedclip-a-multimodal-biomedical-2023.md) | `extracted` | ~86M vision + ~110M text (ViT-B/16 + PubMedBERT) | 15M image-text pairs (PMC-15M), 32 epochs | contrastive-learning, CLIP, biomedical-vision-language, domain-adaptation |
 
-## multimodal (14 papers)
+## multimodal (15 papers)
 
 | Year | Title | Status | Params | Tokens | Tags |
 |------|-------|--------|--------|--------|------|
 | 2026 | [Differential Attention-Augmented BiomedCLIP with Asymmetric Focal Optimization for Imbalanced Multi-Label Video Capsule Endoscopy Classification](notes/differential-attention-augmented-biomedclip-2026.md) | `converted` | — | — |  |
+| 2026 | [Language Modeling Materializes a World Model of Protein Biology](notes/language-modeling-materializes-a-2026.md) | `extracted` | ESMC 300M/600M/6B; ESMFold2 built on ESMC 6B | ESMC 6B reported at 6.2T tokens | protein-language-model, ESMC, ESMFold2, protein-structure |
 | 2026 | [MIMIC: A Generative Multimodal Foundation Model for Biomolecules](notes/mimic-a-generative-multimodal-2026.md) | `extracted` | ~1B | 13M RNA transcripts + 15.5M proteins + >4B NL tokens; 6000+ organisms (LORE dataset) | multimodal, encoder-decoder, generative, any-to-any |
 | 2025 | [An Explainable Biomedical Foundation Model via Large-Scale Concept-Enhanced Vision-Language Pre-training](notes/an-explainable-biomedical-foundation-2025.md) | `converted` | — | — |  |
 | 2025 | [Cell2Text: Multimodal LLM for Generating Single-Cell Descriptions from RNA-Seq Data](notes/cell2text-multimodal-llm-for-2025.md) | `extracted` | ~1.3B (Llama-1B variant) / ~4.3B (Gemma-4B variant); encoder Geneformer-V2-316M frozen | — | scRNA-seq, multimodal-generation, cell-annotation, geneformer |
@@ -160,10 +161,11 @@ Status breakdown:
 | 2024 | [Virchow2: Scaling Self-Supervised Mixed Magnification Models in Pathology](notes/virchow2-scaling-self-supervised-2024.md) | `converted` | — | — |  |
 | 2022 | [BioGPT: Generative Pre-trained Transformer for Biomedical Text Generation and Mining](notes/biogpt-generative-pre-trained-2022.md) | `extracted` | 347000000 | 104900000000 | autoregressive, byte-pair, soft-prompt, causal-lm |
 
-## protein-sequence (27 papers)
+## protein-sequence (28 papers)
 
 | Year | Title | Status | Params | Tokens | Tags |
 |------|-------|--------|--------|--------|------|
+| 2026 | [Language Modeling Materializes a World Model of Protein Biology](notes/language-modeling-materializes-a-2026.md) | `extracted` | ESMC 300M/600M/6B; ESMFold2 built on ESMC 6B | ESMC 6B reported at 6.2T tokens | protein-language-model, ESMC, ESMFold2, protein-structure |
 | 2026 | [MIMIC: A Generative Multimodal Foundation Model for Biomolecules](notes/mimic-a-generative-multimodal-2026.md) | `extracted` | ~1B | 13M RNA transcripts + 15.5M proteins + >4B NL tokens; 6000+ organisms (LORE dataset) | multimodal, encoder-decoder, generative, any-to-any |
 | 2025 | [Boosting In-Silicon Directed Evolution with Fine-Tuned Protein Language Model and Tree Search](notes/boosting-in-silicon-directed-2025.md) | `converted` | — | — |  |
 | 2025 | [Human Genome Book: Words, Sentences and Paragraphs](notes/human-genome-book-words-2025.md) | `extracted` | 117M | — | genomics, language-transfer, cross-lingual, genome-segmentation |
@@ -192,10 +194,11 @@ Status breakdown:
 | 2020 | [ProtTrans: Towards Cracking the Language of Life's Code Through Self-Supervised Deep Learning and High Performance Computing](notes/prottrans-towards-cracking-the-2020.md) | `extracted` | up to 11B (ProtT5-XXL); ProtT5-XL 3B; ProtBert/ProtXLNet/ProtAlbert ~40M; ProtTXL-BFD 562M; ProtElectra 420M | up to 393B amino-acid tokens (BFD); UniRef100 88B; UniRef50 14B | arch-comparison, scaling, T5-XL, BERT |
 | 2019 | [Evaluating Protein Transfer Learning with TAPE](notes/evaluating-protein-transfer-learning-2019.md) | `extracted` | ~38M (each of Transformer, LSTM, ResNet matched to ~38M) | ~32M protein domain sequences (Pfam) | benchmark, transfer-learning, protein-representation, self-supervised |
 
-## protein-structure (22 papers)
+## protein-structure (23 papers)
 
 | Year | Title | Status | Params | Tokens | Tags |
 |------|-------|--------|--------|--------|------|
+| 2026 | [Language Modeling Materializes a World Model of Protein Biology](notes/language-modeling-materializes-a-2026.md) | `extracted` | ESMC 300M/600M/6B; ESMFold2 built on ESMC 6B | ESMC 6B reported at 6.2T tokens | protein-language-model, ESMC, ESMFold2, protein-structure |
 | 2026 | [Mechanisms of AI Protein Folding in ESMFold](notes/mechanisms-of-ai-protein-2026.md) | `converted` | — | — |  |
 | 2026 | [MIMIC: A Generative Multimodal Foundation Model for Biomolecules](notes/mimic-a-generative-multimodal-2026.md) | `extracted` | ~1B | 13M RNA transcripts + 15.5M proteins + >4B NL tokens; 6000+ organisms (LORE dataset) | multimodal, encoder-decoder, generative, any-to-any |
 | 2025 | [InstructPLM-mu: 1-Hour Fine-Tuning of ESM2 Beats ESM3 in Protein Mutation Predictions](notes/instructplm-mu-1-hour-2025.md) | `extracted` | 35M / 150M / 650M (ESM2 backbone scales) | — | protein-mutation-prediction, fine-tuning, multimodal-fusion, parameter-efficient |

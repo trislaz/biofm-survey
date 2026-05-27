@@ -87,3 +87,23 @@ def test_schema_loads() -> None:
     assert "properties" in s
     assert "modalities" in s["properties"]
     assert "status" in s["properties"]
+
+
+def test_requested_biohub_esm_protein_note_present() -> None:
+    """The requested Biohub ESM protein paper should be represented as a survey note."""
+    note = load_note(
+        Path(__file__).resolve().parents[1]
+        / "notes"
+        / "language-modeling-materializes-a-2026.md"
+    )
+    assert note.title == "Language Modeling Materializes a World Model of Protein Biology"
+    assert note.url == "https://biohub.ai/papers/esm_protein.pdf?__clerk_synced=true"
+    assert note.modalities == ["protein-sequence", "protein-structure", "multimodal"]
+    assert "dna" not in note.modalities
+    assert "small-molecule" not in note.modalities
+    assert note.references_chased
+    assert note.parameters == "ESMC 300M/600M/6B; ESMFold2 built on ESMC 6B"
+    assert "6.2T tokens" in note.body
+    assert "ESMC 6B exceeding" in note.body
+    assert "ESMFold2" in note.body
+    assert "ESM-1b → ESM-2/ESMFold → ESMC/ESMFold2" in note.body
