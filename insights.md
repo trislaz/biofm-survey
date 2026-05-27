@@ -6,7 +6,7 @@ This guidebook distils design decisions and empirical findings from the current 
 
 Each FM note in `notes/` carries a `## Ablations (Rev 4)` section that quotes the design-choice ablations actually reported by the authors. This guidebook is *grounded in those tables*: every design-choice axis below ends with an **Ablation evidence (Rev 4)** subsection that quotes the specific finding from the relevant note. Citations use `[short-name](URL)` linking to the source's DOI, arXiv, or canonical URL.
 
-Coverage by modality is multi-label and reflects the current **FM-only** inventory (not the all-paper counts in `modalities.md`), including the three post-Rev5 additions: protein-sequence (22), scRNA (15), protein-structure (14), DNA (14), imaging-pathology (13), multimodal (10), RNA (7), small-molecule (6), epigenome (5), single-cell-multiomics (3), plus low-count radiology, microscopy, cell-painting, biomedical text, vision, interactome, and other modalities. Methods reflect the ablations reported by authors and have not been independently reproduced; see *Methodology & Limitations*.
+Coverage by modality is multi-label and reflects the current **FM-only** inventory (verified from notes with `is_fm: true`, not the all-paper counts in `modalities.md`), including the three post-Rev5 additions: protein-sequence (22), scRNA (15), protein-structure (14), DNA (14), imaging-pathology (13), multimodal (10), RNA (7), small-molecule (6), epigenome (5), single-cell-multiomics (3), plus low-count radiology, microscopy, cell-painting, biomedical text, vision, interactome, and other modalities. Methods reflect the ablations reported by authors and have not been independently reproduced; see *Methodology & Limitations*.
 
 ## Executive Summary — Top-12 Practitioner Take-aways (2026 refresh)
 
@@ -484,7 +484,7 @@ One row per FM, grouped by modality. Each entry: nickname → URL, one-line abla
 - **[Decima](https://doi.org/10.1038/s41592-026-03102-0) ([note](notes/decoding-sequence-determinants-of-2026.md))** — *modalities: dna, epigenome, scrna*
   - Borzoi initialization plus >22M sc/snRNA-seq targets turns long-context DNA sequence-to-expression prediction into cell type- and disease-state-specific regulatory modeling.
   - Public code adds a gene-mask channel and replaces Borzoi's aggregate-track head with Decima task heads, making the target gene and cellular context explicit.
-  - Accessible sources do not yet expose a numeric ablation table, so Decima is a qualitative update pending full-manuscript extraction.
+  - Accessible sources do not yet expose a numeric ablation table, so Decima is a qualitative update pending full-manuscript extraction; the same limitation is recorded in the note's Key Ablations section.
 - **[GET](https://doi.org/10.1038/s41586-024-08391-z) ([note](notes/a-foundation-model-of-2025.md))** — *modalities: epigenome*
   - Self-supervised motif-masked pretraining is essential for cross-cell-type generalization.
   - Region-wise transformer attention beats simpler ML on the same features.
