@@ -21,14 +21,13 @@ Status breakdown:
 |------|-------|--------|--------|--------|------|
 | 2025 | [CellPainTR: Generalizable Representation Learning for Cross-Dataset Cell Painting Analysis](notes/cellpaintr-generalizable-representation-learning-2025.md) | `extracted` | — | — | transformer, hyena-operator, cell-painting, batch-correction |
 
-## dna (22 papers)
+## dna (21 papers)
 
 | Year | Title | Status | Params | Tokens | Tags |
 |------|-------|--------|--------|--------|------|
 | 2026 | [Alignment or Integration? Rethinking Multimodal Fusion in DNA-language Foundation Models](notes/alignment-or-integration-rethinking-2026.md) | `converted` | — | — |  |
 | 2026 | [How Private Are DNA Embeddings? Inverting Foundation Model Representations of Genomic Sequences](notes/how-private-are-dna-2026.md) | `seed` | — | — |  |
 | 2026 | [JEPA-DNA: Grounding Genomic Foundation Models through Joint-Embedding Predictive Architectures](notes/jepa-dna-grounding-genomic-2026.md) | `extracted` | 117M | 7.6B bp | jepa, self-supervised, representation-learning, continual-pretraining |
-| 2026 | [Language Modeling Materializes a World Model of Protein Biology](notes/language-modeling-materializes-a-2026.md) | `extracted` | ESMC 300M/600M/6B; ESMFold2 built on ESMC 6B | ESMC 6B reported at 6.2T tokens | protein-language-model, ESMC, ESMFold2, protein-structure |
 | 2026 | [MIMIC: A Generative Multimodal Foundation Model for Biomolecules](notes/mimic-a-generative-multimodal-2026.md) | `extracted` | ~1B | 13M RNA transcripts + 15.5M proteins + >4B NL tokens; 6000+ organisms (LORE dataset) | multimodal, encoder-decoder, generative, any-to-any |
 | 2026 | [Poisoning the Genome: Targeted Backdoor Attacks on DNA Foundation Models](notes/poisoning-the-genome-targeted-2026.md) | `converted` | — | — |  |
 | 2025 | [A Phylogenetic Approach to Genomic Language Modeling](notes/a-phylogenetic-approach-to-2025.md) | `extracted` | 83000000 | — | genomic-language-model, phylogenetics, variant-effect-prediction, convolutional |
@@ -284,13 +283,12 @@ Status breakdown:
 | 2024 | [scGPT: toward building a foundation model for single-cell multi-omics using generative AI](notes/scgpt-toward-building-a-2024.md) | `extracted` | ~51M (whole-human model; 12 transformer layers, d_model=512, 8 heads, d_hid=512, vocab ~60K genes) | 33M cells from CELLxGENE Census (human normal); organ-specific models up to 13.2M cells | foundation-model, single-cell, generative, gene-token |
 | 2024 | [Transformer-based Single-Cell Language Model: A Survey](notes/transformer-based-single-cell-2024.md) | `extracted` | — | — | survey, transformer, single-cell, foundation-model |
 
-## small-molecule (12 papers)
+## small-molecule (11 papers)
 
 | Year | Title | Status | Params | Tokens | Tags |
 |------|-------|--------|--------|--------|------|
 | 2026 | [A Systematic Survey and Benchmark of Deep Learning for Molecular Property Prediction in the Foundation Model Era](notes/a-systematic-survey-and-2026.md) | `converted` | — | — |  |
 | 2026 | [Elucidating the Design Space of Flow Matching for Cellular Microscopy](notes/elucidating-the-design-space-2026.md) | `extracted` | 700M | — | ablation-study, flow-matching, generative-model, cell-microscopy |
-| 2026 | [Language Modeling Materializes a World Model of Protein Biology](notes/language-modeling-materializes-a-2026.md) | `extracted` | ESMC 300M/600M/6B; ESMFold2 built on ESMC 6B | ESMC 6B reported at 6.2T tokens | protein-language-model, ESMC, ESMFold2, protein-structure |
 | 2025 | [Informing Acquisition Functions via Foundation Models for Molecular Discovery](notes/informing-acquisition-functions-via-2025.md) | `converted` | — | — |  |
 | 2025 | [LSM-MS2: A Foundation Model Bridging Spectral Identification and Biological Interpretation](notes/lsm-ms2-a-foundation-2025.md) | `extracted` | — | — | foundation-model, transformer, mass-spectrometry, metabolomics |
 | 2025 | [Unveiling Latent Knowledge in Chemistry Language Models through Sparse Autoencoders](notes/unveiling-latent-knowledge-in-2025.md) | `converted` | — | — |  |

@@ -98,8 +98,12 @@ def test_requested_biohub_esm_protein_note_present() -> None:
     )
     assert note.title == "Language Modeling Materializes a World Model of Protein Biology"
     assert note.url == "https://biohub.ai/papers/esm_protein.pdf?__clerk_synced=true"
-    assert {"protein-sequence", "protein-structure", "multimodal"}.issubset(note.modalities)
+    assert note.modalities == ["protein-sequence", "protein-structure", "multimodal"]
+    assert "dna" not in note.modalities
+    assert "small-molecule" not in note.modalities
+    assert note.references_chased
     assert note.parameters == "ESMC 300M/600M/6B; ESMFold2 built on ESMC 6B"
     assert "6.2T tokens" in note.body
     assert "ESMC 6B exceeding" in note.body
     assert "ESMFold2" in note.body
+    assert "ESM-1b → ESM-2/ESMFold → ESMC/ESMFold2" in note.body

@@ -6,7 +6,7 @@ This guidebook distils design decisions and empirical findings from the current 
 
 Each FM note in `notes/` carries a `## Ablations (Rev 4)` section that quotes the design-choice ablations actually reported by the authors. This guidebook is *grounded in those tables*: every design-choice axis below ends with an **Ablation evidence (Rev 4)** subsection that quotes the specific finding from the relevant note. Citations use `[short-name](URL)` linking to the source's DOI, arXiv, or canonical URL.
 
-Coverage by modality is multi-label: protein-sequence (23), protein-structure (15), imaging-pathology (13), DNA (14), scRNA (12), multimodal (11), RNA (7), small-molecule (7), epigenome (4), single-cell-multiomics (3), plus low-count radiology, microscopy, cell-painting, biomedical text, vision, interactome, and other modalities. Methods reflect the ablations reported by authors and have not been independently reproduced; see *Methodology & Limitations*.
+Coverage by modality is multi-label: protein-sequence (23), protein-structure (15), imaging-pathology (13), DNA (13), scRNA (12), multimodal (11), RNA (7), small-molecule (6), epigenome (4), single-cell-multiomics (3), plus low-count radiology, microscopy, cell-painting, biomedical text, vision, interactome, and other modalities. Methods reflect the ablations reported by authors and have not been independently reproduced; see *Methodology & Limitations*.
 
 ## Executive Summary — Top-12 Practitioner Take-aways (2026 refresh)
 
@@ -301,7 +301,7 @@ Many headline gains shrink ≥50% under (a) leakage-corrected splits (sequence i
 
 ## Modality-Specific Recipes
 
-Practical defaults per modality, drawn from the strongest ablations in the 86 FM corpus.
+Practical defaults per modality, drawn from the strongest ablations in the 87 FM corpus.
 
 ### DNA / Genomics
 
@@ -393,9 +393,9 @@ Newly broken out in Rev 4. [Nicheformer](https://doi.org/10.1101/2024.04.15.5894
 
 ## Methodology & Limitations
 
-This guidebook is grounded in **86 bio-FM papers**, each of which carries a `## Ablations (Rev 4)` section in its source note. **(N=X papers)** annotations on every claim count only those 86 FM papers; the remaining 57 surveyed papers are baselines, benchmarks, or supporting methods (TAPE, CLAM, scVI, totalVI, Cellpose, CellRanger, etc.) and are not counted as primary evidence.
+This guidebook is grounded in **87 bio-FM papers**, each of which carries a `## Ablations (Rev 4)` section in its source note. **(N=X papers)** annotations on every claim count only those 87 FM papers; the remaining 57 surveyed papers are baselines, benchmarks, or supporting methods (TAPE, CLAM, scVI, totalVI, Cellpose, CellRanger, etc.) and are not counted as primary evidence.
 
-Coverage is uneven: protein sequence (22), protein structure (14), pathology (13), DNA (13), scRNA (12), multimodal (10) are well represented; RNA (7), small-molecule (6), epigenome (4), single-cell-multiomics (3), radiology (2), spatial transcriptomics / cell-imaging / microscopy / MS-proteomics / interactome / biomedical-text (1 each) are under-represented.
+Coverage is uneven: protein sequence (23), protein structure (15), pathology (13), DNA (13), scRNA (12), multimodal (11) are well represented; RNA (7), small-molecule (6), epigenome (4), single-cell-multiomics (3), radiology (2), spatial transcriptomics / cell-imaging / microscopy / MS-proteomics / interactome / biomedical-text (1 each) are under-represented.
 
 Several Rev-4 ablation tables are limited by source access:
 - [scMulan](https://doi.org/10.1101/2024.01.25.577152) ([note](notes/scmulan-a-multitask-generative-2024.md)): full text 403 (bioRxiv); ablations could not be quoted directly.
@@ -405,7 +405,7 @@ Several Rev-4 ablation tables are limited by source access:
 
 Quantitative claims reflect the ablations reported in each paper and have **not been independently reproduced**. The Rev 3 verification appendix (preserved verbatim below) is the only independent fact-check applied.
 
-## Appendix: FM Catalogue (86 entries)
+## Appendix: FM Catalogue (87 entries)
 
 One row per FM, grouped by modality. Each entry: nickname → URL, one-line ablation take-away extracted from the source note's `## Ablations (Rev 4)` table.
 
@@ -511,7 +511,7 @@ One row per FM, grouped by modality. Each entry: nickname → URL, one-line abla
   - Mamba outperforms CNN-RNN and dilated CNN at matched size.
   - 30-sample few-shot: Pearson R 0.53 on human mRNA half-life (71% of full supervised R=0.74).
 
-### Protein Sequence (16)
+### Protein Sequence (17)
 
 - **[Ankh](https://arxiv.org/abs/2301.06568) ([note](notes/ankh-optimized-protein-language-2023.md))** — *modalities: protein-sequence*
   - 1-gram span masking with merged-unmasked target reconstruction (Exp.4) wins; 3-gram spans and partial-loss variants hurt. Reconstructing the full input (incl. unmasked) is required.
@@ -533,6 +533,11 @@ One row per FM, grouped by modality. Each entry: nickname → URL, one-line abla
   - ESMFold achieves near-AlphaFold2 accuracy at ~60× speedup without MSA search, making structure prediction feasible at metagenomic scale.
   - Folding accuracy plateaus at 3B (71.8% vs 72.1% at 15B) while contact precision keeps improving, justifying a 3B backbone over larger models.
   - ESM-2 (650M) substantially outperforms comparable single-sequence PLMs (ProtBERT-BFD, ProtT5-XL) on structure tasks, indicating training data and recipe quality matter beyond architecture.
+- **[ESMC / ESMFold2](https://biohub.ai/papers/esm_protein.pdf?__clerk_synced=true) ([note](notes/language-modeling-materializes-a-2026.md))** — *modalities: protein-sequence, protein-structure, multimodal*
+  - Sequence-only protein scaling remains live: ESMC 300M/600M/6B trained on 6.2T tokens continues the ESM-2 contact-precision curve, with 6B exceeding all ESM-2 sizes on CASP15 contacts.
+  - The relevant literature trail is ESM-1b → ESM-2/ESMFold → ESMC/ESMFold2, not DNA LMs; nucleic-acid or ligand inputs are complex context for a protein folding/design model.
+  - ESMFold2 shifts the protein insight from "representation only" to "representation + diffusion design head", connecting ESM-2/ESMFold to inverse-folding/design systems such as ESM-IF1 and ProteinMPNN.
+  - Atlas-scale deployment (>1B predicted structures over ~6.8B proteins) is an infrastructure insight: the model's utility comes from both per-protein accuracy and precomputed search/folding coverage.
 - **[ESM-3](https://doi.org/10.1101/2024.07.01.600583) ([note](notes/simulating-500-million-years-2024.md))** — *modalities: protein-sequence*
   - Multimodal protein generation shows the same scaling-law behavior as LLMs; frontier capabilities require ≥7B.
   - RLHF-style alignment is scale-dependent; small models cannot fully exploit it.
@@ -593,7 +598,7 @@ One row per FM, grouped by modality. Each entry: nickname → URL, one-line abla
   - A single head ≈ Gremlin; averaging top-5 already exceeds it → contacts live in the attention, LR just selects.
   - One labelled protein already matches Gremlin (p>0.05); diminishing returns past n=10.
 
-### Protein Structure (8)
+### Protein Structure (9)
 
 - **[AlphaFold 2](https://doi.org/10.1038/s41586-021-03819-2) ([note](notes/highly-accurate-protein-structure-2021.md))** — *modalities: protein-structure*
   - Largest single architectural ablation; SE(3)-equivariant geometric attention is the key inductive bias of the structure module.
@@ -605,6 +610,10 @@ One row per FM, grouped by modality. Each entry: nickname → URL, one-line abla
   - Generative diffusion replaces the equivariant structure module with no meaningful accuracy loss while eliminating torsion parametrisation and violation losses.
   - Large-crop fine-tuning disproportionately improves interface quality over intra-chain quality, consistent with interfaces requiring longer-range context.
   - Stereochemical correctness is achieved through sample-and-rank over 25 diffusion samples rather than physics-based guidance.
+- **[ESMC / ESMFold2](https://biohub.ai/papers/esm_protein.pdf?__clerk_synced=true) ([note](notes/language-modeling-materializes-a-2026.md))** — *modalities: protein-sequence, protein-structure, multimodal*
+  - ESMFold2 keeps the MSA-free ESMFold premise but replaces the structure/design head with a diffusion-style system, making it more directly comparable to modern generative structure models than to DNA foundation models.
+  - Protein complex conditioning over nucleic-acid/ligand context is best counted as multimodal protein-structure evidence; it should not change DNA-tokenisation or small-molecule-LM defaults.
+  - The paper's atlas claim updates the MSA-free recipe: for orphan/metagenomic proteins, precomputed ESMFold2 structures and Foldseek-style search are part of the practical default, not just downstream demos.
 - **[ESM-IF](https://doi.org/10.1101/2022.04.10.487779) ([note](notes/learning-inverse-folding-from-2022.md))** — *modalities: protein-structure, protein-sequence*
   - Adding 12M AlphaFold2-predicted structures yields +13.3 pp sequence recovery (38.3% → 51.6%), but only models ≥21M params benefit; a 1M-param GVP-GNN actually regresses.
   - The hybrid GVP-encoder + Transformer-decoder edges out pure-GVP GNNs by only +0.8 pp, indicating most value comes from geometric front-end reasoning.

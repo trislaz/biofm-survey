@@ -12,8 +12,6 @@ md_path: null
 modalities:
 - protein-sequence
 - protein-structure
-- dna
-- small-molecule
 - multimodal
 status: extracted
 evidence_quality: abstract+repo
@@ -28,7 +26,7 @@ tags:
 parameters: ESMC 300M/600M/6B; ESMFold2 built on ESMC 6B
 training_tokens: ESMC 6B reported at 6.2T tokens
 training_compute: null
-references_chased: false
+references_chased: true
 added_at: '2026-05-27T15:49:29+00:00'
 updated_at: '2026-05-27T15:49:29+00:00'
 ---
@@ -41,7 +39,7 @@ This Biohub preprint introduces a successor stack to the ESM-2/ESM-3 line: **ESM
 
 - **ESMC family**: Sequence-only Transformer protein language models at roughly 300M, 600M, and 6B parameters.
 - **ESMFold2**: Structure-prediction and design model that conditions on ESMC 6B representations and uses a diffusion-style structure generation/prediction head.
-- **Inputs beyond proteins**: ESMFold2 extends the folding/design setting to biomolecular complexes, including protein, DNA (including modifications), and ligand / CCD-code conditioning.
+- **Complex context**: ESMFold2 remains a protein-centred folding/design system, but can condition on biomolecular-complex context such as nucleic acids and ligand / CCD-code components.
 - **ESM Atlas**: Atlas-scale deployment of ESMC/ESMFold2 over billions of proteins, with more than one billion predicted structures reported for the 2026 release.
 - **Interpretability layer**: Sparse autoencoders trained on ESMC 6B internal activations expose thousands of human-annotated features for motifs, folds, localization signals, domains, and functional signatures.
 
@@ -50,7 +48,7 @@ This Biohub preprint introduces a successor stack to the ESM-2/ESM-3 line: **ESM
 - **Pretraining data**: Protein sequence corpora at metagenomic scale, continuing the UniRef/MGnify-heavy ESM recipe.
 - **Training scale**: ESMC 6B is reported with **6.2 trillion protein tokens**.
 - **Atlas scale**: ESM Atlas is expanded to roughly **6.8B proteins**, with **>1B** ESMFold2-predicted structures.
-- **Structure/design data**: ESMFold2 uses protein structure supervision and supports complex conditioning over proteins, DNA, and ligands.
+- **Structure/design data**: ESMFold2 uses protein structure supervision and supports complex conditioning over proteins plus nucleic-acid or ligand context; this does not make ESMC a DNA or small-molecule language model.
 
 ## Training Recipe
 
@@ -81,7 +79,9 @@ This Biohub preprint introduces a successor stack to the ESM-2/ESM-3 line: **ESM
 - **Interpretability becomes practical at model scale**: SAE features give a path to inspect large PLMs for human-recognizable protein biology rather than only benchmarking downstream accuracy.
 - **Atlas-scale inference changes the utility curve**: The value of a foundation model is amplified by embedding and folding billions of proteins, not just by per-protein accuracy.
 
-## References Worth Chasing
+## Chased Related Literature
+
+This update treats the Biohub PDF as part of the protein-LM / ESM lineage, not as a DNA-model or small-molecule-model paper. The directly relevant literature already represented in this survey is:
 
 1. **Rives et al. 2021** — "Biological Structure and Function Emerge from Scaling Unsupervised Learning to 250M Protein Sequences" (PNAS; doi:10.1073/pnas.2016239118). ESM-1b predecessor.
 2. **Lin et al. 2023** — "Evolutionary-scale prediction of atomic-level protein structure with a language model" (Science; doi:10.1126/science.ade2574). ESM-2/ESMFold baseline and direct predecessor.
@@ -89,6 +89,8 @@ This Biohub preprint introduces a successor stack to the ESM-2/ESM-3 line: **ESM
 4. **Hsu et al. 2022** — "Learning inverse folding from millions of predicted structures" (ICML / bioRxiv 2022.04.10.487779). ESM-IF1 inverse-folding predecessor.
 5. **Dauparas et al. 2022** — "Robust deep learning-based protein sequence design using ProteinMPNN" (Science; doi:10.1126/science.add2187). Strong inverse-folding/design baseline.
 6. **van Kempen et al. 2023** — "Fast and accurate protein structure search with Foldseek" (Nature Biotechnology). Relevant to atlas-scale structure search.
+
+Chasing these papers changes the derived insight in two ways: the lineage is **ESM-1b → ESM-2/ESMFold → ESMC/ESMFold2**, so ESMC extends the **protein sequence-only scaling** line rather than changing DNA-model defaults, and ESMFold2 belongs with MSA-free protein structure/design systems (ESMFold, ESM-IF1, ProteinMPNN, OmegaFold) while adding complex-context conditioning and atlas-scale deployment.
 
 ## Notes / Open Questions
 

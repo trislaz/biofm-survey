@@ -2640,8 +2640,6 @@
       "modalities": [
         "protein-sequence",
         "protein-structure",
-        "dna",
-        "small-molecule",
         "multimodal"
       ],
       "status": "extracted",
@@ -2658,7 +2656,7 @@
       "parameters": "ESMC 300M/600M/6B; ESMFold2 built on ESMC 6B",
       "training_tokens": "ESMC 6B reported at 6.2T tokens",
       "training_compute": null,
-      "references_chased": false,
+      "references_chased": true,
       "added_at": "2026-05-27T15:49:29+00:00",
       "updated_at": "2026-05-27T15:49:29+00:00"
     },
