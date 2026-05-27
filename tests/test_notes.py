@@ -100,4 +100,6 @@ def test_requested_biohub_esm_protein_note_present() -> None:
     assert note.url == "https://biohub.ai/papers/esm_protein.pdf?__clerk_synced=true"
     assert {"protein-sequence", "protein-structure", "multimodal"}.issubset(note.modalities)
     assert note.parameters == "ESMC 300M/600M/6B; ESMFold2 built on ESMC 6B"
+    assert "6.2T tokens" in note.body
+    assert "ESMC 6B exceeding" in note.body
     assert "ESMFold2" in note.body

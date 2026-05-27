@@ -63,7 +63,7 @@ This Biohub preprint introduces a successor stack to the ESM-2/ESM-3 line: **ESM
 
 | # | Axis varied | Setting | Finding | Take-away |
 |---|---|---|---|---|
-| 1 | ESMC scale | 300M vs 600M vs 6B | Contact/structure-relevant representations continue improving through 6B; the 6B model exceeds earlier ESM-2 baselines on reported contact metrics. | Sequence-only protein scaling remains unsaturated. |
+| 1 | ESMC scale | 300M vs 600M vs 6B, trained for 1.5M steps on 6.2T tokens | CASP15 contact precision follows a scaling-law-like trend: 300M is roughly comparable to ESM-2 650M, 600M is roughly comparable to ESM-2 3B and approaches ESM-2 15B, and 6B exceeds all ESM-2 sizes. | Sequence-only protein scaling remains unsaturated even without ESM-3-style structure/function tracks. |
 | 2 | Folding architecture | ESMFold / ESMFold2-style structure module vs diffusion-based ESMFold2 | The new diffusion head is positioned as better suited for structure prediction and inversion/design than the original ESMFold module. | ESMC supplies the representation; the generative head determines whether it is usable for design. |
 | 3 | Context/data curriculum | Short-context metagenomic-heavy warmup followed by longer-context training | The curriculum is used to make trillion-token training practical before the expensive long-context phase. | Context length is a compute allocation choice, not only a modeling choice. |
 | 4 | Representation analysis | Raw activations vs sparse-autoencoder features | SAE features are interpretable as domains, motifs, localization, fold/function concepts, and other biological signatures. | Mechanistic tools can turn opaque PLM activations into surveyable biological concepts. |
@@ -74,7 +74,8 @@ This Biohub preprint introduces a successor stack to the ESM-2/ESM-3 line: **ESM
 
 ## Reported Insights
 
-- **Protein sequence LMs still scale**: ESMC indicates that protein sequence-only scaling remains productive beyond ESM-2, even before adding structure/function tracks as in ESM-3.
+- **Protein sequence LMs still scale**: The ESMC scaling-law paragraph updates the ESM-2 story: with 6.2T tokens and a 300M/600M/6B sweep, sequence-only contact precision keeps improving through 6B, with ESMC 6B exceeding the earlier ESM-2 size sweep even before adding structure/function tracks as in ESM-3.
+- **Compute allocation matters alongside parameters**: ESMC's two-stage 512-token metagenomic-heavy warmup followed by 2048-token training treats context length and data mix as scaling levers, not just implementation details.
 - **Structure prediction and design are now coupled**: ESMFold2 is not only a predictor but also supports inverse folding/design workflows, making the representation-action loop tighter than in ESM-2/ESMFold.
 - **World-model framing**: The paper argues that ESMC internal states encode reusable biological abstractions, evidenced by structure prediction, atlas search, design, and sparse-autoencoder features.
 - **Interpretability becomes practical at model scale**: SAE features give a path to inspect large PLMs for human-recognizable protein biology rather than only benchmarking downstream accuracy.
