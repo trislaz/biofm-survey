@@ -3,10 +3,10 @@
 Total papers: **144**
 
 Status breakdown:
-- `extracted`: 84
+- `extracted`: 85
 - `converted`: 42
 - `abstract-only`: 9
-- `fetched`: 5
+- `fetched`: 4
 - `seed`: 4
 
 ## DNA (1 papers)
@@ -51,7 +51,7 @@ Status breakdown:
 
 | Year | Title | Status | Params | Tokens | Tags |
 |------|-------|--------|--------|--------|------|
-| 2025 | [A foundation model of transcription across human cell types](notes/a-foundation-model-of-2025.md) | `fetched` | — | — |  |
+| 2025 | [A foundation model of transcription across human cell types](notes/a-foundation-model-of-2025.md) | `extracted` | — | — | transformer, regulatory-genomics, chromatin-accessibility, gene-expression-prediction |
 | 2025 | [CellVerse: Do Large Language Models Really Understand Cell Biology?](notes/cellverse-do-large-language-2025.md) | `extracted` | — | — | benchmark, single-cell, LLM-evaluation, cell-type-annotation |
 | 2025 | [GRNFormer: A Biologically-Guided Framework for Integrating Gene Regulatory Networks into RNA Foundation Models](notes/grnformer-a-biologically-guided-2025.md) | `extracted` | — | — | gene-regulatory-network, adapter, graph-neural-network, cross-attention |
 | 2025 | [Multimodal 3D Genome Pre-training](notes/multimodal-3d-genome-pre-2025.md) | `extracted` | — | — | foundation-model, 3d-genome, hi-c, chromatin |
