@@ -1,5 +1,5 @@
 {
-  "count": 145,
+  "count": 146,
   "papers": [
     {
       "id": "a-foundation-model-of-2025",
@@ -1247,6 +1247,59 @@
       "references_chased": false,
       "added_at": "2026-04-22T19:36:46+00:00",
       "updated_at": "2026-04-22T20:19:06+00:00"
+    },
+    {
+      "id": "decoding-sequence-determinants-of-2026",
+      "title": "Decoding sequence determinants of gene expression in diverse cellular and disease states",
+      "authors": [
+        "Avantika Lal",
+        "Alexander Karollus",
+        "Laura Gunsalus",
+        "David Garfield",
+        "Surag Nair",
+        "Alex M. Tseng",
+        "M. Grace Gordon",
+        "John D. Blischak",
+        "Bryce Van de Geijn",
+        "Tushar Bhangale",
+        "Jenna L. Collier",
+        "Nathaniel Diamant",
+        "Tommaso Biancalani",
+        "Hector Corrada Bravo",
+        "Gabriele Scalia",
+        "Gokcen Eraslan"
+      ],
+      "year": 2026,
+      "venue": "Nature Methods",
+      "arxiv": null,
+      "doi": "10.1038/s41592-026-03102-0",
+      "url": "https://www.nature.com/articles/s41592-026-03102-0",
+      "pdf_path": null,
+      "md_path": null,
+      "modalities": [
+        "dna",
+        "epigenome",
+        "scrna"
+      ],
+      "status": "extracted",
+      "evidence_quality": "abstract+repo",
+      "tags": [
+        "decima",
+        "regulatory-genomics",
+        "gene-expression-prediction",
+        "single-cell-transcriptomics",
+        "cell-type-conditioning",
+        "disease-state-conditioning",
+        "variant-effect-prediction",
+        "regulatory-element-design",
+        "borzoi-initialized"
+      ],
+      "parameters": "not disclosed; Borzoi-initialized backbone likely comparable to Borzoi-scale models",
+      "training_tokens": "more than 22 million single-cell or single-nucleus RNA-seq profiles",
+      "training_compute": null,
+      "references_chased": false,
+      "added_at": "2026-05-27T09:34:12+00:00",
+      "updated_at": "2026-05-27T09:34:12+00:00"
     },
     {
       "id": "differential-attention-augmented-biomedclip-2026",

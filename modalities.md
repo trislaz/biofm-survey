@@ -1,9 +1,9 @@
 # Bio-FM Survey — Per-Modality Index
 
-Total papers: **145**
+Total papers: **146**
 
 Status breakdown:
-- `extracted`: 85
+- `extracted`: 87
 - `converted`: 42
 - `abstract-only`: 9
 - `fetched`: 4
@@ -21,11 +21,12 @@ Status breakdown:
 |------|-------|--------|--------|--------|------|
 | 2025 | [CellPainTR: Generalizable Representation Learning for Cross-Dataset Cell Painting Analysis](notes/cellpaintr-generalizable-representation-learning-2025.md) | `extracted` | — | — | transformer, hyena-operator, cell-painting, batch-correction |
 
-## dna (21 papers)
+## dna (22 papers)
 
 | Year | Title | Status | Params | Tokens | Tags |
 |------|-------|--------|--------|--------|------|
 | 2026 | [Alignment or Integration? Rethinking Multimodal Fusion in DNA-language Foundation Models](notes/alignment-or-integration-rethinking-2026.md) | `converted` | — | — |  |
+| 2026 | [Decoding sequence determinants of gene expression in diverse cellular and disease states](notes/decoding-sequence-determinants-of-2026.md) | `extracted` | not disclosed; Borzoi-initialized backbone likely comparable to Borzoi-scale models | more than 22 million single-cell or single-nucleus RNA-seq profiles | decima, regulatory-genomics, gene-expression-prediction, single-cell-transcriptomics |
 | 2026 | [How Private Are DNA Embeddings? Inverting Foundation Model Representations of Genomic Sequences](notes/how-private-are-dna-2026.md) | `seed` | — | — |  |
 | 2026 | [JEPA-DNA: Grounding Genomic Foundation Models through Joint-Embedding Predictive Architectures](notes/jepa-dna-grounding-genomic-2026.md) | `extracted` | 117M | 7.6B bp | jepa, self-supervised, representation-learning, continual-pretraining |
 | 2026 | [MIMIC: A Generative Multimodal Foundation Model for Biomolecules](notes/mimic-a-generative-multimodal-2026.md) | `extracted` | ~1B | 13M RNA transcripts + 15.5M proteins + >4B NL tokens; 6000+ organisms (LORE dataset) | multimodal, encoder-decoder, generative, any-to-any |
@@ -47,10 +48,11 @@ Status breakdown:
 | 2023 | [HyenaDNA: Long-Range Genomic Sequence Modeling at Single Nucleotide Resolution](notes/hyenadna-long-range-genomic-2023.md) | `extracted` | 6.6M (largest); suite from 0.44M to 6.6M | up to ~2T tokens (1M context × 10–20k steps) | hyena, long-context, single-nucleotide, implicit-convolution |
 | 2021 | [DNABERT: pre-trained Bidirectional Encoder Representations from Transformers model for DNA-language in genome](notes/dnabert-pre-trained-bidirectional-2021.md) | `extracted` | 110000000 | 122000000000 | mlm, k-mer-tokenization, 6-mer, overlapping-k-mer |
 
-## epigenome (8 papers)
+## epigenome (9 papers)
 
 | Year | Title | Status | Params | Tokens | Tags |
 |------|-------|--------|--------|--------|------|
+| 2026 | [Decoding sequence determinants of gene expression in diverse cellular and disease states](notes/decoding-sequence-determinants-of-2026.md) | `extracted` | not disclosed; Borzoi-initialized backbone likely comparable to Borzoi-scale models | more than 22 million single-cell or single-nucleus RNA-seq profiles | decima, regulatory-genomics, gene-expression-prediction, single-cell-transcriptomics |
 | 2025 | [A foundation model of transcription across human cell types](notes/a-foundation-model-of-2025.md) | `extracted` | — | — | transformer, regulatory-genomics, chromatin-accessibility, gene-expression-prediction |
 | 2025 | [CellVerse: Do Large Language Models Really Understand Cell Biology?](notes/cellverse-do-large-language-2025.md) | `extracted` | — | — | benchmark, single-cell, LLM-evaluation, cell-type-annotation |
 | 2025 | [GRNFormer: A Biologically-Guided Framework for Integrating Gene Regulatory Networks into RNA Foundation Models](notes/grnformer-a-biologically-guided-2025.md) | `extracted` | — | — | gene-regulatory-network, adapter, graph-neural-network, cross-attention |
@@ -242,10 +244,11 @@ Status breakdown:
 | 2022 | [Accurate RNA 3D structure prediction using a language model-based deep learning approach](notes/accurate-rna-3d-structure-2022.md) | `extracted` | — | ~23.7M sequences (RNA-FM pre-training) | rna-structure-prediction, foundation-model, language-model, alphafold-inspired |
 | 2022 | [Interpretable RNA Foundation Model from Unannotated Data for Highly Accurate RNA Structure and Function Predictions](notes/interpretable-rna-foundation-model-2022.md) | `extracted` | ~99M (12-layer BERT, 640 hidden, 20 heads; not explicitly stated, estimated from architecture) | 23.7M ncRNA sequences from RNAcentral | foundation-model, rna, bert, masked-language-modeling |
 
-## scrna (23 papers)
+## scrna (24 papers)
 
 | Year | Title | Status | Params | Tokens | Tags |
 |------|-------|--------|--------|--------|------|
+| 2026 | [Decoding sequence determinants of gene expression in diverse cellular and disease states](notes/decoding-sequence-determinants-of-2026.md) | `extracted` | not disclosed; Borzoi-initialized backbone likely comparable to Borzoi-scale models | more than 22 million single-cell or single-nucleus RNA-seq profiles | decima, regulatory-genomics, gene-expression-prediction, single-cell-transcriptomics |
 | 2026 | [Open World Knowledge Aided Single-Cell Foundation Model with Robust Cross-Modal Cell-Language Pre-training](notes/open-world-knowledge-aided-2026.md) | `seed` | — | — |  |
 | 2026 | [PerturbDiff: Functional Diffusion for Single-Cell Perturbation Modeling](notes/perturbdiff-functional-diffusion-for-2026.md) | `extracted` | — | — | single-cell-perturbation, diffusion, virtual-cells, distribution-level-generation |
 | 2026 | [Sparse autoencoders reveal organized biological knowledge but minimal regulatory logic in single-cell foundation models: a comparative atlas of Geneformer and scGPT](notes/sparse-autoencoders-reveal-organized-2026.md) | `converted` | — | — |  |
